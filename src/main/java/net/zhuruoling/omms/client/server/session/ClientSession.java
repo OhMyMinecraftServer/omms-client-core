@@ -1,2 +1,9 @@
-package net.zhuruoling.omms.client.server.session;public class Session {
+package net.zhuruoling.omms.client.server.session;
+
+import net.zhuruoling.omms.client.util.EncryptedConnector;
+
+public class ClientSession {
+    public ClientSession(EncryptedConnector connector){
+
+    }
 }

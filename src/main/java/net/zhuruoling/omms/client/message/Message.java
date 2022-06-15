@@ -1,4 +1,4 @@
-package net.zhuruoling.message;
+package net.zhuruoling.omms.client.message;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +8,7 @@ public class Message {
         this.load = load;
     }
     @SerializedName("msg")
-    String msg = "";
+    String msg;
     @SerializedName("load")
     String[] load;
 

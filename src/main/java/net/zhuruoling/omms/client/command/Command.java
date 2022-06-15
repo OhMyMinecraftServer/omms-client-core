@@ -1,4 +1,4 @@
-package net.zhuruoling.command;
+package net.zhuruoling.omms.client.command;
 
 import com.google.gson.annotations.SerializedName;
 

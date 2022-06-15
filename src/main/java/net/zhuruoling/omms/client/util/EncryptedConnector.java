@@ -1,9 +1,4 @@
-package net.zhuruoling;
-
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package net.zhuruoling.omms.client.util;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -23,9 +18,8 @@ public class EncryptedConnector {
     private final BufferedReader in;
     private final PrintWriter out;
     private final byte[] key;
-    private final Logger logger = LoggerFactory.getLogger("EncryptedConnector");
-    @Contract(pure = true)
-    public EncryptedConnector(BufferedReader in, PrintWriter out, @NotNull String key){
+
+    public EncryptedConnector(BufferedReader in, PrintWriter out,String key){
         this.in = in;
         this.out = out;
         //补全长度
@@ -48,13 +42,12 @@ public class EncryptedConnector {
         }
         this.key = key.getBytes(StandardCharsets.UTF_8);
     }
-    public void println(@NotNull String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void println( String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.send(content);
     }
 
-    public void send(@NotNull String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        var data = encryptECB(content.getBytes(StandardCharsets.UTF_8),this.key);
-        logger.info("Sending:" + content);
+    public void send( String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        byte[] data = encryptECB(content.getBytes(StandardCharsets.UTF_8),this.key);
         out.println(new String(data,StandardCharsets.UTF_8));
         out.flush();
     }
@@ -62,15 +55,14 @@ public class EncryptedConnector {
     public String readLine() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String line = in.readLine();
         if (line == null) return null;
-        logger.debug("Received:" + line);
-        var data = decryptECB(line.getBytes(StandardCharsets.UTF_8),this.key);
+        byte[] data = decryptECB(line.getBytes(StandardCharsets.UTF_8),this.key);
         return new String(data,StandardCharsets.UTF_8);
     }
 
     private static byte[] encryptECB(byte[] data, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"));
-        var result = cipher.doFinal(data);
+        byte[] result = cipher.doFinal(data);
         return Base64.getEncoder().encode(result);
     }
 
