@@ -2,6 +2,9 @@ package net.zhuruoling.omms.client.message;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.awt.image.TileObserver;
+import java.util.Arrays;
+
 public class Message {
     public Message(String msg, String[] load){
         this.msg = msg;
@@ -26,5 +29,13 @@ public class Message {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "msg='" + msg + '\'' +
+                ", load=" + Arrays.toString(load) +
+                '}';
     }
 }

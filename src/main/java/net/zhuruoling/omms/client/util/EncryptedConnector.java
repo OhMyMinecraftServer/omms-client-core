@@ -46,7 +46,7 @@ public class EncryptedConnector {
         this.send(content);
     }
 
-    public void send( String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void send(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         byte[] data = encryptECB(content.getBytes(StandardCharsets.UTF_8),this.key);
         out.println(new String(data,StandardCharsets.UTF_8));
         out.flush();
