@@ -35,7 +35,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>net.zhuruoling.omms.client.TestMain</mainClass>
+                                    <mainClass>net.zhuruoling.omms.client.testmain.ClientTestMain</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

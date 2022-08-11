@@ -36,7 +36,6 @@ public class ClientInitialSession {
 
     public ClientSession init(int code) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailException, InterruptedException {
         Socket socket = new Socket(this.inetAddress,this.port);
-        ConsoleLogger.info(socket.getKeepAlive());
         socket.setKeepAlive(true);
 
         LocalDateTime date = LocalDateTime.now();
@@ -71,7 +70,7 @@ public class ClientInitialSession {
             return new ClientSession(newConnector, socket);
         }
         else {
-            throw new ConnectionFailException();
+            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", message.getMsg()));
         }
 
     }

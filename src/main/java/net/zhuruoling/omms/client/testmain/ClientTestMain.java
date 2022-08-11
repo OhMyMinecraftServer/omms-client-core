@@ -1,4 +1,4 @@
-package net.zhuruoling.omms.client.TestMain;
+package net.zhuruoling.omms.client.testmain;
 
 import net.zhuruoling.omms.client.command.Command;
 import net.zhuruoling.omms.client.message.Message;
@@ -11,9 +11,17 @@ public class ClientTestMain {
     public static void main(String[] args) throws Exception {
         ClientInitialSession initialSession = new ClientInitialSession(InetAddress.getByName("localhost"),50000);
         ClientSession session = initialSession.init(114514);
-        Message message = session.send(new Command("TEST1",new String[]{}));
+        session.fetchWhitelistFromServer();
+        System.out.println(session.getWhitelistMap().toString());
+        Message message = session.send(new Command("TEST",new String[]{}));
         System.out.println(message.toString());
         message = session.send(new Command("TEST2",new String[]{}));
         System.out.println(message.toString());
+        System.out.println(session.queryWhitelist("my_whitelist", "ZhuRuoLing"));
+        System.out.println(session.queryWhitelist("wdnmd", "ZhuRuoLing"));
+        System.out.println(session.queryInAllWhitelist("ZhuRuoLing"));
+        System.out.println(session.queryInAllWhitelist("Simuoss"));
+        System.out.println(session.queryInAllWhitelist("abab"));
+        session.close();
     }
 }
