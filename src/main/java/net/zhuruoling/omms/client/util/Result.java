@@ -1,0 +1,5 @@
+package net.zhuruoling.omms.client.util;
+
+public enum Result {
+    OK, NO_WHITELIST, WHITELIST_NOT_EXIST, NO_SUCH_PLAYER, FAIL, PLAYER_ALREADY_EXISTS, PERMISSION_DENIED, FOLDER_NOT_EXIST, NOT_A_FOLDER, __NULL
+}

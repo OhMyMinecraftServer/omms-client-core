@@ -1,6 +1,6 @@
 package net.zhuruoling.omms.client.testmain;
 
-import net.zhuruoling.omms.client.command.Command;
+import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.message.Message;
 import net.zhuruoling.omms.client.server.session.ClientInitialSession;
 import net.zhuruoling.omms.client.server.session.ClientSession;
@@ -13,9 +13,9 @@ public class ClientTestMain {
         ClientSession session = initialSession.init(114514);
         session.fetchWhitelistFromServer();
         System.out.println(session.getWhitelistMap().toString());
-        Message message = session.send(new Command("TEST",new String[]{}));
+        Message message = session.send(new Request("TEST",new String[]{}));
         System.out.println(message.toString());
-        message = session.send(new Command("TEST2",new String[]{}));
+        message = session.send(new Request("TEST2",new String[]{}));
         System.out.println(message.toString());
         System.out.println(session.queryWhitelist("my_whitelist", "ZhuRuoLing"));
         System.out.println(session.queryWhitelist("wdnmd", "ZhuRuoLing"));

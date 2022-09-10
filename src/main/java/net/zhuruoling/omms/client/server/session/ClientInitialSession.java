@@ -3,10 +3,7 @@ package net.zhuruoling.omms.client.server.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.org.apache.bcel.internal.generic.RET;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-import net.zhuruoling.omms.client.ConsoleLogger;
-import net.zhuruoling.omms.client.command.Command;
+import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.message.Message;
 import net.zhuruoling.omms.client.util.ConnectionFailException;
 import net.zhuruoling.omms.client.util.EncryptedConnector;
@@ -54,7 +51,7 @@ public class ClientInitialSession {
         connCode = Util.base64Encode(connCode);
         connCode = Util.base64Encode(connCode);
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new Command("PING", new String[]{connCode}));
+        String content = gson.toJson(new Request("PING", new String[]{connCode}));
         connector.send(content);
         String line = connector.readLine();
         Message message = gson.fromJson(line, Message.class);

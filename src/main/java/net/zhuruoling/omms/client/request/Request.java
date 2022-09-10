@@ -1,9 +1,9 @@
-package net.zhuruoling.omms.client.command;
+package net.zhuruoling.omms.client.request;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Command {
-    public Command(String cmd, String[] load){
+public class Request {
+    public Request(String cmd, String[] load){
         this.cmd = cmd;
         this.load = load;
     }
