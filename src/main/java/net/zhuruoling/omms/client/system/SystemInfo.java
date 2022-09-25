@@ -1,13 +1,20 @@
 package net.zhuruoling.omms.client.system;
 
 public class SystemInfo {
+
+    String osName;
+    String osVersion;
+    String osArch;
     FileSystemInfo fileSystemInfo;
     MemoryInfo memoryInfo;
     NetworkInfo networkInfo;
     ProcessorInfo processorInfo;
     StorageInfo storageInfo;
 
-    public SystemInfo(FileSystemInfo fileSystemInfo, MemoryInfo memoryInfo, NetworkInfo networkInfo, ProcessorInfo processorInfo, StorageInfo storageInfo) {
+    public SystemInfo(String osName, String osVersion, String osArch, FileSystemInfo fileSystemInfo, MemoryInfo memoryInfo, NetworkInfo networkInfo, ProcessorInfo processorInfo, StorageInfo storageInfo) {
+        this.osName = osName;
+        this.osVersion = osVersion;
+        this.osArch = osArch;
         this.fileSystemInfo = fileSystemInfo;
         this.memoryInfo = memoryInfo;
         this.networkInfo = networkInfo;
@@ -53,5 +60,29 @@ public class SystemInfo {
 
     public void setStorageInfo(StorageInfo storageInfo) {
         this.storageInfo = storageInfo;
+    }
+
+    public String getOsName() {
+        return osName;
+    }
+
+    public void setOsName(String osName) {
+        this.osName = osName;
+    }
+
+    public String getOsVersion() {
+        return osVersion;
+    }
+
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
+
+    public String getOsArch() {
+        return osArch;
+    }
+
+    public void setOsArch(String osArch) {
+        this.osArch = osArch;
     }
 }

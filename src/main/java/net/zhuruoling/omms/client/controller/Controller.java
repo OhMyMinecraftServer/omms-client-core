@@ -37,10 +37,6 @@ public class Controller {
                 '}';
     }
 
-    public Instruction createInstruction(String command){
-        return new Instruction(ControllerTypes.valueOf(type), this.name, command);
-    }
-
     public void setName(String name) {
         this.name = name;
     }
