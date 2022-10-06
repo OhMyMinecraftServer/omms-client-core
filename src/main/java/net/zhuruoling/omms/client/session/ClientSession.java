@@ -1,4 +1,4 @@
-package net.zhuruoling.omms.client.server.session;
+package net.zhuruoling.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,9 +6,11 @@ import net.zhuruoling.omms.client.controller.Instruction;
 import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.controller.Controller;
 import net.zhuruoling.omms.client.message.Message;
+import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.system.SystemInfo;
 import net.zhuruoling.omms.client.util.EncryptedConnector;
 import net.zhuruoling.omms.client.util.Result;
+import net.zhuruoling.omms.client.util.Util;
 
 import java.net.Socket;
 import java.util.*;
@@ -36,29 +38,28 @@ public class ClientSession {
         return controllerMap;
     }
 
-    public Message send(Request request) throws Exception {
+    public Response send(Request request) throws Exception {
         String content = gson.toJson(request);
         connector.println(content);
-        Message message = gson.fromJson(connector.readLine(), Message.class);
-        return message;
+        Response response = gson.fromJson(connector.readLine(), Response.class);
+        return response;
     }
 
     public void close() throws Exception {
-        Message message = send(new Request("END", new String[]{}));
-        if (message.getMsg() == "OK") {
+        Response response = send(new Request("END"));
+        if (Objects.equals(response.getCode(), "OK")) {
             socket.close();
         }
-
     }
 
     public void fetchWhitelistFromServer() throws Exception {
-        Message message = send(new Request("WHITELIST_LIST", new String[]{}));
-        if (Objects.equals(message.getMsg(), "OK")) {
-            String[] whitelistNames = message.getLoad();
+        Response response = send(new Request("WHITELIST_LIST"));
+        if (Objects.equals(response.getCode(), "OK")) {
+            String[] whitelistNames = gson.fromJson(response.getContent("whitelists"), String[].class);
             for (String whitelistName : whitelistNames) {
-                message = send(new Request("WHITELIST_GET", new String[]{whitelistName}));
-                if (Objects.equals(message.getMsg(), "OK")) {
-                    whitelistMap.put(whitelistName, new ArrayList<String>(Arrays.asList(message.getLoad())));
+                response = send(new Request("WHITELIST_GET").withContentKeyPair("whitelist", whitelistName));
+                if (Objects.equals(response.getCode(), "OK")) {
+                    whitelistMap.put(whitelistName, new ArrayList<>(Arrays.asList(gson.fromJson(response.getContent("players"), String[].class))));
                 }
             }
         }
@@ -98,47 +99,53 @@ public class ClientSession {
     }
 
     public Result addToWhitelist(String whitelistName, String player) throws Exception {
-        Message message = this.send(new Request("WHITELIST_ADD", new String[]{whitelistName, player}));
-        return Result.valueOf(message.getMsg());
+        Response response = this.send(new Request("WHITELIST_ADD")
+                .withContentKeyPair("whitelist",whitelistName)
+                .withContentKeyPair("player", player)
+        );
+        return Result.valueOf(response.getCode());
     }
 
     public Result removeFromWhitelist(String whitelistName, String player) throws Exception {
-        Message message = this.send(new Request("WHITELIST_REMOVE", new String[]{whitelistName, player}));
-        return Result.valueOf(message.getMsg());
+        Response response = this.send(new Request("WHITELIST_REMOVE")
+                .withContentKeyPair("whitelist",whitelistName)
+                .withContentKeyPair("player", player)
+        );
+        return Result.valueOf(response.getCode());
     }
 
     public Result fetchCotrollersFromServer() throws Exception {
-        Message message = send(new Request("CONTROLLERS_LIST", new String[]{}));
-        if (Objects.equals(message.getMsg(), "OK")) {
-            String[] controllerNames = message.getLoad();
+        Response response = send(new Request("CONTROLLERS_LIST"));
+        if (Objects.equals(response.getCode(), "OK")) {
+            String[] controllerNames = Util.string2Array(response.getContent("names"));
             for (String controllerName : controllerNames) {
-                Message message_ = send(new Request("CONTROLLERS_GET", new String[]{controllerName}));
-                if (Objects.equals(message_.getMsg(), "OK")) {
-                    String jsonString = message_.getLoad()[0];
+                Response response1 = send(new Request("CONTROLLERS_GET").withContentKeyPair("controller",controllerName));
+                if (Objects.equals(response1.getCode(), "OK")) {
+                    String jsonString = response1.getContent("controller");
                     Controller controller = gson.fromJson(jsonString, Controller.class);
                     System.out.println(controller.toString());
                     controllerMap.put(controllerName, controller);
-                } else return Result.valueOf(message_.getMsg());
+                } else return Result.valueOf(response1.getCode());
             }
             return Result.OK;
         } else {
-            return Result.valueOf(message.getMsg());
+            return Result.valueOf(response.getCode());
         }
     }
 
     public Result fetchSystemInfoFromServer() throws Exception{
-        Message message = send(new Request("SYSINFO_GET", new String[]{}));
-        if (Objects.equals(message.getMsg(), "OK")) {
-            this.systemInfo = gson.fromJson(message.getLoad()[0], SystemInfo.class);
+        Response response = send(new Request("SYSINFO_GET"));
+        if (Objects.equals(response.getCode(), "OK")) {
+            //this.systemInfo = gson.fromJson(response.getLoad()[0], SystemInfo.class);
             return Result.OK;
         } else {
-            return Result.valueOf(message.getMsg());
+            return Result.valueOf(response.getCode());
         }
     }
 
     public Result executeControllerCommand(Controller controller, Instruction instruction) throws Exception {
-        Message message = send(new Request("CONTROLLERS_EXECUTE", new String[]{}));
-        return Result.valueOf(message.getMsg());
+        Response response = send(new Request("CONTROLLERS_EXECUTE").withContentKeyPair("command", Instruction.asJsonString(instruction)));
+        return Result.valueOf(response.getCode());
     }
 
 

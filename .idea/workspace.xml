@@ -4,11 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="server update!!">
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="0.5.6">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/server/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/server/session/ClientSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/server/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/server/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +35,7 @@
   <component name="ProjectId" id="2ATLhdeveK7uWxq0sYGsje3DvLQ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="false" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
@@ -44,7 +49,8 @@
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -53,7 +59,11 @@
       <recent name="C:\Users\jkl-9\IdeaProjects\omms-client-core\src\main\java\net\zhuruoling\omms\client\util" />
       <recent name="C:\Users\jkl-9\IdeaProjects\omms-client-core\src\main\java\net\zhuruoling\omms\client" />
     </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="net.zhuruoling.omms.client" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.zhuruoling.omms.client.response" />
       <recent name="net.zhuruoling.omms.client.permission" />
       <recent name="net.zhuruoling.omms.client.util" />
       <recent name="net.zhuruoling.omms.client.controller" />
@@ -88,7 +98,17 @@
       <workItem from="1663630852339" duration="118000" />
       <workItem from="1663745817057" duration="1047000" />
       <workItem from="1663945920875" duration="160000" />
-      <workItem from="1664114800692" duration="4424000" />
+      <workItem from="1664114800692" duration="4576000" />
+      <workItem from="1664168434008" duration="58000" />
+      <workItem from="1664168505952" duration="160000" />
+      <workItem from="1664168678657" duration="86000" />
+      <workItem from="1664168774534" duration="80000" />
+      <workItem from="1664168867193" duration="116000" />
+      <workItem from="1664169045913" duration="67000" />
+      <workItem from="1664169748623" duration="72000" />
+      <workItem from="1664972129850" duration="4668000" />
+      <workItem from="1665044819341" duration="285000" />
+      <workItem from="1665052670660" duration="717000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -125,7 +145,14 @@
       <option name="project" value="LOCAL" />
       <updated>1663746806024</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="0.5.6">
+      <created>1664124022831</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1664124022831</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -148,6 +175,7 @@
     <MESSAGE value="yeeee" />
     <MESSAGE value="yeee&#10;controller update!!" />
     <MESSAGE value="server update!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="server update!!" />
+    <MESSAGE value="0.5.6" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.5.6" />
   </component>
 </project>

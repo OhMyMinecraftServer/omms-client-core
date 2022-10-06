@@ -1,10 +1,11 @@
-package net.zhuruoling.omms.client.server.session;
+package net.zhuruoling.omms.client.session;
 
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.message.Message;
+import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.util.ConnectionFailException;
 import net.zhuruoling.omms.client.util.EncryptedConnector;
 import net.zhuruoling.omms.client.util.Util;
@@ -51,12 +52,12 @@ public class ClientInitialSession {
         connCode = Util.base64Encode(connCode);
         connCode = Util.base64Encode(connCode);
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new Request("PING", new String[]{connCode}));
+        String content = gson.toJson(new Request("PING"));
         connector.send(content);
         String line = connector.readLine();
-        Message message = gson.fromJson(line, Message.class);
-        if (Objects.equals(message.getMsg(), "OK")){
-            String newKey = message.getLoad()[0];
+        Response response = Response.deserialize(line);
+        if (Objects.equals(response.getCode(), "OK")){
+            String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
                     new BufferedReader(
                             new InputStreamReader(socket.getInputStream())
@@ -67,7 +68,7 @@ public class ClientInitialSession {
             return new ClientSession(newConnector, socket);
         }
         else {
-            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", message.getMsg()));
+            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getCode()));
         }
 
     }
