@@ -5,36 +5,42 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 
 public class Request {
-    public Request(String cmd){
-        this.cmd = cmd;
+    public Request(String req){
+        this.request = req;
     }
+    @SerializedName("request")
+    String request;
 
-    public Request(String cmd, HashMap<String, String> content) {
-        this.cmd = cmd;
-        this.content = content;
-    }
-
-    @SerializedName("cmd")
-    String cmd = "";
     @SerializedName("content")
     HashMap<String, String> content = new HashMap<>();
-
-    public String getCmd() {
-        return cmd;
-    }
-
-
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
-    }
 
     public String getContent(String key) {
         return content.get(key);
     }
+
+    public void setContent(HashMap<String, String> content) {
+        this.content = content;
+    }
+
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
+
 
     public Request withContentKeyPair(String key, String pair){
         content.put(key,pair);
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "Request{" +
+                "request='" + request + '\'' +
+                ", content=" + content +
+                '}';
+    }
 }

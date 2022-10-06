@@ -136,7 +136,7 @@ public class ClientSession {
     public Result fetchSystemInfoFromServer() throws Exception{
         Response response = send(new Request("SYSINFO_GET"));
         if (Objects.equals(response.getCode(), "OK")) {
-            //this.systemInfo = gson.fromJson(response.getLoad()[0], SystemInfo.class);
+            this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
             return Result.OK;
         } else {
             return Result.valueOf(response.getCode());

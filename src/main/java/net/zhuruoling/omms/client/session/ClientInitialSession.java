@@ -52,7 +52,7 @@ public class ClientInitialSession {
         connCode = Util.base64Encode(connCode);
         connCode = Util.base64Encode(connCode);
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new Request("PING"));
+        String content = gson.toJson(new Request("PING").withContentKeyPair("token", connCode));
         connector.send(content);
         String line = connector.readLine();
         Response response = Response.deserialize(line);
