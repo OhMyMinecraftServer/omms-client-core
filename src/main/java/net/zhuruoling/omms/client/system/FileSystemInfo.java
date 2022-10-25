@@ -16,6 +16,10 @@ public class FileSystemInfo { // TODO: 2022/9/10
         return new GsonBuilder().serializeNulls().create().toJson(fileSystemInfo);
     }
 
+    public List<FileSystem> getFileSystemList() {
+        return fileSystemList;
+    }
+
     static class FileSystem {
         long free;
         long total;

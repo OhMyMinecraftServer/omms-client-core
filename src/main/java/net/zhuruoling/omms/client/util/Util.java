@@ -2,6 +2,7 @@ package net.zhuruoling.omms.client.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.zhuruoling.omms.client.request.InitRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -15,4 +16,7 @@ public class Util {
     public static String[] string2Array(String s){
         return gson.fromJson(s, String[].class);
     }
+
+
+    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x1;
 }

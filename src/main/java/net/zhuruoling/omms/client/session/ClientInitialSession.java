@@ -3,6 +3,7 @@ package net.zhuruoling.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.zhuruoling.omms.client.request.InitRequest;
 import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.message.Message;
 import net.zhuruoling.omms.client.response.Response;
@@ -52,7 +53,7 @@ public class ClientInitialSession {
         connCode = Util.base64Encode(connCode);
         connCode = Util.base64Encode(connCode);
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new Request("PING").withContentKeyPair("token", connCode));
+        String content = gson.toJson(new InitRequest("PING", Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
         connector.send(content);
         String line = connector.readLine();
         Response response = Response.deserialize(line);

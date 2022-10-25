@@ -8,6 +8,10 @@ public class Request {
     public Request(String req){
         this.request = req;
     }
+
+    public Request(){
+
+    }
     @SerializedName("request")
     String request;
 
