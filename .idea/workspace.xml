@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="IT WORKS!">
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/InitRequest.java" afterDir="false" />
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="0.6.11 0.6.11 supports C-S version check">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/announcement/Announcement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/DirectoryInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/DirectoryInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,6 +49,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
@@ -63,11 +63,11 @@
       <recent name="net.zhuruoling.omms.client" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.zhuruoling.omms.client.announcement" />
       <recent name="net.zhuruoling.omms.client.request" />
       <recent name="net.zhuruoling.omms.client.response" />
       <recent name="net.zhuruoling.omms.client.permission" />
       <recent name="net.zhuruoling.omms.client.util" />
-      <recent name="net.zhuruoling.omms.client.controller" />
     </key>
   </component>
   <component name="RunManager">
@@ -114,7 +114,10 @@
       <workItem from="1666328620824" duration="3000" />
       <workItem from="1666439769166" duration="54000" />
       <workItem from="1666619335793" duration="6000" />
-      <workItem from="1666709328275" duration="2413000" />
+      <workItem from="1666709328275" duration="3741000" />
+      <workItem from="1667024688804" duration="5446000" />
+      <workItem from="1667038556000" duration="1192000" />
+      <workItem from="1667061185514" duration="2405000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -172,7 +175,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665060193251</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="0.6.11 0.6.11 supports C-S version check">
+      <created>1666713130689</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1666713130689</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,6 +208,7 @@
     <MESSAGE value="0.5.6" />
     <MESSAGE value="0.6.5&#10;Hope it works" />
     <MESSAGE value="IT WORKS!" />
-    <option name="LAST_COMMIT_MESSAGE" value="IT WORKS!" />
+    <MESSAGE value="0.6.11 0.6.11 supports C-S version check" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.6.11 0.6.11 supports C-S version check" />
   </component>
 </project>

@@ -2,6 +2,7 @@ package net.zhuruoling.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.zhuruoling.omms.client.announcement.Announcement;
 import net.zhuruoling.omms.client.controller.Instruction;
 import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.controller.Controller;
@@ -22,27 +23,38 @@ public class ClientSession {
 
     private HashMap<String, ArrayList<String>> whitelistMap = new HashMap<>();
     private HashMap<String, Controller> controllerMap = new HashMap<>();
-
+    private HashMap<String, Announcement> announcementHashMap = new HashMap<>();
     private SystemInfo systemInfo = null;
-
-    public SystemInfo getSystemInfo() {
-        return systemInfo;
-    }
 
     public ClientSession(EncryptedConnector connector, Socket socket) {
         this.connector = connector;
         this.socket = socket;
     }
 
+    public HashMap<String, Announcement> getAnnouncementHashMap() {
+        return announcementHashMap;
+    }
+
+    public void setAnnouncementHashMap(HashMap<String, Announcement> announcementHashMap) {
+        this.announcementHashMap = announcementHashMap;
+    }
+
+    public SystemInfo getSystemInfo() {
+        return systemInfo;
+    }
+
     public HashMap<String, Controller> getControllerMap() {
         return controllerMap;
+    }
+
+    public void setControllerMap(HashMap<String, Controller> controllerMap) {
+        this.controllerMap = controllerMap;
     }
 
     public Response send(Request request) throws Exception {
         String content = gson.toJson(request);
         connector.println(content);
-        Response response = gson.fromJson(connector.readLine(), Response.class);
-        return response;
+        return gson.fromJson(connector.readLine(), Response.class);
     }
 
     public void close() throws Exception {
@@ -67,6 +79,10 @@ public class ClientSession {
 
     public HashMap<String, ArrayList<String>> getWhitelistMap() {
         return whitelistMap;
+    }
+
+    public void setWhitelistMap(HashMap<String, ArrayList<String>> whitelistMap) {
+        this.whitelistMap = whitelistMap;
     }
 
     public Result queryWhitelist(String whitelistName, String playerName) {
@@ -100,7 +116,7 @@ public class ClientSession {
 
     public Result addToWhitelist(String whitelistName, String player) throws Exception {
         Response response = this.send(new Request("WHITELIST_ADD")
-                .withContentKeyPair("whitelist",whitelistName)
+                .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player)
         );
         return Result.valueOf(response.getCode());
@@ -108,7 +124,7 @@ public class ClientSession {
 
     public Result removeFromWhitelist(String whitelistName, String player) throws Exception {
         Response response = this.send(new Request("WHITELIST_REMOVE")
-                .withContentKeyPair("whitelist",whitelistName)
+                .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player)
         );
         return Result.valueOf(response.getCode());
@@ -119,7 +135,7 @@ public class ClientSession {
         if (Objects.equals(response.getCode(), "OK")) {
             String[] controllerNames = Util.string2Array(response.getContent("names"));
             for (String controllerName : controllerNames) {
-                Response response1 = send(new Request("CONTROLLERS_GET").withContentKeyPair("controller",controllerName));
+                Response response1 = send(new Request("CONTROLLERS_GET").withContentKeyPair("controller", controllerName));
                 if (Objects.equals(response1.getCode(), "OK")) {
                     String jsonString = response1.getContent("controller");
                     Controller controller = gson.fromJson(jsonString, Controller.class);
@@ -133,7 +149,7 @@ public class ClientSession {
         }
     }
 
-    public Result fetchSystemInfoFromServer() throws Exception{
+    public Result fetchSystemInfoFromServer() throws Exception {
         Response response = send(new Request("SYSINFO_GET"));
         if (Objects.equals(response.getCode(), "OK")) {
             this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
@@ -143,10 +159,32 @@ public class ClientSession {
         }
     }
 
+    public Result fetchAnnouncementFromServer() throws Exception {
+        Response response = send(new Request().setRequest("ANNOUNCEMENT_LIST"));
+        if (!Objects.equals(response.getCode(), "OK")) {
+            String[] names = Util.string2Array(response.getContent("announcements"));
+            for (String name : names) {
+                Response r = send(new Request().setRequest("ANNOUNCEMENT_LIST").withContentKeyPair("id", name));
+                if (!Objects.equals(r.getCode(), "OK")){
+                    Announcement announcement = new Announcement(r.getContent("id"),
+                            Long.parseLong(r.getContent("time")),
+                            r.getContent("title"),
+                            Util.string2Array(r.getContent("content"))
+                    );
+                    announcementHashMap.put(name, announcement);
+                }
+                else {
+                    return Result.valueOf(r.getCode());
+                }
+            }
+            return Result.OK;
+        }
+        return Result.valueOf(response.getCode());
+    }
+
     public Result executeControllerCommand(Controller controller, Instruction instruction) throws Exception {
         Response response = send(new Request("CONTROLLERS_EXECUTE").withContentKeyPair("command", Instruction.asJsonString(instruction)));
         return Result.valueOf(response.getCode());
     }
-
 
 }

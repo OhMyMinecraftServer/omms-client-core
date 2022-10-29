@@ -8,7 +8,7 @@ public class DirectoryInfo {
     List<String> folders = null;
     List<String> files = null;
 
-    private Result result = Result.__NULL;
+    private Result result = Result.UNDEFINED;
 
     public DirectoryInfo() {
     }

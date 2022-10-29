@@ -30,8 +30,9 @@ public class Request {
         return request;
     }
 
-    public void setRequest(String request) {
+    public Request setRequest(String request) {
         this.request = request;
+        return this;
     }
 
 
