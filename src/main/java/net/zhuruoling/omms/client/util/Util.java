@@ -18,8 +18,7 @@ public class Util {
         return gson.fromJson(s, String[].class);
     }
 
-
-    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x1;
+    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x02;
 
     public static String randomStringGen(int len) {
         String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";

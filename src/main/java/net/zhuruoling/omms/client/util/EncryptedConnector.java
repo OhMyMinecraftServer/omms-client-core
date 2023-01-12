@@ -42,7 +42,7 @@ public class EncryptedConnector {
         }
         this.key = key.getBytes(StandardCharsets.UTF_8);
     }
-    public void println( String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void println(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.send(content);
     }
 

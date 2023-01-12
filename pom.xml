@@ -6,7 +6,7 @@
 
     <groupId>net.zhuruoling</groupId>
     <artifactId>omms-client-core</artifactId>
-    <version>0.6.11</version>
+    <version>0.8.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

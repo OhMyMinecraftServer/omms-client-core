@@ -4,8 +4,6 @@ package net.zhuruoling.omms.client.session;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.zhuruoling.omms.client.request.InitRequest;
-import net.zhuruoling.omms.client.request.Request;
-import net.zhuruoling.omms.client.message.Message;
 import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.util.ConnectionFailException;
 import net.zhuruoling.omms.client.util.EncryptedConnector;
@@ -41,6 +39,7 @@ public class ClientInitialSession {
         String key = date.format(DateTimeFormatter.ofPattern("yyyyMMddhhmm"));
         key = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
         key = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
+
         EncryptedConnector connector = new EncryptedConnector(
                 new BufferedReader(
                         new InputStreamReader(socket.getInputStream())
@@ -48,15 +47,19 @@ public class ClientInitialSession {
                 new PrintWriter(new OutputStreamWriter(socket.getOutputStream())),
                 key
         );
+
         long timeCode = Long.parseLong(date.format(DateTimeFormatter.ofPattern("yyyyMMddhhmm")));
         String connCode = String.valueOf(timeCode ^ code);
         connCode = Util.base64Encode(connCode);
         connCode = Util.base64Encode(connCode);
+
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new InitRequest("PING", Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
+        String content = gson.toJson(new InitRequest( Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
         connector.send(content);
+
         String line = connector.readLine();
         Response response = Response.deserialize(line);
+
         if (Objects.equals(response.getCode(), "OK")){
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
@@ -68,6 +71,7 @@ public class ClientInitialSession {
             );
             return new ClientSession(newConnector, socket);
         }
+
         else {
             throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getCode()));
         }
