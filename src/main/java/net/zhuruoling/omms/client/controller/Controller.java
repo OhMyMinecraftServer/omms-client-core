@@ -1,5 +1,6 @@
 package net.zhuruoling.omms.client.controller;
 
+
 public class Controller {
     private String name;
 
@@ -10,6 +11,16 @@ public class Controller {
     private String launchParams;
 
     private String workingDir;
+
+    private boolean statusQueryable;
+
+    public boolean isStatusQueryable() {
+        return statusQueryable;
+    }
+
+    public void setStatusQueryable(boolean statusQueryable) {
+        this.statusQueryable = statusQueryable;
+    }
 
     public Controller() {
     }
@@ -32,8 +43,9 @@ public class Controller {
                 "name='" + name + '\'' +
                 ", executable='" + executable + '\'' +
                 ", type='" + type + '\'' +
-                ", launchCommand='" + launchParams + '\'' +
+                ", launchParams='" + launchParams + '\'' +
                 ", workingDir='" + workingDir + '\'' +
+                ", statusQueryable=" + statusQueryable +
                 '}';
     }
 
@@ -72,4 +84,5 @@ public class Controller {
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
     }
+
 }

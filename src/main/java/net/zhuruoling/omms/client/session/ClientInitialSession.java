@@ -7,6 +7,7 @@ import net.zhuruoling.omms.client.request.InitRequest;
 import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.util.ConnectionFailException;
 import net.zhuruoling.omms.client.util.EncryptedConnector;
+import net.zhuruoling.omms.client.util.Result;
 import net.zhuruoling.omms.client.util.Util;
 
 import javax.crypto.BadPaddingException;
@@ -21,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Objects;
 
 public class ClientInitialSession {
     InetAddress inetAddress;
@@ -60,7 +60,7 @@ public class ClientInitialSession {
         String line = connector.readLine();
         Response response = Response.deserialize(line);
 
-        if (Objects.equals(response.getCode(), "OK")){
+        if (response.getResponseCode() == Result.OK){
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
                     new BufferedReader(
@@ -73,7 +73,7 @@ public class ClientInitialSession {
         }
 
         else {
-            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getCode()));
+            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));
         }
 
     }

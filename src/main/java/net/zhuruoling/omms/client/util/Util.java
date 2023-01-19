@@ -9,7 +9,7 @@ import java.util.Base64;
 import java.util.Random;
 
 public class Util {
-    private static Gson gson = new  GsonBuilder().serializeNulls().create();
+    public static Gson gson = new  GsonBuilder().serializeNulls().create();
     public static String base64Encode(String content){
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }

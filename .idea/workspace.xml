@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="0.7.0 Announcement">
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Status.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Pair.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/InitRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/InitRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/EncryptedConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/EncryptedConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,11 +69,11 @@
       <recent name="net.zhuruoling.omms.client" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.zhuruoling.omms.client.controller" />
       <recent name="net.zhuruoling.omms.client.announcement" />
       <recent name="net.zhuruoling.omms.client.request" />
       <recent name="net.zhuruoling.omms.client.response" />
       <recent name="net.zhuruoling.omms.client.permission" />
-      <recent name="net.zhuruoling.omms.client.util" />
     </key>
   </component>
   <component name="RunManager">
@@ -121,6 +128,9 @@
       <workItem from="1668171243451" duration="6882000" />
       <workItem from="1672635544919" duration="126000" />
       <workItem from="1672657637133" duration="26000" />
+      <workItem from="1673533221519" duration="634000" />
+      <workItem from="1673533892752" duration="2711000" />
+      <workItem from="1673879698781" duration="11445000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -192,7 +202,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667065461162</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02">
+      <created>1673533386565</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1673533386565</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -220,6 +237,7 @@
     <MESSAGE value="IT WORKS!" />
     <MESSAGE value="0.6.11 0.6.11 supports C-S version check" />
     <MESSAGE value="0.7.0 Announcement" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.7.0 Announcement" />
+    <MESSAGE value="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02" />
   </component>
 </project>

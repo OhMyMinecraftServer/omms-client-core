@@ -90,4 +90,7 @@ public class SystemInfo {
     public void setOsArch(String osArch) {
         this.osArch = osArch;
     }
+
+
+
 }

@@ -1,16 +1,22 @@
 package net.zhuruoling.omms.client.response;
 
 import com.google.gson.GsonBuilder;
+import net.zhuruoling.omms.client.util.Result;
 
 import java.util.HashMap;
 
 public class Response {
 
-    private String code = "";
+    private Result responseCode;
     private HashMap<String, String> content = new HashMap<>();
 
-    public Response(String code, HashMap<String, String> content) {
-        this.code = code;
+    public Response(String responseCode, HashMap<String, String> content) {
+        this.responseCode = Result.valueOf(responseCode);
+        this.content = content;
+    }
+
+    public Response(Result responseCode, HashMap<String, String> content) {
+        this.responseCode = responseCode;
         this.content = content;
     }
 
@@ -25,12 +31,12 @@ public class Response {
         return new GsonBuilder().serializeNulls().create().fromJson(x, Response.class);
     }
 
-    public String getCode() {
-        return code;
+    public Result getResponseCode() {
+        return responseCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setResponseCode(Result responseCode) {
+        this.responseCode = responseCode;
     }
 
     public String getContent(String key) {
@@ -41,8 +47,8 @@ public class Response {
         this.content = content;
     }
 
-    public Response withResponseCode(String code){
-        setCode(code);
+    public Response withResponseCode(Result code){
+        setResponseCode(code);
         return this;
     }
 
@@ -54,7 +60,7 @@ public class Response {
     @Override
     public String toString() {
         return "Response{" +
-                "code='" + code + '\'' +
+                "code='" + responseCode + '\'' +
                 ", content=" + content +
                 '}';
     }
