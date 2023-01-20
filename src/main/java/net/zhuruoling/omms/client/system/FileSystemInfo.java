@@ -20,7 +20,7 @@ public class FileSystemInfo { // TODO: 2022/9/10
         return fileSystemList;
     }
 
-    static class FileSystem {
+    public static class FileSystem {
         long free;
         long total;
         String volume;
