@@ -16,11 +16,6 @@ public class SystemInfo {
         this.osVersion = osVersion;
         this.osArch = osArch;
         this.fileSystemInfo = fileSystemInfo;
-
-
-
-
-
         this.memoryInfo = memoryInfo;
         this.networkInfo = networkInfo;
         this.processorInfo = processorInfo;

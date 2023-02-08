@@ -54,12 +54,13 @@ public class ClientInitialSession {
         connCode = Util.base64Encode(connCode);
 
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new InitRequest( Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
+        String content = gson.toJson(new InitRequest(Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
+        System.out.println(content);
         connector.send(content);
 
         String line = connector.readLine();
         Response response = Response.deserialize(line);
-
+        System.out.println(response);
         if (response.getResponseCode() == Result.OK){
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
@@ -71,7 +72,6 @@ public class ClientInitialSession {
             );
             return new ClientSession(newConnector, socket);
         }
-
         else {
             throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));
         }

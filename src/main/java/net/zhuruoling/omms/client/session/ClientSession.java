@@ -34,7 +34,13 @@ public class ClientSession {
     public Response send(Request request) throws Exception {
         String content = gson.toJson(request);
         connector.println(content);
-        return gson.fromJson(connector.readLine(), Response.class);
+        Response response = gson.fromJson(connector.readLine(), Response.class);
+        if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED){
+            this.socket.close();
+            throw new RateExceedException("Connection closed because request rate exceeded.");
+        }else {
+            return response;
+        }
     }
 
     public void close() throws Exception {
