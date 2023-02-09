@@ -1,12 +1,13 @@
 package net.zhuruoling.omms.client.testmain;
 
-import net.zhuruoling.omms.client.controller.Status;
 import net.zhuruoling.omms.client.session.ClientInitialSession;
 import net.zhuruoling.omms.client.session.ClientSession;
 import net.zhuruoling.omms.client.util.Pair;
 import net.zhuruoling.omms.client.util.Result;
 
 import java.net.InetAddress;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class ClientTestMain {
     public static void main(String[] args) throws Exception {
@@ -14,13 +15,15 @@ public class ClientTestMain {
         ClientSession session = initialSession.init(114514);
 
         System.out.println("======BEGIN======");
-        for (int j = 0; j < 50; j++) {
-            Thread.sleep(1000);
-            for (int i = 0; i < 99; i++) {
-                Pair<Result, Status> result = session.fetchControllerStatus("skyblock");
-                System.out.printf("%d %d %s %s\n",j, i, result.getA(), result.getB());
-            }
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();
+        while (!Objects.equals(line, "end")) {
+            Pair<Result, String> resultStringPair = session.sendCommandToController("out_survival", line);
+            System.out.println(resultStringPair.getA());
+            System.out.println(resultStringPair.getB());
+            line = scanner.nextLine();
         }
+
         session.close();
     }
 }

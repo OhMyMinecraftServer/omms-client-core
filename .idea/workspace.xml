@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="version 0.8.0&#10;GOOD">
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="my local repo blows up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,6 +124,9 @@
       <workItem from="1673533892752" duration="2711000" />
       <workItem from="1673879698781" duration="11482000" />
       <workItem from="1674213285381" duration="1000000" />
+      <workItem from="1675873850074" duration="130000" />
+      <workItem from="1675908265977" duration="1223000" />
+      <workItem from="1675925118845" duration="506000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -208,7 +212,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674141282681</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="my local repo blows up">
+      <created>1675873941732</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1675873941732</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,6 +249,7 @@
     <MESSAGE value="0.7.0 Announcement" />
     <MESSAGE value="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02" />
     <MESSAGE value="version 0.8.0&#10;GOOD" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 0.8.0&#10;GOOD" />
+    <MESSAGE value="my local repo blows up" />
+    <option name="LAST_COMMIT_MESSAGE" value="my local repo blows up" />
   </component>
 </project>
