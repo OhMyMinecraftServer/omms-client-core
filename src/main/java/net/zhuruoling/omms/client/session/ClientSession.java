@@ -8,28 +8,142 @@ import net.zhuruoling.omms.client.request.Request;
 import net.zhuruoling.omms.client.controller.Controller;
 import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.system.SystemInfo;
-import net.zhuruoling.omms.client.util.EncryptedConnector;
-import net.zhuruoling.omms.client.util.Pair;
-import net.zhuruoling.omms.client.util.Result;
-import net.zhuruoling.omms.client.util.Util;
+import net.zhuruoling.omms.client.util.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class ClientSession {
+public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final HashMap<String, ArrayList<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, Announcement> announcementMap = new HashMap<>();
+
+    private final List<Request> requestCache = new ArrayList<>();
     private final Socket socket;
     EncryptedConnector connector;
     private SystemInfo systemInfo = null;
 
     public ClientSession(EncryptedConnector connector, Socket socket) {
+        super("ClientSessionThread");
         this.connector = connector;
         this.socket = socket;
     }
 
+    @Override
+    public void run(){
+        Response response;
+        while (true){
+            try {
+                response = gson.fromJson(connector.readLine(), Response.class);
+                handleResponse(response);
+            } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                     BadPaddingException | InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void handleResponse(Response response) throws IOException {
+        if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED){
+            this.socket.close();
+            throw new RateExceedException("Connection closed because request rate exceeded.");
+        }
+        switch (response.getResponseCode()){
+            case FAIL:
+                throw new ServerInternalErrorException("Got FAIL from server.");
+            case OK:
+                break;
+            case PERMISSION_DENIED:
+                break;
+            case OPERATION_ALREADY_EXISTS:
+                break;
+            case CONTROLLER_NOT_EXIST:
+                break;
+            case CONTROLLER_NO_STATUS:
+                break;
+            case CONTROLLER_LOG:
+                break;
+            case CONSOLE_NOT_EXIST:
+                break;
+            case NO_WHITELIST:
+                break;
+            case WHITELIST_NOT_EXIST:
+                break;
+            case RUNNER_NOT_EXIST:
+                break;
+            case NO_SUCH_PLAYER:
+                break;
+            case PLAYER_ALREADY_EXISTS:
+                break;
+            case VERSION_NOT_MATCH:
+                break;
+            case ANNOUNCEMENT_NOT_EXIST:
+                break;
+            case INVALID_ARGUMENTS:
+                break;
+            case NO_RUNNER:
+                break;
+            case RATE_LIMIT_EXCEEDED:
+                break;
+            case ANNOUNCEMENT_GOT:
+                break;
+            case ANNOUNCEMENT_LISTED:
+                break;
+            case CONTROLLER_CREATED:
+                break;
+            case CONTROLLER_GOT:
+                break;
+            case CONTROLLER_STATUS_GOT:
+                break;
+            case CONSOLE_LAUNCHED:
+                break;
+            case CONTROLLER_LISTED:
+                break;
+            case CONTROLLER_COMMAND_SENT:
+                break;
+            case CONTROLLER_CONSOLE_INPUT_SENT:
+                break;
+            case PERMISSION_CREATED:
+                break;
+            case PERMISSION_DELETED:
+                break;
+            case PERMISSION_REMOVED:
+                break;
+            case PERMISSION_GRANTED:
+                break;
+            case PERMISSION_LISTED:
+                break;
+            case RUNNER_LISTED:
+                break;
+            case RUNNER_OUTPUT_GOT:
+                break;
+            case SYSINFO_GOT:
+                break;
+            case RUNNER_LAUNCHED:
+                break;
+            case WHITELIST_ADDED:
+                break;
+            case WHITELIST_CREATED:
+                break;
+            case WHITELIST_DELETED:
+                break;
+            case WHITELIST_GOT:
+                break;
+            case WHITELIST_LISTED:
+                break;
+            case WHITELIST_REMOVED:
+                break;
+            case UNDEFINED:
+                break;
+        }
+    }
 
     public Response send(Request request) throws Exception {
         String content = gson.toJson(request);
@@ -47,6 +161,7 @@ public class ClientSession {
         Response response = send(new Request("END"));
         if (response.getResponseCode() == Result.OK) {
             socket.close();
+            this.interrupt();
         }
     }
 

@@ -4,10 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="my local repo blows up">
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="GOOD">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/Callback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnAnnouncementReceivedCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerCommandLogReceivedCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerConsoleLogRecievedCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnResponseRecievedCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnWhitelistReceivedCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ServerInternalErrorException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/message/Message.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +26,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="AnnotationType" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -61,11 +72,11 @@
       <recent name="net.zhuruoling.omms.client" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.zhuruoling.omms.client.response.callback" />
       <recent name="net.zhuruoling.omms.client.controller" />
       <recent name="net.zhuruoling.omms.client.announcement" />
       <recent name="net.zhuruoling.omms.client.request" />
       <recent name="net.zhuruoling.omms.client.response" />
-      <recent name="net.zhuruoling.omms.client.permission" />
     </key>
   </component>
   <component name="RunManager">
@@ -127,6 +138,12 @@
       <workItem from="1675873850074" duration="130000" />
       <workItem from="1675908265977" duration="1223000" />
       <workItem from="1675925118845" duration="506000" />
+      <workItem from="1675955883660" duration="1053000" />
+      <workItem from="1677341633019" duration="21000" />
+      <workItem from="1678161994138" duration="1410000" />
+      <workItem from="1678200547730" duration="1585000" />
+      <workItem from="1678255980397" duration="1636000" />
+      <workItem from="1678384293115" duration="801000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -219,7 +236,14 @@
       <option name="project" value="LOCAL" />
       <updated>1675873941732</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="GOOD">
+      <created>1675955900301</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1675955900301</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -250,6 +274,7 @@
     <MESSAGE value="version 0.8.0&#10;protocol version update to InitRequest.VERSION_BASE+0x02" />
     <MESSAGE value="version 0.8.0&#10;GOOD" />
     <MESSAGE value="my local repo blows up" />
-    <option name="LAST_COMMIT_MESSAGE" value="my local repo blows up" />
+    <MESSAGE value="GOOD" />
+    <option name="LAST_COMMIT_MESSAGE" value="GOOD" />
   </component>
 </project>
