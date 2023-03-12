@@ -70,7 +70,9 @@ public class ClientInitialSession {
                     new PrintWriter(new OutputStreamWriter(socket.getOutputStream())),
                     newKey
             );
-            return new ClientSession(newConnector, socket);
+            ClientSession clientSession = new ClientSession(newConnector, socket, response.getContent("serverName"));
+            clientSession.start();
+            return clientSession;
         }
         else {
             throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));

@@ -4,19 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="GOOD">
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/Callback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnAnnouncementReceivedCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerCommandLogReceivedCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerConsoleLogRecievedCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnResponseRecievedCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnWhitelistReceivedCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ServerInternalErrorException.java" afterDir="false" />
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="0.10.0">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ControllerNotExistException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/PermissionDeniedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Triple.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/message/Message.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/Callback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Callback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnAnnouncementReceivedCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerCommandLogReceivedCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnControllerConsoleLogRecievedCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnResponseRecievedCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/callback/OnWhitelistReceivedCallback.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +65,9 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="net.zhuruoling.omms.client.session" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jkl-9\IdeaProjects\omms-client-core\src\main\java\net\zhuruoling\omms\client\system" />
       <recent name="C:\Users\jkl-9\IdeaProjects\omms-client-core\src\main\java\net\zhuruoling\omms\client\util" />
@@ -143,7 +148,11 @@
       <workItem from="1678161994138" duration="1410000" />
       <workItem from="1678200547730" duration="1585000" />
       <workItem from="1678255980397" duration="1636000" />
-      <workItem from="1678384293115" duration="801000" />
+      <workItem from="1678384293115" duration="923000" />
+      <workItem from="1678419890052" duration="2679000" />
+      <workItem from="1678460030908" duration="1777000" />
+      <workItem from="1678533319277" duration="12252000" />
+      <workItem from="1678635425441" duration="2038000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -243,7 +252,14 @@
       <option name="project" value="LOCAL" />
       <updated>1675955900301</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="0.10.0">
+      <created>1678385274161</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1678385274161</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -275,6 +291,7 @@
     <MESSAGE value="version 0.8.0&#10;GOOD" />
     <MESSAGE value="my local repo blows up" />
     <MESSAGE value="GOOD" />
-    <option name="LAST_COMMIT_MESSAGE" value="GOOD" />
+    <MESSAGE value="0.10.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.10.0" />
   </component>
 </project>

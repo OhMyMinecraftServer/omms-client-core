@@ -1,4 +1,4 @@
-package net.zhuruoling.omms.client.response.callback;
+package net.zhuruoling.omms.client.response;
 
 @FunctionalInterface
 public interface Callback <T>{

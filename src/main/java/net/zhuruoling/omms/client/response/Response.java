@@ -1,6 +1,7 @@
 package net.zhuruoling.omms.client.response;
 
 import com.google.gson.GsonBuilder;
+import net.zhuruoling.omms.client.util.Pair;
 import net.zhuruoling.omms.client.util.Result;
 
 import java.util.HashMap;
@@ -41,6 +42,10 @@ public class Response {
 
     public String getContent(String key) {
         return content.get(key);
+    }
+
+    public Pair<String, String> getPair(String k, String v){
+        new Pair<>(this.getContent(k), this.getContent(v));
     }
 
     public void setContent(HashMap<String, String> content) {
