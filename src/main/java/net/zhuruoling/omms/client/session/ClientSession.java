@@ -31,7 +31,7 @@ public class ClientSession extends Thread {
     private Callback<Response> onServerInternalExeptionCallback;
     private Callback<Object> onInvalidOperationCallback;
     private Callback<Throwable> onAnyExceptionCallback;
-    private Callback<Map<String,Announcement>> onAnnouncementReceivedCallback;
+    private Callback<Map<String, Announcement>> onAnnouncementReceivedCallback;
     private Callback<List<String>> onControllerCommandLogReceivedCallback;
     private Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback;
     private Callback<Response> onResponseRecievedCallback;
@@ -48,6 +48,11 @@ public class ClientSession extends Thread {
     private Callback<String> onAnnouncementNotExistCallback;
     private Callback<Pair<String, String>> onPlayerAlreadyExistsCallback;
     private Callback<String> onConsoleStoppedCallback;
+    private Callback<String> onControllerNotExistCallback;
+
+    private Callback<String> onDisconnectedCallback;
+
+    private Callback<String> onControllerConsoleAlreadyExistsCallback;
 
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
@@ -68,6 +73,11 @@ public class ClientSession extends Thread {
             try {
                 response = gson.fromJson(connector.readLine(), Response.class);
                 handleResponse(response);
+            } catch (DisconnectedException ignored) {
+                if (onDisconnectedCallback != null) {
+                    onDisconnectedCallback.accept(this.serverName);
+                }
+                break;
             } catch (Exception e) {
                 onAnyExceptionCallback.accept(e);
             }
@@ -75,7 +85,7 @@ public class ClientSession extends Thread {
     }
 
     private void handleResponse(Response response) throws Exception {
-        if (onResponseRecievedCallback != null){
+        if (onResponseRecievedCallback != null) {
             onResponseRecievedCallback.accept(response);
         }
         if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
@@ -86,7 +96,9 @@ public class ClientSession extends Thread {
             case FAIL:
                 if (onServerInternalExeptionCallback == null)
                     throw new ServerInternalErrorException("Got FAIL from server.");
-                else onServerInternalExeptionCallback.accept(response);
+                else {
+                    onServerInternalExeptionCallback.accept(response);
+                }
             case PERMISSION_DENIED:
                 if (onPermissionDeniedCallback == null)
                     throw new PermissionDeniedException("Permission Denied.");
@@ -94,38 +106,57 @@ public class ClientSession extends Thread {
                     onPermissionDeniedCallback.accept(this);
                 break;
             case OPERATION_ALREADY_EXISTS:
-                if (onInvalidOperationCallback != null)
+                if (onInvalidOperationCallback != null) {
                     onInvalidOperationCallback.accept(lastPermissionOperation);
+                    onInvalidOperationCallback = null;
+                }
                 break;
             case CONTROLLER_NOT_EXIST:
-                throw new ControllerNotExistException("Controller not exist");
+                if (onConsoleNotFoundCallback == null)
+                    throw new ControllerNotExistException("Controller not exist");
+                else {
+                    onControllerNotExistCallback.accept(response.getContent("controller"));
+                    onControllerNotExistCallback = null;
+                }
             case CONTROLLER_NO_STATUS:
-                if (onStatusReceivedCallback != null) onStatusReceivedCallback.accept(null);
+                if (onStatusReceivedCallback != null) {
+                    onStatusReceivedCallback.accept(null);
+                    onStatusReceivedCallback = null;
+                }
                 break;
             case CONTROLLER_LOG:
-                onControllerConsoleLogRecievedCallback.accept(response.getPair("consoleId", "content"));
+                if (onControllerConsoleLogRecievedCallback != null) {
+                    onControllerConsoleLogRecievedCallback.accept(response.getPair("consoleId", "content"));
+                }
                 break;
             case CONSOLE_NOT_EXIST:
                 if (onConsoleNotFoundCallback != null) {
                     onConsoleNotFoundCallback.accept(response.getContent("console"));
+                    onConsoleNotFoundCallback = null;
                 }
                 break;
             case NO_WHITELIST:
-                if (onWhitelistReceivedCallback != null) onWhitelistReceivedCallback.accept(null);
+                if (onWhitelistReceivedCallback != null) {
+                    onWhitelistReceivedCallback.accept(null);
+                    onWhitelistReceivedCallback = null;
+                }
                 break;
             case WHITELIST_NOT_EXIST:
                 if (onWhitelistNotExistCallback != null) {
                     onWhitelistNotExistCallback.accept(response.getContent("whitelist"));
+                    onWhitelistNotExistCallback = null;
                 }
                 break;
             case PLAYER_ALREADY_EXISTS:
                 if (onPlayerAlreadyExistsCallback != null) {
                     onPlayerAlreadyExistsCallback.accept(response.getPair("whitelist", "player"));
+                    onPlayerAlreadyExistsCallback = null;
                 }
                 break;
             case ANNOUNCEMENT_NOT_EXIST:
                 if (onArgumentInvalidCallback != null) {
                     onAnnouncementNotExistCallback.accept(response.getContent("announcementId"));
+                    onAnnouncementNotExistCallback = null;
                 }
                 break;
             case INVALID_ARGUMENTS:
@@ -146,18 +177,21 @@ public class ClientSession extends Thread {
                         announcementMap.put(name, announcement);
                     }
                 }
-                if (onAnnouncementReceivedCallback != null){
+                if (onAnnouncementReceivedCallback != null) {
                     onAnnouncementReceivedCallback.accept(announcementMap);
+                    onAnnouncementReceivedCallback = null;
                 }
                 break;
             case CONTROLLER_STATUS_GOT:
                 if (onStatusReceivedCallback != null) {
                     onStatusReceivedCallback.accept(gson.fromJson(response.getContent("status"), Status.class));
+                    onStatusReceivedCallback = null;
                 }
                 break;
             case CONSOLE_LAUNCHED:
                 if (onControllerConsoleLaunchedCallback != null) {
                     onControllerConsoleLaunchedCallback.accept(response.getContent("consoleId"));
+                    onControllerConsoleLaunchedCallback = null;
                 }
                 break;
             case CONTROLLER_LISTED:
@@ -173,11 +207,14 @@ public class ClientSession extends Thread {
                 }
                 if (onControllerListedCallback != null) {
                     onControllerListedCallback.accept(controllerMap);
+                    onControllerListedCallback = null;
                 }
                 break;
             case CONTROLLER_COMMAND_SENT:
-                if (onControllerCommandLogReceivedCallback != null)
+                if (onControllerCommandLogReceivedCallback != null) {
                     onControllerCommandLogReceivedCallback.accept(Arrays.asList(response.getContent("output").split("\n")));
+                    onControllerCommandLogReceivedCallback = null;
+                }
                 break;
             case CONTROLLER_CONSOLE_INPUT_SENT:
                 //ignore result
@@ -186,12 +223,14 @@ public class ClientSession extends Thread {
                 this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
                 if (onSystemInfoGotCallback != null) {
                     onSystemInfoGotCallback.accept(systemInfo);
+                    onSystemInfoGotCallback = null;
                 }
                 break;
 
             case WHITELIST_ADDED:
                 if (onPlayerAddedCallback != null) {
                     onPlayerAddedCallback.accept(response.getPair("whitelist", "player"));
+                    onPlayerAddedCallback = null;
                 }
                 break;
             case WHITELIST_LISTED:
@@ -202,18 +241,25 @@ public class ClientSession extends Thread {
                         whitelistMap.put(whitelistName, new ArrayList<>(Arrays.asList(gson.fromJson(response.getContent("players"), String[].class))));
                     }
                 }
-                onWhitelistReceivedCallback.accept(whitelistMap);
+                if (onWhitelistReceivedCallback != null) {
+                    onWhitelistReceivedCallback.accept(whitelistMap);
+                    onWhitelistReceivedCallback = null;
+                }
                 break;
             case WHITELIST_REMOVED:
                 if (onPlayerRemovedCallback != null) {
                     onPlayerRemovedCallback.accept(response.getPair("whitelist", "player"));
+                    onPlayerRemovedCallback = null;
                 }
                 break;
             case CONSOLE_STOPPED:
                 if (onConsoleStoppedCallback != null) {
                     onConsoleStoppedCallback.accept(response.getContent("consoleId"));
+                    onConsoleStoppedCallback = null;
                 }
                 break;
+            case DISCONNECT:
+                throw new DisconnectedException();
         }
     }
 
@@ -233,75 +279,65 @@ public class ClientSession extends Thread {
         }
     }
 
-    public void close() throws Exception {
-        Response response = sendBlocking(new Request("END"));
-        if (response.getResponseCode() == Result.OK) {
-            socket.close();
-            this.interrupt();
-        }
+    public void close(Callback<String> onDisconnectedCallback) throws Exception {
+        setOnDisconnectedCallback(onDisconnectedCallback);
+        send(new Request("END"));
     }
 
     public void fetchWhitelistFromServer(Callback<HashMap<String, ArrayList<String>>> callback) throws Exception {
+        fetchWhitelistFromServer(callback, null);
+    }
+
+    public void fetchWhitelistFromServer(Callback<HashMap<String, ArrayList<String>>> callback,
+                                         Callback<String> onWhitelistNotExistCallback
+    ) throws Exception {
         setOnWhitelistReceivedCallback(callback);
+        setOnWhitelistNotExistCallback(onWhitelistNotExistCallback);
         send(new Request("WHITELIST_LIST"));
-
     }
 
-    public Result fetchControllersFromServer() throws Exception {
-        Response response = sendBlocking(new Request("CONTROLLER_LIST"));
-        if (response.getResponseCode() == Result.OK) {
-            String[] controllerNames = Util.string2Array(response.getContent("names"));
-            for (String controllerName : controllerNames) {
-                Response response1 = sendBlocking(new Request("CONTROLLER_GET").withContentKeyPair("controller", controllerName));
-                if (response1.getResponseCode() == Result.OK) {
-                    String jsonString = response1.getContent("controller");
-                    Controller controller = gson.fromJson(jsonString, Controller.class);
-                    System.out.println(controller.toString());
-                    controllerMap.put(controllerName, controller);
-                } else return response1.getResponseCode();
-            }
-            return Result.OK;
-        } else {
-            return response.getResponseCode();
-        }
+    public void fetchControllersFromServer(Callback<Map<String, Controller>> callback) throws Exception {
+        fetchControllersFromServer(callback, null);
     }
 
-    public Result fetchSystemInfoFromServer() throws Exception {
-        Response response = sendBlocking(new Request("SYSTEM_GET_INFO"));
-        if (response.getResponseCode() == Result.OK) {
-            this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
-            return Result.OK;
-        } else {
-            return response.getResponseCode();
-        }
+    public void fetchControllersFromServer(Callback<Map<String, Controller>> callback,
+                                           Callback<String> onControllerNotExistCallback
+    ) throws Exception {
+        setOnControllerListedCallback(callback);
+        setOnControllerNotExistCallback(onControllerNotExistCallback);
+        sendBlocking(new Request("CONTROLLER_LIST"));
     }
 
-    public Result fetchAnnouncementFromServer() throws Exception {
-        Response response = sendBlocking(new Request().setRequest("ANNOUNCEMENT_LIST"));
-        if (response.getResponseCode() == Result.OK) {
-
-            return Result.OK;
-        }
-        return response.getResponseCode();
+    public void fetchSystemInfoFromServer(Callback<SystemInfo> onSystemInfoGotCallback) throws Exception {
+        setOnSystemInfoGotCallback(onSystemInfoGotCallback);
+        send(new Request("SYSTEM_GET_INFO"));
     }
 
-    public Pair<Result, Status> fetchControllerStatus(String controllerId) throws Exception {
-        Response response = sendBlocking(new Request().setRequest("CONTROLLER_GET_STATUS").withContentKeyPair("id", controllerId));
-        if (response.getResponseCode() == Result.OK) {
-            Status status = Util.gson.fromJson(response.getContent("status"), Status.class);
-            return new Pair<>(response.getResponseCode(), status);
-        } else {
-            return new Pair<>(response.getResponseCode(), null);
-        }
+    public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> onAnnouncementReceivedCallback) throws Exception {
+      fetchAnnouncementFromServer(onAnnouncementReceivedCallback, null);
+    }
+
+    public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> onAnnouncementReceivedCallback,
+                                            Callback<String> onAnnouncementNotExistCallback
+    ) throws Exception {
+        setOnAnnouncementReceivedCallback(onAnnouncementReceivedCallback);
+        setOnAnnouncementNotExistCallback(onAnnouncementNotExistCallback);
+        send(new Request().setRequest("ANNOUNCEMENT_LIST"));
+    }
+
+    public void fetchControllerStatus(String controllerId, Callback<Status> onStatusReceivedCallback, Callback<String> onControllerNotExistCallback) throws Exception {
+        setOnStatusReceivedCallback(onStatusReceivedCallback);
+        setOnControllerNotExistCallback(onControllerNotExistCallback);
+        send(new Request().setRequest("CONTROLLER_GET_STATUS").withContentKeyPair("id", controllerId));
     }
 
 
-    public Result removeFromWhitelist(String whitelistName, String player) throws Exception {
-        Response response = this.sendBlocking(new Request("WHITELIST_REMOVE")
+    public void removeFromWhitelist(String whitelistName, String player, Callback<Pair<String, String>> onPlayerRemovedCallback) throws Exception {
+        this.setOnPlayerRemovedCallback(onPlayerRemovedCallback);
+        this.send(new Request("WHITELIST_REMOVE")
                 .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player)
         );
-        return response.getResponseCode();
     }
 
     public Result queryWhitelist(String whitelistName, String playerName) {
@@ -333,12 +369,60 @@ public class ClientSession extends Thread {
         return whitelists;
     }
 
-    public void addToWhitelist(String whitelistName, String player, Callback<Result> resultCallback) throws Exception {
+    public void startControllerConsole(String controller,
+                                       Callback<String> onControllerConsoleLaunchedCallback,
+                                       Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback,
+                                       Callback<String> onControllerNotExistCallback,
+                                       Callback<String> onControllerConsoleAlreadyExistsCallback
+    ) throws Exception {
+        setOnControllerConsoleLaunchedCallback(onControllerConsoleLaunchedCallback);
+        setOnControllerConsoleLogRecievedCallback(onControllerConsoleLogRecievedCallback);
+        setOnControllerNotExistCallback(onControllerNotExistCallback);
+        setOnControllerConsoleAlreadyExistsCallback(onControllerConsoleAlreadyExistsCallback);
+        send(new Request().setRequest("CONTROLLER_LAUNCH_CONSOLE").withContentKeyPair("controller", controller));
+    }
+
+    public void stopControllerConsole(String consoleId,
+                                      Callback<String> onConsoleStoppedCallback,
+                                      Callback<String> onConsoleNotFoundCallback
+    ) throws Exception {
+        setOnConsoleStoppedCallback(onConsoleStoppedCallback);
+        setOnConsoleNotFoundCallback(onConsoleNotFoundCallback);
+        send(new Request().setRequest("CONTROLLER_END_CONSOLE").withContentKeyPair("consoleId", consoleId));
+    }
+
+    public void controllerConsoleInput(String consoleId,
+                                       String line,
+                                       Callback<String> onConsoleNotFoundCallback
+    ) throws Exception {
+        setOnConsoleNotFoundCallback(onConsoleNotFoundCallback);
+        send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
+                .withContentKeyPair("consoleId", consoleId)
+                .withContentKeyPair("command",line)
+        );
+    }
+
+    public void addToWhitelist(String whitelistName, String player, Callback<Pair<String, String>> resultCallback, Callback<Pair<String, String>> onPlayerAlreadyExistsCallback) throws Exception {
+        this.setOnPlayerAddedCallback(resultCallback);
+        setOnPlayerAlreadyExistsCallback(onPlayerAlreadyExistsCallback);
         this.send(new Request("WHITELIST_ADD")
                 .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player)
         );
     }
+
+
+    public void sendCommandToController(String controller, String command, Callback<List<String>> callback) throws Exception {
+        sendCommandToController(controller, command, callback, null);
+    }
+
+    public void sendCommandToController(String controller, String command, Callback<List<String>> callback, Callback<String> onControllerNotExistCallback) throws Exception {
+        Request request = new Request().setRequest("CONTROLLER_EXECUTE_COMMAND").withContentKeyPair("controller", controller).withContentKeyPair("command", command);
+        setOnControllerCommandLogReceivedCallback(callback);
+        setOnControllerNotExistCallback(onControllerNotExistCallback);
+        send(request);
+    }
+
 
     public HashMap<String, ArrayList<String>> getWhitelistMap() {
         return whitelistMap;
@@ -354,12 +438,6 @@ public class ClientSession extends Thread {
 
     public HashMap<String, Controller> getControllerMap() {
         return controllerMap;
-    }
-
-    public Pair<Result, String> sendCommandToController(String controller, String command) throws Exception {
-        Request request = new Request().setRequest("CONTROLLER_EXECUTE_COMMAND").withContentKeyPair("controller", controller).withContentKeyPair("command", command);
-        Response response = sendBlocking(request);
-        return new Pair<>(response.getResponseCode(), response.getContent("output"));
     }
 
     public Controller getControllerByName(String name) {
@@ -453,5 +531,17 @@ public class ClientSession extends Thread {
 
     public void setOnConsoleStoppedCallback(Callback<String> onConsoleStoppedCallback) {
         this.onConsoleStoppedCallback = onConsoleStoppedCallback;
+    }
+
+    public void setOnControllerNotExistCallback(Callback<String> onControllerNotExistCallback) {
+        this.onControllerNotExistCallback = onControllerNotExistCallback;
+    }
+
+    public void setOnDisconnectedCallback(Callback<String> onDisconnectedCallback) {
+        this.onDisconnectedCallback = onDisconnectedCallback;
+    }
+
+    public void setOnControllerConsoleAlreadyExistsCallback(Callback<String> onControllerConsoleAlreadyExistsCallback) {
+        this.onControllerConsoleAlreadyExistsCallback = onControllerConsoleAlreadyExistsCallback;
     }
 }
