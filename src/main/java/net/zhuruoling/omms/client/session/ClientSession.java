@@ -13,12 +13,16 @@ import net.zhuruoling.omms.client.util.*;
 
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final HashMap<String, ArrayList<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, Announcement> announcementMap = new HashMap<>();
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     private final List<Request> requestCache = new ArrayList<>();
     private final Socket socket;
@@ -66,13 +70,33 @@ public class ClientSession extends Thread {
         return socket.isClosed() && this.isAlive();
     }
 
+    public static class UncaughtExceptionHandlerImpl implements UncaughtExceptionHandler{
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+
+        }
+    }
+
     @Override
     public void run() {
         Response response;
         while (true) {
             try {
                 response = gson.fromJson(connector.readLine(), Response.class);
-                handleResponse(response);
+                Response finalResponse1 = response;
+                executorService.submit(() -> {
+                    try {
+                        handleResponse(finalResponse1);
+                    } catch (DisconnectedException e) {
+                        if (onDisconnectedCallback != null) {
+                            onDisconnectedCallback.accept(this.serverName);
+                        }
+                    } catch (Exception e) {
+                        if (onAnyExceptionCallback != null) {
+                            onAnyExceptionCallback.accept(new Pair<>(currentThread(), e));
+                        }
+                    }
+                });
             } catch (DisconnectedException ignored) {
                 if (onDisconnectedCallback != null) {
                     onDisconnectedCallback.accept(this.serverName);
@@ -226,7 +250,11 @@ public class ClientSession extends Thread {
                     onSystemInfoGotCallback = null;
                 }
                 break;
-
+            case CONSOLE_ALREADY_EXISTS:
+                if (onControllerConsoleAlreadyExistsCallback != null) {
+                    onControllerConsoleAlreadyExistsCallback.accept(response.getContent("controller"));
+                    onControllerConsoleAlreadyExistsCallback = null;
+                }
             case WHITELIST_ADDED:
                 if (onPlayerAddedCallback != null) {
                     onPlayerAddedCallback.accept(response.getPair("whitelist", "player"));
@@ -313,8 +341,9 @@ public class ClientSession extends Thread {
         send(new Request("SYSTEM_GET_INFO"));
     }
 
-    public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> onAnnouncementReceivedCallback) throws Exception {
-      fetchAnnouncementFromServer(onAnnouncementReceivedCallback, null);
+    public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> onAnnouncementReceivedCallback
+    ) throws Exception {
+        fetchAnnouncementFromServer(onAnnouncementReceivedCallback, null);
     }
 
     public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> onAnnouncementReceivedCallback,
@@ -325,14 +354,20 @@ public class ClientSession extends Thread {
         send(new Request().setRequest("ANNOUNCEMENT_LIST"));
     }
 
-    public void fetchControllerStatus(String controllerId, Callback<Status> onStatusReceivedCallback, Callback<String> onControllerNotExistCallback) throws Exception {
+    public void fetchControllerStatus(String controllerId,
+                                      Callback<Status> onStatusReceivedCallback,
+                                      Callback<String> onControllerNotExistCallback
+    ) throws Exception {
         setOnStatusReceivedCallback(onStatusReceivedCallback);
         setOnControllerNotExistCallback(onControllerNotExistCallback);
         send(new Request().setRequest("CONTROLLER_GET_STATUS").withContentKeyPair("id", controllerId));
     }
 
 
-    public void removeFromWhitelist(String whitelistName, String player, Callback<Pair<String, String>> onPlayerRemovedCallback) throws Exception {
+    public void removeFromWhitelist(String whitelistName,
+                                    String player,
+                                    Callback<Pair<String, String>> onPlayerRemovedCallback
+    ) throws Exception {
         this.setOnPlayerRemovedCallback(onPlayerRemovedCallback);
         this.send(new Request("WHITELIST_REMOVE")
                 .withContentKeyPair("whitelist", whitelistName)
@@ -376,7 +411,7 @@ public class ClientSession extends Thread {
                                        Callback<String> onControllerConsoleAlreadyExistsCallback
     ) throws Exception {
         setOnControllerConsoleLaunchedCallback(onControllerConsoleLaunchedCallback);
-        setOnControllerConsoleLogRecievedCallback(onControllerConsoleLogRecievedCallback);
+        setOnControllerConsoleLogReceivedCallback(onControllerConsoleLogRecievedCallback);
         setOnControllerNotExistCallback(onControllerNotExistCallback);
         setOnControllerConsoleAlreadyExistsCallback(onControllerConsoleAlreadyExistsCallback);
         send(new Request().setRequest("CONTROLLER_LAUNCH_CONSOLE").withContentKeyPair("controller", controller));
@@ -398,11 +433,15 @@ public class ClientSession extends Thread {
         setOnConsoleNotFoundCallback(onConsoleNotFoundCallback);
         send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
                 .withContentKeyPair("consoleId", consoleId)
-                .withContentKeyPair("command",line)
+                .withContentKeyPair("command", line)
         );
     }
 
-    public void addToWhitelist(String whitelistName, String player, Callback<Pair<String, String>> resultCallback, Callback<Pair<String, String>> onPlayerAlreadyExistsCallback) throws Exception {
+    public void addToWhitelist(String whitelistName,
+                               String player,
+                               Callback<Pair<String, String>> resultCallback,
+                               Callback<Pair<String, String>> onPlayerAlreadyExistsCallback
+    ) throws Exception {
         this.setOnPlayerAddedCallback(resultCallback);
         setOnPlayerAlreadyExistsCallback(onPlayerAlreadyExistsCallback);
         this.send(new Request("WHITELIST_ADD")
@@ -412,12 +451,22 @@ public class ClientSession extends Thread {
     }
 
 
-    public void sendCommandToController(String controller, String command, Callback<List<String>> callback) throws Exception {
+    public void sendCommandToController(String controller,
+                                        String command,
+                                        Callback<List<String>> callback
+    ) throws Exception {
         sendCommandToController(controller, command, callback, null);
     }
 
-    public void sendCommandToController(String controller, String command, Callback<List<String>> callback, Callback<String> onControllerNotExistCallback) throws Exception {
-        Request request = new Request().setRequest("CONTROLLER_EXECUTE_COMMAND").withContentKeyPair("controller", controller).withContentKeyPair("command", command);
+    public void sendCommandToController(String controller,
+                                        String command,
+                                        Callback<List<String>> callback,
+                                        Callback<String> onControllerNotExistCallback
+    ) throws Exception {
+        Request request = new Request()
+                .setRequest("CONTROLLER_EXECUTE_COMMAND")
+                .withContentKeyPair("controller", controller)
+                .withContentKeyPair("command", command);
         setOnControllerCommandLogReceivedCallback(callback);
         setOnControllerNotExistCallback(onControllerNotExistCallback);
         send(request);
@@ -473,7 +522,7 @@ public class ClientSession extends Thread {
         this.onControllerCommandLogReceivedCallback = onControllerCommandLogReceivedCallback;
     }
 
-    public void setOnControllerConsoleLogRecievedCallback(Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback) {
+    public void setOnControllerConsoleLogReceivedCallback(Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback) {
         this.onControllerConsoleLogRecievedCallback = onControllerConsoleLogRecievedCallback;
     }
 
