@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="SHIT CODE WARNING">
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/UncaughtExceptionHandlerImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
     </list>
     <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="">
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
@@ -35,25 +33,35 @@
   <component name="LineStatusTrackerManager">
     <file path="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java">
       <ranges>
-        <range start1="15" end1="15" start2="15" end2="17" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="21" end1="21" start2="23" end2="25" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="32" end1="33" start2="36" end2="37" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="51" end1="52" start2="55" end2="55" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="53" end1="54" start2="56" end2="56" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="68" end1="68" start2="70" end2="77" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="74" end1="75" start2="83" end2="97" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="81" end1="82" start2="103" end2="104" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="228" end1="229" start2="250" end2="255" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="315" end1="317" start2="341" end2="344" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="327" end1="328" start2="354" end2="358" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="334" end1="335" start2="364" end2="368" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="378" end1="379" start2="411" end2="412" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="400" end1="401" start2="433" end2="434" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="404" end1="405" start2="437" end2="442" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="414" end1="415" start2="451" end2="455" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="418" end1="420" start2="458" end2="467" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="463" end1="464" start2="510" end2="511" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="475" end1="476" start2="522" end2="523" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="13" end1="13" start2="13" end2="16" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="14" end1="14" start2="17" end2="20" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="24" end1="27" start2="30" end2="31" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="36" end1="37" start2="40" end2="41" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
+        <range start1="39" end1="40" start2="43" end2="44" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="55" end1="56" start2="59" end2="59" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
+        <range start1="57" end1="58" start2="60" end2="60" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
+        <range start1="59" end1="59" start2="61" end2="62" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="72" end1="73" start2="75" end2="76" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="85" end1="100" start2="88" end2="94" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="105" end1="106" start2="99" end2="101" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
+        <range start1="111" end1="114" start2="106" end2="106" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="141" end1="142" start2="133" end2="134" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="151" end1="153" start2="143" end2="145" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="223" end1="223" start2="215" end2="216" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="224" end1="224" start2="217" end2="218" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="230" end1="230" start2="224" end2="225" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="243" end1="244" start2="238" end2="243" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="267" end1="268" start2="266" end2="267" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="293" end1="296" start2="292" end2="302" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="299" end1="300" start2="305" end2="307" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="301" end1="301" start2="308" end2="312" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="428" end1="428" start2="439" end2="446" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="430" end1="431" start2="448" end2="450" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="432" end1="432" start2="451" end2="452" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="512" end1="513" start2="532" end2="533" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
+        <range start1="524" end1="527" start2="544" end2="544" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="528" end1="529" start2="545" end2="546" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
+        <range start1="595" end1="595" start2="612" end2="620" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
       </ranges>
     </file>
   </component>
@@ -178,7 +186,8 @@
       <workItem from="1679059284991" duration="3000" />
       <workItem from="1679067538238" duration="3972000" />
       <workItem from="1679760744218" duration="2705000" />
-      <workItem from="1679885794808" duration="4758000" />
+      <workItem from="1679885794808" duration="4793000" />
+      <workItem from="1680500155695" duration="4864000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -299,7 +308,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679072135074</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="SHIT CODE WARNING">
+      <created>1679927110340</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1679927110340</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

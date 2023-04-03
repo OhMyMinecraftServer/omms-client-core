@@ -11,7 +11,13 @@ import net.zhuruoling.omms.client.response.Response;
 import net.zhuruoling.omms.client.system.SystemInfo;
 import net.zhuruoling.omms.client.util.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,9 +28,7 @@ public class ClientSession extends Thread {
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, Announcement> announcementMap = new HashMap<>();
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
-    private final List<Request> requestCache = new ArrayList<>();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Socket socket;
     private final String serverName;
     EncryptedConnector connector;
@@ -37,7 +41,7 @@ public class ClientSession extends Thread {
     private Callback<Throwable> onAnyExceptionCallback;
     private Callback<Map<String, Announcement>> onAnnouncementReceivedCallback;
     private Callback<List<String>> onControllerCommandLogReceivedCallback;
-    private Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback;
+    private Callback<Pair<String, String>> onControllerConsoleLogReceievedCallback;
     private Callback<Response> onResponseRecievedCallback;
     private Callback<HashMap<String, ArrayList<String>>> onWhitelistReceivedCallback;
     private Callback<String> onConsoleNotFoundCallback;
@@ -57,6 +61,7 @@ public class ClientSession extends Thread {
     private Callback<String> onDisconnectedCallback;
 
     private Callback<String> onControllerConsoleAlreadyExistsCallback;
+    private Callback<String> onControllerConsoleInputSendCallback;
 
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
@@ -70,7 +75,7 @@ public class ClientSession extends Thread {
         return socket.isClosed() && this.isAlive();
     }
 
-    public static class UncaughtExceptionHandlerImpl implements UncaughtExceptionHandler{
+    public static class UncaughtExceptionHandlerImpl implements UncaughtExceptionHandler {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
 
@@ -83,21 +88,12 @@ public class ClientSession extends Thread {
         while (true) {
             try {
                 response = gson.fromJson(connector.readLine(), Response.class);
-                Response finalResponse1 = response;
-                executorService.submit(() -> {
-                    try {
-                        handleResponse(finalResponse1);
-                    } catch (DisconnectedException e) {
-                        if (onDisconnectedCallback != null) {
-                            onDisconnectedCallback.accept(this.serverName);
-                        }
-                    } catch (Exception e) {
-                        if (onAnyExceptionCallback != null) {
-                            onAnyExceptionCallback.accept(new Pair<>(currentThread(), e));
-                        }
-                    }
-                });
-            } catch (DisconnectedException ignored) {
+                if (onResponseRecievedCallback != null){
+                    System.out.print("Client Session");
+                    onResponseRecievedCallback.accept(response);
+                }
+                handleResponse(response);
+            } catch (DisconnectedException | SocketException ignored) {
                 if (onDisconnectedCallback != null) {
                     onDisconnectedCallback.accept(this.serverName);
                 }
@@ -109,9 +105,6 @@ public class ClientSession extends Thread {
     }
 
     private void handleResponse(Response response) throws Exception {
-        if (onResponseRecievedCallback != null) {
-            onResponseRecievedCallback.accept(response);
-        }
         if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
             this.socket.close();
             throw new RateExceedException("Connection closed because request rate exceeded.");
@@ -139,7 +132,7 @@ public class ClientSession extends Thread {
                 if (onConsoleNotFoundCallback == null)
                     throw new ControllerNotExistException("Controller not exist");
                 else {
-                    onControllerNotExistCallback.accept(response.getContent("controller"));
+                    onControllerNotExistCallback.accept(response.getContent("controllerId"));
                     onControllerNotExistCallback = null;
                 }
             case CONTROLLER_NO_STATUS:
@@ -149,8 +142,8 @@ public class ClientSession extends Thread {
                 }
                 break;
             case CONTROLLER_LOG:
-                if (onControllerConsoleLogRecievedCallback != null) {
-                    onControllerConsoleLogRecievedCallback.accept(response.getPair("consoleId", "content"));
+                if (onControllerConsoleLogReceievedCallback != null) {
+                    onControllerConsoleLogReceievedCallback.accept(response.getPair("consoleId", "content"));
                 }
                 break;
             case CONSOLE_NOT_EXIST:
@@ -221,13 +214,16 @@ public class ClientSession extends Thread {
             case CONTROLLER_LISTED:
                 String[] controllerNames = Util.string2Array(response.getContent("names"));
                 for (String controllerName : controllerNames) {
+                    System.out.printf("Fetching Controller %s%n",controllerName );
                     Response response1 = sendBlocking(new Request("CONTROLLER_GET").withContentKeyPair("controller", controllerName));
+                    System.out.printf("Got Controller %s%n", response1);
                     if (response1.getResponseCode() == Result.CONTROLLER_GOT) {
                         String jsonString = response1.getContent("controller");
                         Controller controller = gson.fromJson(jsonString, Controller.class);
                         System.out.println(controller.toString());
                         controllerMap.put(controllerName, controller);
                     }
+                    System.out.print("Next\n");
                 }
                 if (onControllerListedCallback != null) {
                     onControllerListedCallback.accept(controllerMap);
@@ -241,7 +237,11 @@ public class ClientSession extends Thread {
                 }
                 break;
             case CONTROLLER_CONSOLE_INPUT_SENT:
-                //ignore result
+                String id = response.getContent("consoleId");
+                if (onControllerConsoleInputSendCallback != null) {
+                    onControllerConsoleInputSendCallback.accept(id);
+                }
+                //can ignore result
                 break;
             case SYSINFO_GOT:
                 this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
@@ -265,7 +265,7 @@ public class ClientSession extends Thread {
                 String[] whitelistNames = gson.fromJson(response.getContent("whitelists"), String[].class);
                 for (String whitelistName : whitelistNames) {
                     response = sendBlocking(new Request("WHITELIST_GET").withContentKeyPair("whitelist", whitelistName));
-                    if (response.getResponseCode() == Result.OK) {
+                    if (response.getResponseCode() == Result.WHITELIST_GOT) {
                         whitelistMap.put(whitelistName, new ArrayList<>(Arrays.asList(gson.fromJson(response.getContent("players"), String[].class))));
                     }
                 }
@@ -291,14 +291,26 @@ public class ClientSession extends Thread {
         }
     }
 
-    public void send(Request request) throws Exception {
-        String content = gson.toJson(request);
-        connector.println(content);
+    public void send(Request request) {
+        executorService.submit(() -> {
+            String content = gson.toJson(request);
+            try {
+                connector.println(content);
+            } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                     BadPaddingException | InvalidKeyException e) {
+                onAnyExceptionCallback.accept(new Pair<>(currentThread(), e));
+            }
+        });
     }
 
     private Response sendBlocking(Request request) throws Exception {
-        send(request);
+        String content = gson.toJson(request);
+        connector.println(content);
         Response response = gson.fromJson(connector.readLine(), Response.class);
+        if (onResponseRecievedCallback != null) {
+            System.out.print("sendBlocking ");
+            onResponseRecievedCallback.accept(response);
+        }
         if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
             this.socket.close();
             throw new RateExceedException("Connection closed because request rate exceeded.");
@@ -430,6 +442,15 @@ public class ClientSession extends Thread {
                                        String line,
                                        Callback<String> onConsoleNotFoundCallback
     ) throws Exception {
+        controllerConsoleInput(consoleId, line, onConsoleNotFoundCallback, null);
+    }
+
+    public void controllerConsoleInput(String consoleId,
+                                       String line,
+                                       Callback<String> onConsoleNotFoundCallback,
+                                       Callback<String> onControllerConsoleInputSendCallback
+    ) throws Exception {
+        setOnControllerConsoleInputSendCallback(onControllerConsoleInputSendCallback);
         setOnConsoleNotFoundCallback(onConsoleNotFoundCallback);
         send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
                 .withContentKeyPair("consoleId", consoleId)
@@ -522,11 +543,8 @@ public class ClientSession extends Thread {
         this.onControllerCommandLogReceivedCallback = onControllerCommandLogReceivedCallback;
     }
 
-    public void setOnControllerConsoleLogReceivedCallback(Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback) {
-        this.onControllerConsoleLogRecievedCallback = onControllerConsoleLogRecievedCallback;
-    }
 
-    public void setOnResponseRecievedCallback(Callback<Response> onResponseRecievedCallback) {
+    public void setOnResponseReceivedCallback(Callback<Response> onResponseRecievedCallback) {
         this.onResponseRecievedCallback = onResponseRecievedCallback;
     }
 
@@ -592,5 +610,13 @@ public class ClientSession extends Thread {
 
     public void setOnControllerConsoleAlreadyExistsCallback(Callback<String> onControllerConsoleAlreadyExistsCallback) {
         this.onControllerConsoleAlreadyExistsCallback = onControllerConsoleAlreadyExistsCallback;
+    }
+
+    public void setOnControllerConsoleInputSendCallback(Callback<String> onControllerConsoleInputSendCallback) {
+        this.onControllerConsoleInputSendCallback = onControllerConsoleInputSendCallback;
+    }
+
+    public void setOnControllerConsoleLogReceivedCallback(Callback<Pair<String, String>> onControllerConsoleLogReceievedCallback) {
+        this.onControllerConsoleLogReceievedCallback = onControllerConsoleLogReceievedCallback;
     }
 }

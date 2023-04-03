@@ -10,11 +10,16 @@ public class ClientTestMain {
     public static void main(String[] args) throws Exception {
         ClientInitialSession initialSession = new ClientInitialSession(InetAddress.getByName("localhost"), 50000);
         ClientSession session = initialSession.init(114514);
-
-        System.out.println("======BEGIN======");
-        session.fetchWhitelistFromServer((map) -> map.forEach((s, strings) -> System.out.printf("%s %s", s, Arrays.toString(strings.toArray()))));
-        session.fetchAnnouncementFromServer((map) -> map.forEach((s, announcement) -> System.out.printf("%s %s", s, announcement.toString())));
+        session.setOnAnyExceptionCallback((pair) -> pair.getB().printStackTrace());
+        session.setOnResponseReceivedCallback((response) -> System.out.println(response.toString()));
+        System.out.println("===========BEGIN===========");
+        System.out.println("===========FETCH ALL===========");
+        //session.fetchWhitelistFromServer((map) -> map.forEach((s, strings) -> System.out.printf("%s %s\n", s, Arrays.toString(strings.toArray()))), null);
+        //session.fetchAnnouncementFromServer((map) -> map.forEach((s, announcement) -> System.out.printf("%s %s\n", s, announcement.toString())));
         session.fetchControllersFromServer((map) -> map.forEach((s, controller) -> System.out.printf("%s %s", s,controller.toString())));
+//        session.fetchSystemInfoFromServer((info) -> System.out.printf("%s", info.toString()));
+        System.out.println("\n===========WHITELIST TEST===========");
 
+        System.out.println("\n===========CONTROLLER TEST===========");
     }
 }
