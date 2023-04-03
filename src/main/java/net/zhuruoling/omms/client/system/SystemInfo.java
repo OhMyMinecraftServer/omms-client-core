@@ -86,6 +86,17 @@ public class SystemInfo {
         this.osArch = osArch;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "SystemInfo{" +
+                "osName='" + osName + '\'' +
+                ", osVersion='" + osVersion + '\'' +
+                ", osArch='" + osArch + '\'' +
+                ", fileSystemInfo=" + fileSystemInfo +
+                ", memoryInfo=" + memoryInfo +
+                ", networkInfo=" + networkInfo +
+                ", processorInfo=" + processorInfo +
+                ", storageInfo=" + storageInfo +
+                '}';
+    }
 }
