@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="?">
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="0.10.0 DONE">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" afterDir="false" />
     </list>
     <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="">
       <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
@@ -31,50 +27,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java">
-      <ranges>
-        <range start1="40" end1="41" start2="40" end2="41" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="42" end1="43" start2="42" end2="43" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="50" end1="51" start2="50" end2="51" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="59" end1="60" start2="59" end2="59" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="61" end1="62" start2="60" end2="60" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="64" end1="64" start2="62" end2="64" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="91" end1="92" start2="91" end2="91" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="101" end1="102" start2="100" end2="102" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="105" end1="105" start2="105" end2="106" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="143" end1="143" start2="144" end2="149" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="172" end1="172" start2="178" end2="183" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="209" end1="210" start2="220" end2="221" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="216" end1="217" start2="227" end2="227" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="218" end1="219" start2="228" end2="228" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="222" end1="223" start2="231" end2="231" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="225" end1="226" start2="233" end2="233" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="234" end1="235" start2="241" end2="242" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="308" end1="309" start2="315" end2="317" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="310" end1="311" start2="318" end2="318" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="347" end1="348" start2="354" end2="355" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="371" end1="372" start2="378" end2="379" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="380" end1="382" start2="387" end2="390" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="383" end1="383" start2="391" end2="392" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="419" end1="420" start2="428" end2="429" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="423" end1="424" start2="432" end2="433" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="434" end1="435" start2="443" end2="444" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="443" end1="444" start2="452" end2="453" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="451" end1="452" start2="460" end2="461" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="464" end1="465" start2="473" end2="474" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="476" end1="479" start2="485" end2="488" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="483" end1="486" start2="492" end2="496" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="492" end1="492" start2="502" end2="503" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="533" end1="534" start2="544" end2="545" changelist="62f98793-6fda-4678-aafe-50dd0014422b" />
-        <range start1="541" end1="545" start2="552" end2="552" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="561" end1="561" start2="568" end2="572" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="570" end1="573" start2="581" end2="582" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="614" end1="614" start2="623" end2="627" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-        <range start1="621" end1="621" start2="634" end2="642" changelist="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" />
-      </ranges>
-    </file>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -199,7 +151,7 @@
       <workItem from="1679067538238" duration="3972000" />
       <workItem from="1679760744218" duration="2705000" />
       <workItem from="1679885794808" duration="4793000" />
-      <workItem from="1680500155695" duration="16390000" />
+      <workItem from="1680500155695" duration="16807000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -334,7 +286,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680505054535</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="0.10.0 DONE">
+      <created>1680542482567</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1680542482567</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -370,6 +329,7 @@
     <MESSAGE value="0.10.0&#10;I wrote shit" />
     <MESSAGE value="SHIT CODE WARNING" />
     <MESSAGE value="?" />
-    <option name="LAST_COMMIT_MESSAGE" value="?" />
+    <MESSAGE value="0.10.0 DONE" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.10.0 DONE" />
   </component>
 </project>

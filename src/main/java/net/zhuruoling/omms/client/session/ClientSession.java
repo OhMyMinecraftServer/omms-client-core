@@ -74,7 +74,7 @@ public class ClientSession extends Thread {
     }
 
     public boolean isActive() {
-        return socket.isClosed() && this.isAlive();
+        return !socket.isClosed() && this.isAlive();
     }
 
     public static class UncaughtExceptionHandlerImpl implements UncaughtExceptionHandler {
