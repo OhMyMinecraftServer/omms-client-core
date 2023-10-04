@@ -1,4 +1,4 @@
-package net.zhuruoling.omms.client.testmain;
+package net.zhuruoling.omms.client.test;
 
 import net.zhuruoling.omms.client.session.ClientInitialSession;
 import net.zhuruoling.omms.client.session.ClientSession;

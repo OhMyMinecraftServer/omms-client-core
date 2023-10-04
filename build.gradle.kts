@@ -11,9 +11,7 @@ plugins {
 
 repositories {
     mavenLocal()
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
+    mavenCentral()
 }
 
 dependencies {
@@ -25,8 +23,14 @@ version = "0.15.0"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+
 publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
     }
 }
