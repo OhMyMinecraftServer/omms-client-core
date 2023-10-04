@@ -21,7 +21,7 @@ dependencies {
 }
 
 group = "net.zhuruoling"
-version = "0.12.0"
+version = "0.15.0"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
