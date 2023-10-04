@@ -5,6 +5,8 @@ public class Controller {
     private Controller(){}
     private String name;
     private String type;
+
+    private String displayName;
     private boolean statusQueryable;
 
     public String getName() {
@@ -19,4 +21,7 @@ public class Controller {
         return statusQueryable;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
 }
