@@ -22,6 +22,6 @@ public class Controller {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return displayName == null ? name : displayName;
     }
 }
