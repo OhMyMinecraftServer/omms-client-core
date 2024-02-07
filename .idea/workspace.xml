@@ -4,20 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="build: version bump to 0.15.0">
-      <change afterPath="$PROJECT_DIR$/jitpack.yml" afterDir="false" />
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="feat: add Controller#displayName">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/ConsoleLogger.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/ControllerTypes.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Instruction.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Status.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Status.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/testmain/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/test/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/announcement/Announcement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/announcement/Announcement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/controller/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Status.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/controller/Status.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/permission/Permission.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/permission/Permission.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/InitRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/request/InitRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/request/Request.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Callback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Callback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientInitialSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ControllerNotExistException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ControllerNotExistException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/DisconnectedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/DisconnectedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/RateExceedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/DirectoryInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/DirectoryInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/FileSystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/MemoryInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/MemoryInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/NetworkInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/NetworkInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/ProcessorInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/ProcessorInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/StorageInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/StorageInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/SystemInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/test/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/test/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ConnectionFailException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/ConnectionFailException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/EncryptedConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/EncryptedConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Pair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Pair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/PermissionDeniedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/PermissionDeniedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ServerInternalErrorException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/ServerInternalErrorException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Triple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Triple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/UncaughtExceptionHandlerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/UncaughtExceptionHandlerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Util.java" afterDir="false" />
     </list>
-    <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" afterDir="false" />
-    </list>
+    <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,7 +58,12 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="omms-client-core" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -58,10 +85,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2ATLhdeveK7uWxq0sYGsje3DvLQ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -75,13 +102,17 @@
     "WebServerToolWindowFactoryState": "false",
     "dart.analysis.tool.window.visible": "false",
     "extract.method.default.visibility": "private",
+    "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/jkl-9/IdeaProjects/omms-client-core",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
     "show.migrate.to.gradle.popup": "false",
     "vue.rearranger.settings.migration": "true"
   }
@@ -107,7 +138,7 @@
       <recent name="net.zhuruoling.omms.client.response" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.C:/Users/jkl-9/IdeaProjects/omms-client-core [init]">
+  <component name="RunManager" selected="Gradle.omms-client-core [jar]">
     <configuration name="ClientTestMain" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="net.zhuruoling.omms.client.testmain.ClientTestMain" />
       <module name="omms-client-core" />
@@ -143,11 +174,87 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="omms-client-core [buildDependents]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="buildDependents" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="omms-client-core [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="omms-client-core [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="jar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.omms-client-core [jar]" />
+        <item itemvalue="Gradle.omms-client-core [build]" />
+        <item itemvalue="Gradle.omms-client-core [buildDependents]" />
         <item itemvalue="Gradle.C:/Users/jkl-9/IdeaProjects/omms-client-core [init]" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-1.8.0_402-corretto-1.8.0_402-3183f394aec4-734fdc6e" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -217,7 +324,8 @@
       <workItem from="1687964497626" duration="278000" />
       <workItem from="1687965603298" duration="4000" />
       <workItem from="1688030769258" duration="2000" />
-      <workItem from="1696430388755" duration="648000" />
+      <workItem from="1696430388755" duration="2349000" />
+      <workItem from="1707309326535" duration="118000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -396,7 +504,23 @@
       <option name="project" value="LOCAL" />
       <updated>1696430859607</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="build: version bump to 0.15.0">
+      <option name="closed" value="true" />
+      <created>1696431044310</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1696431044310</updated>
+    </task>
+    <task id="LOCAL-00027" summary="feat: add Controller#displayName">
+      <option name="closed" value="true" />
+      <created>1696431249176</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1696431249176</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -438,6 +562,7 @@
     <MESSAGE value="0.12.0" />
     <MESSAGE value="migrate from maven to gradle" />
     <MESSAGE value="build: version bump to 0.15.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="build: version bump to 0.15.0" />
+    <MESSAGE value="feat: add Controller#displayName" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add Controller#displayName" />
   </component>
 </project>

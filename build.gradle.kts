@@ -18,7 +18,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
 }
 
-group = "net.zhuruoling"
+group = "icu.takeneko"
 version = "0.15.0"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
