@@ -5,13 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 
 public class Request {
-    public Request(String req){
+    public Request(String req) {
         this.request = req;
     }
 
-    public Request(){
+    public Request() {
 
     }
+
     @SerializedName("request")
     String request;
 
@@ -36,8 +37,8 @@ public class Request {
     }
 
 
-    public Request withContentKeyPair(String key, String pair){
-        content.put(key,pair);
+    public Request withContentKeyPair(String key, String pair) {
+        content.put(key, pair);
         return this;
     }
 

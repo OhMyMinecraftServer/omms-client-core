@@ -2,7 +2,9 @@ package icu.takeneko.omms.client.controller;
 
 
 public class Controller {
-    private Controller(){}
+    private Controller() {
+    }
+
     private String name;
     private String type;
 

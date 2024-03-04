@@ -36,31 +36,14 @@ public class Response {
         return responseCode;
     }
 
-    public void setResponseCode(Result responseCode) {
-        this.responseCode = responseCode;
-    }
-
     public String getContent(String key) {
         return content.get(key);
     }
 
-    public Pair<String, String> getPair(String k, String v){
+    public Pair<String, String> getPair(String k, String v) {
         return new Pair<>(this.getContent(k), this.getContent(v));
     }
 
-    public void setContent(HashMap<String, String> content) {
-        this.content = content;
-    }
-
-    public Response withResponseCode(Result code){
-        setResponseCode(code);
-        return this;
-    }
-
-    public Response withContentPair(String a, String b) {
-        content.put(a, b);
-        return this;
-    }
 
     @Override
     public String toString() {

@@ -9,10 +9,12 @@ import java.util.List;
 public class StorageInfo { // TODO: 2022/9/10
     @SerializedName("storages")
     List<Storage> storageList = new ArrayList<>();
-    public class Storage{
+
+    public class Storage {
         final String name;
         final String model;
         final long size;
+
         public Storage(String name, String model, long size) {
             this.name = name;
             this.model = model;
@@ -28,7 +30,7 @@ public class StorageInfo { // TODO: 2022/9/10
         this.storageList = storageList;
     }
 
-    public static String asJsonString(StorageInfo storageInfo){
+    public static String asJsonString(StorageInfo storageInfo) {
         return new GsonBuilder().serializeNulls().create().toJson(storageInfo);
     }
 }

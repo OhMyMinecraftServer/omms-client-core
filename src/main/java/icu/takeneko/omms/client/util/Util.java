@@ -9,13 +9,10 @@ import java.util.Base64;
 import java.util.Random;
 
 public class Util {
-    public static Gson gson = new  GsonBuilder().serializeNulls().create();
-    public static String base64Encode(String content){
-        return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
-    }
+    public static Gson gson = new GsonBuilder().serializeNulls().create();
 
-    public static String[] string2Array(String s){
-        return gson.fromJson(s, String[].class);
+    public static String base64Encode(String content) {
+        return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }
 
     public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x06;

@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.util;
 
-public class Pair <K,V> {
+public class Pair<K, V> {
     K a;
     V b;
 

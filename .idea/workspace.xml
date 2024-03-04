@@ -5,39 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="feat: add Controller#displayName">
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/SessionContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/BiStringCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/Callback2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerListCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/JsonObjectCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ListCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/MapCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StatusCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StringCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/SystemInfoCallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/CallbackHandle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegateImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/announcement/Announcement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/announcement/Announcement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/controller/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/controller/Status.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/controller/Status.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/permission/Permission.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/permission/Permission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/InitRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/request/InitRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/request/Request.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/request/Request.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Callback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Callback.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientInitialSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientInitialSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/ControllerNotExistException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ControllerNotExistException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/DisconnectedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/DisconnectedException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/session/RateExceedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/DirectoryInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/DirectoryInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/FileSystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/FileSystemInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/MemoryInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/MemoryInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/NetworkInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/NetworkInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/ProcessorInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/ProcessorInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/StorageInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/StorageInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/system/SystemInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/system/SystemInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/test/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/test/ClientTestMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ConnectionFailException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/ConnectionFailException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/EncryptedConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/EncryptedConnector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Pair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Pair.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/PermissionDeniedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/PermissionDeniedException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Result.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/ServerInternalErrorException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/ServerInternalErrorException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Triple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Triple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/UncaughtExceptionHandlerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/UncaughtExceptionHandlerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/zhuruoling/omms/client/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Callback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/Callback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" afterDir="false" />
     </list>
     <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -63,6 +55,11 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="omms-client-core" type="f1a62948:ProjectNode" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="omms-client-core" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -75,6 +72,7 @@
       <list>
         <option value="AnnotationType" />
         <option value="Interface" />
+        <option value="package-info" />
         <option value="Class" />
       </list>
     </option>
@@ -99,11 +97,13 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "dart.analysis.tool.window.visible": "false",
     "extract.method.default.visibility": "private",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jkl-9/IdeaProjects/omms-client-core",
+    "last_opened_file_path": "/Users/zhuruoling/IdeaProjects/omms-client-core",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -131,11 +131,11 @@
       <recent name="net.zhuruoling.omms.client" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="icu.takeneko.omms.client.session.callback" />
       <recent name="net.zhuruoling.omms.client.response.callback" />
       <recent name="net.zhuruoling.omms.client.controller" />
       <recent name="net.zhuruoling.omms.client.announcement" />
       <recent name="net.zhuruoling.omms.client.request" />
-      <recent name="net.zhuruoling.omms.client.response" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.omms-client-core [jar]">
@@ -252,7 +252,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-1.8.0_402-corretto-1.8.0_402-3183f394aec4-734fdc6e" />
+        <option value="jdk-17.0.10-corretto-17.0.10-4caba194b151-53826d6a" />
       </set>
     </attachedChunks>
   </component>
@@ -326,6 +326,7 @@
       <workItem from="1688030769258" duration="2000" />
       <workItem from="1696430388755" duration="2349000" />
       <workItem from="1707309326535" duration="118000" />
+      <workItem from="1709541102403" duration="8006000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>

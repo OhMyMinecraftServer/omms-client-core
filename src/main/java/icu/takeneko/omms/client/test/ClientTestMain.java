@@ -64,7 +64,8 @@ public class ClientTestMain {
                     });
                     break;
                 }
-                session.controllerConsoleInput(id.get(), line, s -> {}, s -> {
+                session.controllerConsoleInput(id.get(), line, s -> {
+                }, s -> {
                     System.out.printf("Input %s to %s.", s, id.get());
                 });
             }

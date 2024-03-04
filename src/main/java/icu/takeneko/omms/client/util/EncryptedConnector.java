@@ -19,44 +19,43 @@ public class EncryptedConnector {
     private final PrintWriter out;
     private final byte[] key;
 
-    public EncryptedConnector(BufferedReader in, PrintWriter out,String key){
+    public EncryptedConnector(BufferedReader in, PrintWriter out, String key) {
         this.in = in;
         this.out = out;
         //补全长度
-        if (key.length() <= 16){
+        if (key.length() <= 16) {
             StringBuilder keyBuilder = new StringBuilder(key);
             while (keyBuilder.length() < 16)
                 keyBuilder.append("0");
             key = keyBuilder.toString();
-        }
-        else {
+        } else {
             if (key.length() <= 32) {
                 StringBuilder keyBuilder = new StringBuilder(key);
                 while (keyBuilder.length() < 32)
                     keyBuilder.append("0");
                 key = keyBuilder.toString();
-            }
-            else {
+            } else {
                 throw new RuntimeException();
             }
         }
         this.key = key.getBytes(StandardCharsets.UTF_8);
     }
+
     public void println(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.send(content);
     }
 
     public void send(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        byte[] data = encryptECB(content.getBytes(StandardCharsets.UTF_8),this.key);
-        out.println(new String(data,StandardCharsets.UTF_8));
+        byte[] data = encryptECB(content.getBytes(StandardCharsets.UTF_8), this.key);
+        out.println(new String(data, StandardCharsets.UTF_8));
         out.flush();
     }
 
     public String readLine() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String line = in.readLine();
         if (line == null) return null;
-        byte[] data = decryptECB(line.getBytes(StandardCharsets.UTF_8),this.key);
-        return new String(data,StandardCharsets.UTF_8);
+        byte[] data = decryptECB(line.getBytes(StandardCharsets.UTF_8), this.key);
+        return new String(data, StandardCharsets.UTF_8);
     }
 
     private static byte[] encryptECB(byte[] data, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {

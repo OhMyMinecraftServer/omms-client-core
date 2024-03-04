@@ -2,12 +2,16 @@ package icu.takeneko.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import icu.takeneko.omms.client.announcement.Announcement;
 import icu.takeneko.omms.client.controller.Controller;
 import icu.takeneko.omms.client.controller.Status;
 import icu.takeneko.omms.client.request.Request;
-import icu.takeneko.omms.client.announcement.Announcement;
-import icu.takeneko.omms.client.response.Callback;
 import icu.takeneko.omms.client.response.Response;
+import icu.takeneko.omms.client.session.callback.Callback;
+import icu.takeneko.omms.client.session.callback.Callback2;
+import icu.takeneko.omms.client.session.handler.CallbackHandle;
+import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegate;
+import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
 import icu.takeneko.omms.client.system.SystemInfo;
 import icu.takeneko.omms.client.util.*;
 
@@ -18,50 +22,36 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
-    private final HashMap<String, ArrayList<String>> whitelistMap = new HashMap<>();
+    private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, Announcement> announcementMap = new HashMap<>();
-
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Socket socket;
     private final String serverName;
     EncryptedConnector connector;
     private SystemInfo systemInfo = null;
     private Object lastPermissionOperation;
+    private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
 
     private Callback<ClientSession> onPermissionDeniedCallback;
     private Callback<Response> onServerInternalExeptionCallback;
     private Callback<Object> onInvalidOperationCallback;
-    private Callback<Pair<Thread, Throwable>> onAnyExceptionCallback;
-    private Callback<Map<String, Announcement>> onAnnouncementReceivedCallback;
-    private Callback<Pair<String,List<String>>> onControllerCommandLogReceivedCallback;
-    private Callback<Pair<String, String>> onControllerConsoleLogReceievedCallback;
+    private Callback2<Thread, Throwable> onAnyExceptionCallback;
+    //    private Callback<Map<String, Announcement>> onAnnouncementReceivedCallback;
+//    private Callback<Pair<String,List<String>>> onControllerCommandLogReceivedCallback;
     private Callback<Response> onResponseRecievedCallback;
-    private Callback<HashMap<String, ArrayList<String>>> onWhitelistReceivedCallback;
-    private Callback<String> onConsoleNotFoundCallback;
-    private Callback<Status> onStatusReceivedCallback;
-    private Callback<String> onWhitelistNotExistCallback;
-    private Callback<Map<String, Controller>> onControllerListedCallback;
-    private Callback<Pair<String,String>> onControllerConsoleLaunchedCallback;
-    private Callback<SystemInfo> onSystemInfoGotCallback;
-    private Callback<Pair<String, String>> onPlayerAddedCallback;
-    private Callback<Pair<String, String>> onPlayerRemovedCallback;
-    private Callback<List<String>> onArgumentInvalidCallback;
-    private Callback<String> onAnnouncementNotExistCallback;
-    private Callback<Pair<String, String>> onPlayerAlreadyExistsCallback;
-    private Callback<String> onConsoleStoppedCallback;
-    private Callback<String> onControllerNotExistCallback;
+    //    private Callback<HashMap<String, ArrayList<String>>> onWhitelistReceivedCallback;
+//    private Callback<Map<String, Controller>> onControllerListedCallback;
     private Callback<String> onDisconnectedCallback;
-    private Callback<String> onControllerConsoleAlreadyExistsCallback;
-    private Callback<String> onControllerConsoleInputSendCallback;
-    private Callback<Pair<String, String>> onPlayerNotExistCallback;
-    private Callback<String> onControllerAuthFailedCallback;
 
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
@@ -69,6 +59,7 @@ public class ClientSession extends Thread {
         this.serverName = serverName;
         this.connector = connector;
         this.socket = socket;
+        delegate = new ResponseHandlerDelegateImpl<>();
     }
 
     public boolean isActive() {
@@ -88,7 +79,7 @@ public class ClientSession extends Thread {
         while (true) {
             try {
                 response = gson.fromJson(connector.readLine(), Response.class);
-                if (onResponseRecievedCallback != null){
+                if (onResponseRecievedCallback != null) {
                     onResponseRecievedCallback.accept(response);
                 }
                 handleResponse(response);
@@ -99,11 +90,10 @@ public class ClientSession extends Thread {
                 break;
             } catch (Exception e) {
                 if (onAnyExceptionCallback != null)
-                    onAnyExceptionCallback.accept(new Pair<>(currentThread(), e));
+                    onAnyExceptionCallback.accept(currentThread(), e);
             }
         }
     }
-
 
     private void handleResponse(Response response) throws Exception {
         if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
@@ -129,173 +119,11 @@ public class ClientSession extends Thread {
                     onInvalidOperationCallback = null;
                 }
                 break;
-            case CONTROLLER_NOT_EXIST:
-                if (onConsoleNotFoundCallback == null)
-                    throw new ControllerNotExistException("Controller not exist");
-                else {
-                    onControllerNotExistCallback.accept(response.getContent("controllerId"));
-                    onControllerNotExistCallback = null;
-                }
-            case CONTROLLER_NO_STATUS:
-                if (onStatusReceivedCallback != null) {
-                    onStatusReceivedCallback.accept(null);
-                    onStatusReceivedCallback = null;
-                }
-                break;
-            case CONTROLLER_AUTH_FAILED:
-                if (onControllerAuthFailedCallback != null){
-                    onControllerAuthFailedCallback.accept(response.getContent("controllerId"));
-                }
-                break;
-            case CONTROLLER_LOG:
-                if (onControllerConsoleLogReceievedCallback != null) {
-                    onControllerConsoleLogReceievedCallback.accept(response.getPair("consoleId", "content"));
-                }
-                break;
-            case CONSOLE_NOT_EXIST:
-                if (onConsoleNotFoundCallback != null) {
-                    onConsoleNotFoundCallback.accept(response.getContent("console"));
-                    onConsoleNotFoundCallback = null;
-                }
-                break;
-            case NO_WHITELIST:
-                if (onWhitelistReceivedCallback != null) {
-                    onWhitelistReceivedCallback.accept(null);
-                    onWhitelistReceivedCallback = null;
-                }
-                break;
-            case WHITELIST_NOT_EXIST:
-                if (onWhitelistNotExistCallback != null) {
-                    onWhitelistNotExistCallback.accept(response.getContent("whitelist"));
-                    onWhitelistNotExistCallback = null;
-                }
-                break;
-            case PLAYER_ALREADY_EXISTS:
-                if (onPlayerAlreadyExistsCallback != null) {
-                    onPlayerAlreadyExistsCallback.accept(response.getPair("whitelist", "player"));
-                    onPlayerAlreadyExistsCallback = null;
-                }
-                break;
-            case PLAYER_NOT_EXIST:
-                if (onPlayerNotExistCallback != null){
-                    onPlayerNotExistCallback.accept(response.getPair("whitelist","player"));
-                }
-                break;
-            case ANNOUNCEMENT_NOT_EXIST:
-                if (onArgumentInvalidCallback != null) {
-                    onAnnouncementNotExistCallback.accept(response.getContent("announcementId"));
-                    onAnnouncementNotExistCallback = null;
-                }
-                break;
-            case INVALID_ARGUMENTS:
-                if (onArgumentInvalidCallback != null) {
-                    onArgumentInvalidCallback.accept(Arrays.asList(gson.fromJson(response.getContent("args"), String[].class)));
-                }
-                break;
-            case ANNOUNCEMENT_LISTED:
-                String[] names = Util.string2Array(response.getContent("announcements"));
-                for (String name : names) {
-                    Response r = sendBlocking(new Request().setRequest("ANNOUNCEMENT_GET").withContentKeyPair("id", name));
-                    if (r.getResponseCode() == Result.ANNOUNCEMENT_GOT) {
-                        Announcement announcement = new Announcement(r.getContent("id"),
-                                Long.parseLong(r.getContent("time")),
-                                r.getContent("title"),
-                                Util.string2Array(r.getContent("content"))
-                        );
-                        announcementMap.put(name, announcement);
-                    }
-                }
-                if (onAnnouncementReceivedCallback != null) {
-                    onAnnouncementReceivedCallback.accept(announcementMap);
-                    onAnnouncementReceivedCallback = null;
-                }
-                break;
-            case CONTROLLER_STATUS_GOT:
-                if (onStatusReceivedCallback != null) {
-                    onStatusReceivedCallback.accept(gson.fromJson(response.getContent("status"), Status.class));
-                    onStatusReceivedCallback = null;
-                }
-                break;
-            case CONSOLE_LAUNCHED:
-                if (onControllerConsoleLaunchedCallback != null) {
-                    onControllerConsoleLaunchedCallback.accept(new Pair<>(response.getContent("consoleId"),response.getContent("consoleId")));
-                    onControllerConsoleLaunchedCallback = null;
-                }
-                break;
-            case CONTROLLER_LISTED:
-                String[] controllerNames = Util.string2Array(response.getContent("names"));
-                for (String controllerName : controllerNames) {
-                    Response response1 = sendBlocking(new Request("CONTROLLER_GET").withContentKeyPair("controller", controllerName));
-                    if (response1.getResponseCode() == Result.CONTROLLER_GOT) {
-                        String jsonString = response1.getContent("controller");
-                        Controller controller = gson.fromJson(jsonString, Controller.class);
-                        controllerMap.put(controllerName, controller);
-                    }
-                }
-                if (onControllerListedCallback != null) {
-                    onControllerListedCallback.accept(controllerMap);
-                    onControllerListedCallback = null;
-                }
-                break;
-            case CONTROLLER_COMMAND_SENT:
-                if (onControllerCommandLogReceivedCallback != null) {
-                    onControllerCommandLogReceivedCallback.accept(new Pair<>(response.getContent("controllerId"),Arrays.asList(response.getContent("output").split("\n"))));
-                    onControllerCommandLogReceivedCallback = null;
-                }
-                break;
-            case CONTROLLER_CONSOLE_INPUT_SENT:
-                String id = response.getContent("consoleId");
-                if (onControllerConsoleInputSendCallback != null) {
-                    onControllerConsoleInputSendCallback.accept(id);
-                }
-                //can ignore result
-                break;
-            case SYSINFO_GOT:
-                this.systemInfo = gson.fromJson(response.getContent("systemInfo"), SystemInfo.class);
-                if (onSystemInfoGotCallback != null) {
-                    onSystemInfoGotCallback.accept(systemInfo);
-                    onSystemInfoGotCallback = null;
-                }
-                break;
-            case CONSOLE_ALREADY_EXISTS:
-                if (onControllerConsoleAlreadyExistsCallback != null) {
-                    onControllerConsoleAlreadyExistsCallback.accept(response.getContent("controller"));
-                    onControllerConsoleAlreadyExistsCallback = null;
-                }
-            case WHITELIST_ADDED:
-                if (onPlayerAddedCallback != null) {
-                    onPlayerAddedCallback.accept(response.getPair("whitelist", "player"));
-                    onPlayerAddedCallback = null;
-                }
-                break;
-            case WHITELIST_LISTED:
-                String[] whitelistNames = gson.fromJson(response.getContent("whitelists"), String[].class);
-                for (String whitelistName : whitelistNames) {
-                    response = sendBlocking(new Request("WHITELIST_GET").withContentKeyPair("whitelist", whitelistName));
-                    if (response.getResponseCode() == Result.WHITELIST_GOT) {
-                        whitelistMap.put(whitelistName, new ArrayList<>(Arrays.asList(gson.fromJson(response.getContent("players"), String[].class))));
-                    }
-                }
-                if (onWhitelistReceivedCallback != null) {
-                    onWhitelistReceivedCallback.accept(whitelistMap);
-                    onWhitelistReceivedCallback = null;
-                }
-                break;
-            case WHITELIST_REMOVED:
-                if (onPlayerRemovedCallback != null) {
-                    onPlayerRemovedCallback.accept(response.getPair("whitelist", "player"));
-                    onPlayerRemovedCallback = null;
-                }
-                break;
-            case CONSOLE_STOPPED:
-                if (onConsoleStoppedCallback != null) {
-                    onConsoleStoppedCallback.accept(response.getContent("consoleId"));
-                    onConsoleStoppedCallback = null;
-                }
-                break;
             case DISCONNECT:
                 throw new DisconnectedException();
         }
+        delegate.handle(response.getResponseCode(), response);
+
     }
 
     public void send(Request request) {
@@ -310,7 +138,7 @@ public class ClientSession extends Thread {
         });
     }
 
-    private Response sendBlocking(Request request) throws Exception {
+    public Response sendBlocking(Request request) throws Exception {
         String content = gson.toJson(request);
         connector.println(content);
         String s = connector.readLine();
@@ -426,7 +254,7 @@ public class ClientSession extends Thread {
     }
 
     public void startControllerConsole(String controller,
-                                       Callback<Pair<String,String>> onControllerConsoleLaunchedCallback,
+                                       Callback<Pair<String, String>> onControllerConsoleLaunchedCallback,
                                        Callback<Pair<String, String>> onControllerConsoleLogRecievedCallback,
                                        Callback<String> onControllerNotExistCallback,
                                        Callback<String> onControllerConsoleAlreadyExistsCallback
@@ -483,14 +311,14 @@ public class ClientSession extends Thread {
 
     public void sendCommandToController(String controller,
                                         String command,
-                                        Callback<Pair<String,List<String>>> callback//this list will never equal null
+                                        Callback<Pair<String, List<String>>> callback//this list will never equal null
     ) {
-        sendCommandToController(controller, command, callback, null,null);
+        sendCommandToController(controller, command, callback, null, null);
     }
 
     public void sendCommandToController(String controller,
                                         String command,
-                                        Callback<Pair<String,List<String>>> callback,//this list will never equal null
+                                        Callback<Pair<String, List<String>>> callback,//this list will never equal null
                                         Callback<String> onControllerNotExistCallback,
                                         Callback<String> onControllerAuthFailedCallback
     ) {
@@ -505,7 +333,7 @@ public class ClientSession extends Thread {
     }
 
 
-    public HashMap<String, ArrayList<String>> getWhitelistMap() {
+    public HashMap<String, List<String>> getWhitelistMap() {
         return whitelistMap;
     }
 
@@ -578,7 +406,6 @@ public class ClientSession extends Thread {
     public void setOnControllerListedCallback(Callback<Map<String, Controller>> onControllerListedCallback) {
         this.onControllerListedCallback = onControllerListedCallback;
     }
-
 
 
     public void setOnSystemInfoGotCallback(Callback<SystemInfo> onSystemInfoGotCallback) {

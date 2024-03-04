@@ -26,13 +26,14 @@ import java.util.Base64;
 public class ClientInitialSession {
     InetAddress inetAddress;
     int port;
-    public ClientInitialSession(InetAddress inetAddress, int port){
+
+    public ClientInitialSession(InetAddress inetAddress, int port) {
         this.port = port;
         this.inetAddress = inetAddress;
     }
 
     public ClientSession init(int code) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailException, InterruptedException {
-        Socket socket = new Socket(this.inetAddress,this.port);
+        Socket socket = new Socket(this.inetAddress, this.port);
         socket.setKeepAlive(true);
 
         LocalDateTime date = LocalDateTime.now();
@@ -61,7 +62,7 @@ public class ClientInitialSession {
         String line = connector.readLine();
         Response response = Response.deserialize(line);
         System.out.println(response);
-        if (response.getResponseCode() == Result.OK){
+        if (response.getResponseCode() == Result.OK) {
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
                     new BufferedReader(
@@ -73,8 +74,7 @@ public class ClientInitialSession {
             ClientSession clientSession = new ClientSession(newConnector, socket, response.getContent("serverName"));
             clientSession.start();
             return clientSession;
-        }
-        else {
+        } else {
             throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));
         }
 

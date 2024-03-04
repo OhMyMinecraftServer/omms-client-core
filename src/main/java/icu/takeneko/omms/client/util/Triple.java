@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.util;
 
-public class Triple <A,B,C>{
+public class Triple<A, B, C> {
     A first;
     B second;
     C third;

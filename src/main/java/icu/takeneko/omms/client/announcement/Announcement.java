@@ -74,7 +74,8 @@ public class Announcement {
                 ", content=" + Arrays.toString(content) +
                 '}';
     }
-    public String toJson(){
+
+    public String toJson() {
         return new GsonBuilder().serializeNulls().create().toJson(this);
     }
 
