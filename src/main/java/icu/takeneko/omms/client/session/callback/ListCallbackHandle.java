@@ -14,4 +14,9 @@ public class ListCallbackHandle<E> extends JsonObjectCallbackHandle<E[]> {
         super(key, (es -> fn.accept(Arrays.asList(es))));
         this.fn = fn;
     }
+
+    @Override
+    protected TypeToken<E[]> getObjectType() {
+        return new TypeToken<E[]>(){};
+    }
 }
