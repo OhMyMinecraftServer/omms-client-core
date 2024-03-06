@@ -2,15 +2,15 @@ package icu.takeneko.omms.client.session.callback;
 
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 
-import java.util.function.BiConsumer;
+public abstract class CallbackHandle2<T, U, C> extends CallbackHandle<C> {
 
-public abstract class CallbackHandle2<T, U, C> implements CallbackHandle<C> {
-
-    private final BiConsumer<T, U> fn;
+    private final Callback2<T, U> fn;
     protected final String key1;
     protected final String key2;
 
-    public CallbackHandle2(String key1, String key2, BiConsumer<T, U> fn) {
+    protected CallbackHandle<C> associatedHandle;
+
+    public CallbackHandle2(String key1, String key2, Callback2<T, U> fn) {
         this.fn = fn;
         this.key1 = key1;
         this.key2 = key2;

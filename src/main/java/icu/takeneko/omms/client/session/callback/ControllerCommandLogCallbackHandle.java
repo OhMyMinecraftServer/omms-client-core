@@ -4,11 +4,10 @@ import icu.takeneko.omms.client.session.SessionContext;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class ControllerCommandLogCallbackHandle extends CallbackHandle2<String, List<String>, SessionContext> {
-    public ControllerCommandLogCallbackHandle(String key1, String key2, BiConsumer<String, List<String>> fn) {
-        super(key1, key2, fn);
+    public ControllerCommandLogCallbackHandle(Callback2<String, List<String>> fn) {
+        super("controllerId", "output", fn);
     }
 
     @Override

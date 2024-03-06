@@ -4,32 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="feat: add Controller#displayName">
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/SessionContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/BiStringCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/Callback2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerListCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/JsonObjectCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ListCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/MapCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StatusCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StringCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/SystemInfoCallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/CallbackHandle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegateImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="927aeb09-d7fa-49d0-8b35-1e58380d4ea1" name="变更" comment="refactor: Response Callback">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Callback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/Callback.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/response/Response.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/ClientSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/RateExceedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/AnnouncementListCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/AnnouncementListCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/BiStringCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/BiStringCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/CallbackHandle2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerCommandLogCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerCommandLogCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerListCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ControllerListCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/JsonObjectCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/JsonObjectCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ListCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/ListCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/MapCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/MapCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StatusCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StatusCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StringCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/StringCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/SystemInfoCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/SystemInfoCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/WhitelistListCallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/callback/WhitelistListCallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/CallbackHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/CallbackHandle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegateImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/session/handler/ResponseHandlerDelegateImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/test/ClientTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/test/ClientTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/icu/takeneko/omms/client/util/Result.java" afterDir="false" />
     </list>
     <list id="62f98793-6fda-4678-aafe-50dd0014422b" name="Changes by ZhuRuoLing" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -112,6 +107,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
     "show.migrate.to.gradle.popup": "false",
     "vue.rearranger.settings.migration": "true"
@@ -326,7 +322,7 @@
       <workItem from="1688030769258" duration="2000" />
       <workItem from="1696430388755" duration="2349000" />
       <workItem from="1707309326535" duration="118000" />
-      <workItem from="1709541102403" duration="8006000" />
+      <workItem from="1709541102403" duration="18277000" />
     </task>
     <task id="LOCAL-00001" summary="yee">
       <created>1655274311497</created>
@@ -521,7 +517,15 @@
       <option name="project" value="LOCAL" />
       <updated>1696431249176</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="refactor: Response Callback">
+      <option name="closed" value="true" />
+      <created>1709572141344</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1709572141344</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -539,7 +543,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="yee" />
     <MESSAGE value="yeee" />
     <MESSAGE value="yeeee" />
     <MESSAGE value="yeee&#10;controller update!!" />
@@ -564,6 +567,7 @@
     <MESSAGE value="migrate from maven to gradle" />
     <MESSAGE value="build: version bump to 0.15.0" />
     <MESSAGE value="feat: add Controller#displayName" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add Controller#displayName" />
+    <MESSAGE value="refactor: Response Callback" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: Response Callback" />
   </component>
 </project>

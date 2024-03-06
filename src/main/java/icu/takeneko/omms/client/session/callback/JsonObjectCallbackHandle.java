@@ -7,12 +7,14 @@ import java.util.function.Consumer;
 
 import static icu.takeneko.omms.client.util.Util.gson;
 
-public abstract class JsonObjectCallbackHandle<T> extends CallbackHandle1<T, SessionContext> {
-    public JsonObjectCallbackHandle(String key, Consumer<T> fn) {
+public class JsonObjectCallbackHandle<T> extends CallbackHandle1<T, SessionContext> {
+    public JsonObjectCallbackHandle(String key, Callback<T> fn) {
         super(key, fn);
     }
 
-    protected abstract TypeToken<T> getObjectType();
+    protected TypeToken<T> getObjectType(){
+        return new TypeToken<T>(){};
+    }
 
     @Override
     protected final T parse(SessionContext context) {

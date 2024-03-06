@@ -8,16 +8,10 @@ import java.util.function.Consumer;
 
 public abstract class ListCallbackHandle<E> extends JsonObjectCallbackHandle<E[]> {
 
-    private final Consumer<List<E>> fn;
+    private final Callback<List<E>> fn;
 
-    public ListCallbackHandle(String key, Consumer<List<E>> fn) {
+    public ListCallbackHandle(String key, Callback<List<E>> fn) {
         super(key, (es -> fn.accept(Arrays.asList(es))));
         this.fn = fn;
-    }
-
-    @Override
-    protected final TypeToken<E[]> getObjectType() {
-        return new TypeToken<E[]>() {
-        };
     }
 }

@@ -8,4 +8,6 @@ public interface ResponseHandlerDelegate<E, C, H> {
     void register(E event, H handle, boolean emitOnce);
 
     void remove(E event, H handle);
+
+    void removeAssocGroup(String groupId);
 }

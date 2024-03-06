@@ -5,6 +5,7 @@ import icu.takeneko.omms.client.request.Request;
 import icu.takeneko.omms.client.response.Response;
 import icu.takeneko.omms.client.session.SessionContext;
 import icu.takeneko.omms.client.util.Result;
+import jdk.vm.ci.code.site.Call;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -13,8 +14,8 @@ import static icu.takeneko.omms.client.util.Util.gson;
 
 public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, Announcement>, SessionContext> {
 
-    public AnnouncementListCallbackHandle(String key, Consumer<Map<String, Announcement>> fn) {
-        super(key, fn);
+    public AnnouncementListCallbackHandle(Callback<Map<String, Announcement>> fn) {
+        super("announcements", fn);
     }
 
     @Override

@@ -2,16 +2,22 @@ package icu.takeneko.omms.client.session.callback;
 
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 
-import java.util.function.Consumer;
+public abstract class CallbackHandle1<T, C> extends CallbackHandle<C> {
 
-public abstract class CallbackHandle1<T, C> implements CallbackHandle<C> {
-
-    private final Consumer<T> fn;
+    private final Callback<T> fn;
     protected final String key;
+    protected CallbackHandle<C> associatedHandle;
 
-    public CallbackHandle1(String key, Consumer<T> fn) {
+    public CallbackHandle1(String key, Callback<T> fn) {
         this.fn = fn;
         this.key = key;
+        associatedHandle = null;
+    }
+
+    public CallbackHandle1(Callback<T> fn, String key, CallbackHandle<C> associatedHandle) {
+        this.fn = fn;
+        this.key = key;
+        this.associatedHandle = associatedHandle;
     }
 
     @Override

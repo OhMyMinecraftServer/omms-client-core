@@ -15,8 +15,8 @@ import static icu.takeneko.omms.client.util.Util.gson;
 
 public class WhitelistListCallbackHandle extends CallbackHandle1<Map<String, List<String>>, SessionContext> {
 
-    public WhitelistListCallbackHandle(String key, Consumer<Map<String, List<String>>> fn) {
-        super(key, fn);
+    public WhitelistListCallbackHandle(Callback<Map<String, List<String>>> fn) {
+        super("whitelists", fn);
     }
 
     @Override

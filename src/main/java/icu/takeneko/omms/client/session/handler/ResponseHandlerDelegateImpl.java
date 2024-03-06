@@ -5,22 +5,36 @@ import icu.takeneko.omms.client.util.Result;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<Result, C, CallbackHandle<C>> {
 
-    Map<Result, Set<Callback<C>>> eventCallbackMap = new ConcurrentHashMap<>();
+    Map<Result, List<Callback<C>>> eventCallbackMap = new ConcurrentHashMap<>();
 
     @Override
     public void handle(Result event, C context) {
-        Set<Callback<C>> set = eventCallbackMap.get(event);
-        if (set == null) return;
-        List<Callback<C>> removed = set.stream().filter(it -> it.emitOnce).collect(Collectors.toList());
-        set.forEach(it -> it.invoke(context));
-        removed.forEach(set::remove);
+        List<Callback<C>> callbacks = eventCallbackMap.get(event);
+        if (callbacks == null) return;
+        List<Callback<C>> removed = callbacks.stream().filter(it -> it.emitOnce).collect(Collectors.toList());
+        boolean[] bl = new boolean[]{false};
+        RuntimeException re = new RuntimeException();
+        callbacks.forEach(it -> {
+            if (it == null)return;
+            try {
+                it.invoke(context);
+            } catch (Exception e) {
+                re.addSuppressed(e);
+                bl[0] = true;
+            }
+        });
+        removed.forEach(callbacks::remove);
+        removed.stream()
+                .filter(it -> it.handle.getAssociateGroupId() != null)
+                .map(it -> it.handle.getAssociateGroupId())
+                .forEach(this::removeAssocGroup);
+        if (bl[0]) throw re;
     }
 
     @Override
@@ -31,7 +45,7 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
     @Override
     public void register(Result event, CallbackHandle<C> handle, boolean emitOnce) {
         if (!eventCallbackMap.containsKey(event)) {
-            eventCallbackMap.put(event, new CopyOnWriteArraySet<>());
+            eventCallbackMap.put(event, new CopyOnWriteArrayList<>());
         } else {
             eventCallbackMap.get(event).add(new Callback<>(emitOnce, handle));
         }
@@ -40,9 +54,16 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
 
     @Override
     public void remove(Result event, CallbackHandle<C> handle) {
-        Set<Callback<C>> set = eventCallbackMap.get(event);
-        if (set == null) return;
-        set.removeIf(c -> c.handle == handle);
+        List<Callback<C>> callbacks = eventCallbackMap.get(event);
+        if (callbacks == null) return;
+        callbacks.removeIf(c -> c.handle == handle);
+    }
+
+    @Override
+    public void removeAssocGroup(String groupId) {
+        for (List<Callback<C>> callbacks : eventCallbackMap.values()) {
+            callbacks.removeIf(it -> it.handle.getAssociateGroupId() != null && it.handle.getAssociateGroupId().equals(groupId));
+        }
     }
 
     private static final class Callback<R> {
@@ -77,6 +98,7 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
         }
 
         public void invoke(R context) {
+            if (handle == null)return;
             handle.invoke(context);
         }
     }

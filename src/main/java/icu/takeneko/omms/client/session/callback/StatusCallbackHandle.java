@@ -6,13 +6,7 @@ import icu.takeneko.omms.client.controller.Status;
 import java.util.function.Consumer;
 
 public class StatusCallbackHandle extends JsonObjectCallbackHandle<Status> {
-    public StatusCallbackHandle(Consumer<Status> fn) {
+    public StatusCallbackHandle(Callback<Status> fn) {
         super("status", fn);
-    }
-
-    @Override
-    protected TypeToken<Status> getObjectType() {
-        return new TypeToken<Status>() {
-        };
     }
 }

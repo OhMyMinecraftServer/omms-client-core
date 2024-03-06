@@ -6,6 +6,7 @@ import icu.takeneko.omms.client.request.Request;
 import icu.takeneko.omms.client.response.Response;
 import icu.takeneko.omms.client.session.SessionContext;
 import icu.takeneko.omms.client.util.Result;
+import jdk.vm.ci.code.site.Call;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -14,14 +15,14 @@ import static icu.takeneko.omms.client.util.Util.gson;
 
 public class ControllerListCallbackHandle extends CallbackHandle1<Map<String, Controller>, SessionContext> {
 
-    public ControllerListCallbackHandle(String key, Consumer<Map<String, Controller>> fn) {
-        super(key, fn);
+    public ControllerListCallbackHandle(Callback<Map<String, Controller>> fn) {
+        super("names", fn);
     }
 
     @Override
     protected Map<String, Controller> parse(SessionContext context) {
 
-        String names = context.getContent("names");
+        String names = context.getContent(key);
         if (names == null) return null;
         String[] controllerNames = gson.fromJson(names, new TypeToken<String[]>() {
         }.getType());
