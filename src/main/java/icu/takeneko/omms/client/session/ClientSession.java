@@ -46,7 +46,7 @@ public class ClientSession extends Thread {
     private PermissionOperation lastPermissionOperation;
     private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
     private Callback<ClientSession> onPermissionDeniedCallback;
-    private Callback<Response> onServerInternalExeptionCallback;
+    private Callback<Response> onServerInternalExceptionCallback;
     private Callback<PermissionOperation> onInvalidOperationCallback;
     private Callback2<Thread, Throwable> onAnyExceptionCallback;
     private Callback<Response> onResponseRecievedCallback;
@@ -56,6 +56,7 @@ public class ClientSession extends Thread {
     boolean chatMessagePassthroughEnabled = true;
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
+
         super("ClientSessionThread");
         this.serverName = serverName;
         this.connector = connector;
@@ -108,10 +109,10 @@ public class ClientSession extends Thread {
         }
         switch (response.getResponseCode()) {
             case FAIL:
-                if (onServerInternalExeptionCallback == null)
+                if (onServerInternalExceptionCallback == null)
                     throw new ServerInternalErrorException("Got FAIL from server.");
                 else {
-                    onServerInternalExeptionCallback.accept(response);
+                    onServerInternalExceptionCallback.accept(response);
                 }
             case PERMISSION_DENIED:
                 if (onPermissionDeniedCallback == null)
@@ -426,8 +427,8 @@ public class ClientSession extends Thread {
         this.onPermissionDeniedCallback = onPermissionDeniedCallback;
     }
 
-    public void setOnServerInternalExeptionCallback(Callback<Response> onServerInternalExeptionCallback) {
-        this.onServerInternalExeptionCallback = onServerInternalExeptionCallback;
+    public void setOnServerInternalExceptionCallback(Callback<Response> onServerInternalExeptionCallback) {
+        this.onServerInternalExceptionCallback = onServerInternalExeptionCallback;
     }
 
     public void setOnInvalidOperationCallback(Callback<PermissionOperation> onInvalidOperationCallback) {
