@@ -1,5 +1,6 @@
 package icu.takeneko.omms.client.session.callback;
 
+import icu.takeneko.omms.client.session.handler.CallbackHandle;
 import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.session.SessionContext;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
 import static icu.takeneko.omms.client.util.Util.gson;
 
@@ -22,22 +24,27 @@ public class WhitelistListCallbackHandle extends CallbackHandle1<Map<String, Lis
     protected Map<String, List<String>> parse(SessionContext context) {
         String whitelists = context.getContent("whitelists");
         if (whitelists == null) return null;
-        String[] whitelistNames = gson.fromJson(whitelists, String[].class);
+        List<String> whitelistNames = Arrays.asList(gson.fromJson(whitelists, String[].class));
         context.getSession().getWhitelistMap().clear();
-        boolean hasError = false;
-        RuntimeException re = new RuntimeException();
-        try {
-            for (String whitelistName : whitelistNames) {
-                Response response = context.getSession().sendBlocking(new Request("WHITELIST_GET").withContentKeyPair("whitelist", whitelistName));
-                if (response.getResponseCode() == Result.WHITELIST_GOT) {
-                    context.getSession().getWhitelistMap().put(whitelistName, new ArrayList<>(Arrays.asList(gson.fromJson(response.getContent("players"), String[].class))));
-                }
-            }
-        } catch (Exception e) {
-            re.addSuppressed(e);
-            hasError = true;
+        List<String> a = new ArrayList<>(whitelistNames);
+        String id = Long.toString(System.nanoTime());
+        CallbackHandle<SessionContext> handle = new StringWithListCallbackHandle("whitelist", "players", (s, l) -> {
+            context.getSession().getWhitelistMap().put(s, l);
+            a.remove(s);
+        });
+        CallbackHandle<SessionContext> notExist = new StringCallbackHandle("whitelist", a::remove);
+        handle.setAssociateGroupId(id);
+        notExist.setAssociateGroupId(id);
+        context.getSession().getDelegate().register(Result.WHITELIST_GOT, handle, false);
+        context.getSession().getDelegate().register(Result.WHITELIST_NOT_EXIST, notExist, false);
+        for (String whitelistName : whitelistNames) {
+            Request request = new Request("WHITELIST_GET").withContentKeyPair("whitelist", whitelistName);
+            context.getSession().send(request);
         }
-        if (hasError) throw re;
+        while (!a.isEmpty()){
+            LockSupport.parkNanos(1);
+        }
+        context.getSession().getDelegate().removeAssocGroup(id);
         return context.getSession().getWhitelistMap();
     }
 }

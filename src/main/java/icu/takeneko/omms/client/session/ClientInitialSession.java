@@ -3,9 +3,10 @@ package icu.takeneko.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import icu.takeneko.omms.client.exception.VersionNotMatchException;
 import icu.takeneko.omms.client.session.request.InitRequest;
 import icu.takeneko.omms.client.session.response.Response;
-import icu.takeneko.omms.client.util.ConnectionFailException;
+import icu.takeneko.omms.client.exception.ConnectionFailException;
 import icu.takeneko.omms.client.util.EncryptedConnector;
 import icu.takeneko.omms.client.util.Result;
 import icu.takeneko.omms.client.util.Util;
@@ -56,12 +57,10 @@ public class ClientInitialSession {
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         String content = gson.toJson(new InitRequest(Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
-        System.out.println(content);
         connector.send(content);
 
         String line = connector.readLine();
         Response response = Response.deserialize(line);
-        System.out.println(response);
         if (response.getResponseCode() == Result.OK) {
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
@@ -75,6 +74,13 @@ public class ClientInitialSession {
             clientSession.start();
             return clientSession;
         } else {
+            if (response.getResponseCode() == Result.VERSION_NOT_MATCH){
+                String serverVersion = response.getContent("version");
+                if (serverVersion == null){
+                    throw new VersionNotMatchException();
+                }
+                throw new VersionNotMatchException(Long.parseLong(serverVersion));
+            }
             throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));
         }
 

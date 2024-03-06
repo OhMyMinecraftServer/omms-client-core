@@ -21,7 +21,7 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
         boolean[] bl = new boolean[]{false};
         RuntimeException re = new RuntimeException();
         callbacks.forEach(it -> {
-            if (it == null)return;
+            if (it == null) return;
             try {
                 it.invoke(context);
             } catch (Exception e) {
@@ -46,9 +46,8 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
     public void register(Result event, CallbackHandle<C> handle, boolean emitOnce) {
         if (!eventCallbackMap.containsKey(event)) {
             eventCallbackMap.put(event, new CopyOnWriteArrayList<>());
-        } else {
-            eventCallbackMap.get(event).add(new Callback<>(emitOnce, handle));
         }
+        eventCallbackMap.get(event).add(new Callback<>(emitOnce, handle));
     }
 
 
@@ -98,7 +97,7 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
         }
 
         public void invoke(R context) {
-            if (handle == null)return;
+            if (handle == null) return;
             handle.invoke(context);
         }
     }

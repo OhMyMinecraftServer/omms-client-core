@@ -14,6 +14,9 @@ public class Controller {
     public String getName() {
         return name;
     }
+    public String getId() {
+        return name;
+    }
 
     public String getType() {
         return type;
@@ -25,5 +28,15 @@ public class Controller {
 
     public String getDisplayName() {
         return displayName == null ? name : displayName;
+    }
+
+    @Override
+    public String toString() {
+        return "Controller{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", statusQueryable=" + statusQueryable +
+                '}';
     }
 }

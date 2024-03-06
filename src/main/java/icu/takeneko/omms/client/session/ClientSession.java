@@ -2,6 +2,7 @@ package icu.takeneko.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import icu.takeneko.omms.client.data.announcement.Announcement;
 import icu.takeneko.omms.client.data.broadcast.Broadcast;
 import icu.takeneko.omms.client.data.broadcast.MessageCache;
@@ -16,16 +17,13 @@ import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
 import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
-import icu.takeneko.omms.client.util.PermissionDeniedException;
+import icu.takeneko.omms.client.exception.PermissionDeniedException;
 import icu.takeneko.omms.client.util.Result;
-import icu.takeneko.omms.client.util.ServerInternalErrorException;
+import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,7 +35,7 @@ public class ClientSession extends Thread {
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, Announcement> announcementMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
     private final String serverName;
     EncryptedConnector connector;
@@ -48,7 +46,10 @@ public class ClientSession extends Thread {
     private Callback<ClientSession> onPermissionDeniedCallback;
     private Callback<Response> onServerInternalExceptionCallback;
     private Callback<PermissionOperation> onInvalidOperationCallback;
-    private Callback2<Thread, Throwable> onAnyExceptionCallback;
+    private Callback2<Thread, Throwable> onAnyExceptionCallback = (t, e) -> {
+        System.out.printf("Exception in thread %s%n", t);
+        e.printStackTrace();
+    };
     private Callback<Response> onResponseRecievedCallback;
     private Callback<String> onDisconnectedCallback;
     private Callback<Broadcast> onNewBroadcastReceivedCallback;
@@ -56,17 +57,22 @@ public class ClientSession extends Thread {
     boolean chatMessagePassthroughEnabled = true;
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
-
         super("ClientSessionThread");
         this.serverName = serverName;
         this.connector = connector;
         this.socket = socket;
         delegate = new ResponseHandlerDelegateImpl<>();
         delegate.register(Result.BROADCAST_MESSAGE, new JsonObjectCallbackHandle<Broadcast>("broadcast", (broadcast) -> {
-            if (onNewBroadcastReceivedCallback != null){
+            if (onNewBroadcastReceivedCallback != null) {
                 onNewBroadcastReceivedCallback.accept(broadcast);
             }
-        }), false);
+        }) {
+            @Override
+            protected TypeToken<Broadcast> getObjectType() {
+                return TypeToken.get(Broadcast.class);
+            }
+        }, false);
+
     }
 
     public boolean isActive() {
@@ -114,6 +120,7 @@ public class ClientSession extends Thread {
                 else {
                     onServerInternalExceptionCallback.accept(response);
                 }
+                break;
             case PERMISSION_DENIED:
                 if (onPermissionDeniedCallback == null)
                     throw new PermissionDeniedException("Permission Denied.");
@@ -128,8 +135,9 @@ public class ClientSession extends Thread {
                 break;
             case DISCONNECT:
                 throw new DisconnectedException();
+            default:
+                delegate.handle(response.getResponseCode(), new SessionContext(response, this));
         }
-        delegate.handle(response.getResponseCode(), new SessionContext(response, this));
     }
 
     private void syncStatus() {
@@ -137,7 +145,7 @@ public class ClientSession extends Thread {
     }
 
     public void send(Request request) {
-        executorService.submit(() -> {
+        networkExecutor.submit(() -> {
             String content = gson.toJson(request);
             try {
                 connector.println(content);
@@ -147,23 +155,34 @@ public class ClientSession extends Thread {
         });
     }
 
-    public Response sendBlocking(Request request) throws Exception {
+    public Response sendBlocking(Request request, Result... expectedValue) throws Exception {
         String content = gson.toJson(request);
         connector.println(content);
         String s = connector.readLine();
         Response response = gson.fromJson(s, Response.class);
-        if (onResponseRecievedCallback != null) {
-            onResponseRecievedCallback.accept(response);
+        while (true) {// tiny loop
+            if (onResponseRecievedCallback != null) {
+                onResponseRecievedCallback.accept(response);
+            }
+            if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
+                this.socket.close();
+                throw new RateExceedException("Connection closed because request rate exceeded.");
+            } else {
+                Response finalResponse = response;
+                if (Arrays.stream(expectedValue).anyMatch(result -> result == finalResponse.getResponseCode())) {
+                    break;
+                } else {
+                    handleResponse(response);
+                }
+            }
+            s = connector.readLine();
+            response = gson.fromJson(s, Response.class);
         }
-        if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
-            this.socket.close();
-            throw new RateExceedException("Connection closed because request rate exceeded.");
-        } else {
-            return response;
-        }
+        return response;
     }
 
     public void close(Callback<String> onDisconnectedCallback) {
+        networkExecutor.shutdownNow();
         setOnDisconnectedCallback(onDisconnectedCallback);
         send(new Request("END"));
     }
@@ -391,12 +410,16 @@ public class ClientSession extends Thread {
         send(request);
     }
 
-    public void getChatHistory(Callback<MessageCache> onMessageCacheReceivedCallback){
-        JsonObjectCallbackHandle<MessageCache> cb = new JsonObjectCallbackHandle<>("content", onMessageCacheReceivedCallback);
+    public void getChatHistory(Callback<MessageCache> onMessageCacheReceivedCallback) {
+        JsonObjectCallbackHandle<MessageCache> cb = new JsonObjectCallbackHandle<MessageCache>("content", onMessageCacheReceivedCallback) {
+            @Override
+            protected TypeToken<MessageCache> getObjectType() {
+                return TypeToken.get(MessageCache.class);
+            }
+        };
         delegate.registerOnce(Result.GOT_CHAT_HISTORY, cb);
         send(new Request("GET_CHAT_HISTORY"));
     }
-
 
 
     public HashMap<String, List<String>> getWhitelistMap() {
@@ -449,5 +472,9 @@ public class ClientSession extends Thread {
 
     public EncryptedConnector getConnector() {
         return connector;
+    }
+
+    public ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> getDelegate() {
+        return delegate;
     }
 }

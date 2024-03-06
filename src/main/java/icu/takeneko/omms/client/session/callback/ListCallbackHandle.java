@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class ListCallbackHandle<E> extends JsonObjectCallbackHandle<E[]> {
+public class ListCallbackHandle<E> extends JsonObjectCallbackHandle<E[]> {
 
     private final Callback<List<E>> fn;
 
