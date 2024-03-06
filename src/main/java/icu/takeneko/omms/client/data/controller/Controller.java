@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.controller;
+package icu.takeneko.omms.client.data.controller;
 
 
 public class Controller {

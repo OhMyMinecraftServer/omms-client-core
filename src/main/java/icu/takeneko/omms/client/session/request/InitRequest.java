@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.request;
+package icu.takeneko.omms.client.session.request;
 
 public class InitRequest extends Request {
     long version = VERSION_BASE + 0xffffL;

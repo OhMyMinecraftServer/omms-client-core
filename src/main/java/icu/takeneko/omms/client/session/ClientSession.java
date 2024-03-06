@@ -2,17 +2,19 @@ package icu.takeneko.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import icu.takeneko.omms.client.announcement.Announcement;
-import icu.takeneko.omms.client.controller.Controller;
-import icu.takeneko.omms.client.controller.Status;
-import icu.takeneko.omms.client.permission.PermissionOperation;
-import icu.takeneko.omms.client.request.Request;
-import icu.takeneko.omms.client.response.Response;
+import icu.takeneko.omms.client.data.announcement.Announcement;
+import icu.takeneko.omms.client.data.broadcast.Broadcast;
+import icu.takeneko.omms.client.data.broadcast.MessageCache;
+import icu.takeneko.omms.client.data.controller.Controller;
+import icu.takeneko.omms.client.data.controller.Status;
+import icu.takeneko.omms.client.data.permission.PermissionOperation;
+import icu.takeneko.omms.client.data.system.SystemInfo;
 import icu.takeneko.omms.client.session.callback.*;
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegate;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
-import icu.takeneko.omms.client.system.SystemInfo;
+import icu.takeneko.omms.client.session.request.Request;
+import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
 import icu.takeneko.omms.client.util.PermissionDeniedException;
 import icu.takeneko.omms.client.util.Result;
@@ -28,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+@SuppressWarnings("unused")
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
@@ -38,6 +41,7 @@ public class ClientSession extends Thread {
     private final Socket socket;
     private final String serverName;
     EncryptedConnector connector;
+    @SuppressWarnings("FieldMayBeFinal")
     private SystemInfo systemInfo = null;
     private PermissionOperation lastPermissionOperation;
     private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
@@ -47,7 +51,9 @@ public class ClientSession extends Thread {
     private Callback2<Thread, Throwable> onAnyExceptionCallback;
     private Callback<Response> onResponseRecievedCallback;
     private Callback<String> onDisconnectedCallback;
+    private Callback<Broadcast> onNewBroadcastReceivedCallback;
 
+    boolean chatMessagePassthroughEnabled = true;
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
         super("ClientSessionThread");
@@ -55,6 +61,11 @@ public class ClientSession extends Thread {
         this.connector = connector;
         this.socket = socket;
         delegate = new ResponseHandlerDelegateImpl<>();
+        delegate.register(Result.BROADCAST_MESSAGE, new JsonObjectCallbackHandle<Broadcast>("broadcast", (broadcast) -> {
+            if (onNewBroadcastReceivedCallback != null){
+                onNewBroadcastReceivedCallback.accept(broadcast);
+            }
+        }), false);
     }
 
     public boolean isActive() {
@@ -118,6 +129,10 @@ public class ClientSession extends Thread {
                 throw new DisconnectedException();
         }
         delegate.handle(response.getResponseCode(), new SessionContext(response, this));
+    }
+
+    private void syncStatus() {
+
     }
 
     public void send(Request request) {
@@ -356,6 +371,32 @@ public class ClientSession extends Thread {
         send(request);
     }
 
+    public void setChatMessagePassthroughState(boolean state, Callback<Boolean> onStateChangedCallback) {
+        Request request = new Request()
+                .setRequest("SET_CHAT_PASSTHROUGH_STATE")
+                .withContentKeyPair("state", Boolean.toString(state));
+        BooleanCallbackHandle cb = new BooleanCallbackHandle("state", onStateChangedCallback);
+        delegate.registerOnce(Result.CHAT_PASSTHROUGH_STATE_CHANGED, cb);
+        send(request);
+    }
+
+    public void sendBroadcastMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
+        Request request = new Request()
+                .setRequest("SEND_BROADCAST")
+                .withContentKeyPair("channel", channel)
+                .withContentKeyPair("message", message);
+        BiStringCallbackHandle cb = new BiStringCallbackHandle("channel", "message", onMessageSentCallback);
+        delegate.registerOnce(Result.BROADCAST_SENT, cb);
+        send(request);
+    }
+
+    public void getChatHistory(Callback<MessageCache> onMessageCacheReceivedCallback){
+        JsonObjectCallbackHandle<MessageCache> cb = new JsonObjectCallbackHandle<>("content", onMessageCacheReceivedCallback);
+        delegate.registerOnce(Result.GOT_CHAT_HISTORY, cb);
+        send(new Request("GET_CHAT_HISTORY"));
+    }
+
+
 
     public HashMap<String, List<String>> getWhitelistMap() {
         return whitelistMap;
@@ -376,7 +417,6 @@ public class ClientSession extends Thread {
     public Controller getControllerByName(String name) {
         return controllerMap.get(name);
     }
-
 
     public String getServerName() {
         return serverName;
@@ -400,5 +440,13 @@ public class ClientSession extends Thread {
 
     public void setOnDisconnectedCallback(Callback<String> onDisconnectedCallback) {
         this.onDisconnectedCallback = onDisconnectedCallback;
+    }
+
+    public void setOnNewBroadcastReceivedCallback(Callback<Broadcast> onNewBroadcastReceivedCallback) {
+        this.onNewBroadcastReceivedCallback = onNewBroadcastReceivedCallback;
+    }
+
+    public EncryptedConnector getConnector() {
+        return connector;
     }
 }

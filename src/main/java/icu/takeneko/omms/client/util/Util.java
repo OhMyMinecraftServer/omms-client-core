@@ -2,7 +2,7 @@ package icu.takeneko.omms.client.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import icu.takeneko.omms.client.request.InitRequest;
+import icu.takeneko.omms.client.session.request.InitRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

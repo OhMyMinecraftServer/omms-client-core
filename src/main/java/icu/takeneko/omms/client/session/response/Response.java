@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.response;
+package icu.takeneko.omms.client.session.response;
 
 import com.google.gson.GsonBuilder;
 import icu.takeneko.omms.client.util.Pair;

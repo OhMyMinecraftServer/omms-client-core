@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.session;
 
-import icu.takeneko.omms.client.response.Response;
+import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.Result;
 
 public class SessionContext {

@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.announcement;
+package icu.takeneko.omms.client.data.announcement;
 
 import com.google.gson.GsonBuilder;
 import icu.takeneko.omms.client.util.Util;

@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.request;
+package icu.takeneko.omms.client.session.request;
 
 import com.google.gson.annotations.SerializedName;
 

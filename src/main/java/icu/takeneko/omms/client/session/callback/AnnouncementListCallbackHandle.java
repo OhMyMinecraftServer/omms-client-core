@@ -1,14 +1,12 @@
 package icu.takeneko.omms.client.session.callback;
 
-import icu.takeneko.omms.client.announcement.Announcement;
-import icu.takeneko.omms.client.request.Request;
-import icu.takeneko.omms.client.response.Response;
+import icu.takeneko.omms.client.data.announcement.Announcement;
+import icu.takeneko.omms.client.session.request.Request;
+import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.session.SessionContext;
 import icu.takeneko.omms.client.util.Result;
-import jdk.vm.ci.code.site.Call;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static icu.takeneko.omms.client.util.Util.gson;
 

@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.system;
+package icu.takeneko.omms.client.data.system;
 
 public class SystemInfo {
 

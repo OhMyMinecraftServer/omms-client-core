@@ -3,8 +3,8 @@ package icu.takeneko.omms.client.session;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import icu.takeneko.omms.client.request.InitRequest;
-import icu.takeneko.omms.client.response.Response;
+import icu.takeneko.omms.client.session.request.InitRequest;
+import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.ConnectionFailException;
 import icu.takeneko.omms.client.util.EncryptedConnector;
 import icu.takeneko.omms.client.util.Result;

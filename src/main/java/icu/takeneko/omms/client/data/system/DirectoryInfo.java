@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.system;
+package icu.takeneko.omms.client.data.system;
 
 import icu.takeneko.omms.client.util.Result;
 

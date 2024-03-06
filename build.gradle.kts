@@ -16,10 +16,12 @@ repositories {
 
 dependencies {
     compileOnly("com.google.code.gson:gson:2.9.0")
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 group = "icu.takeneko"
-version = "0.16.4"
+version = "0.16.5"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
