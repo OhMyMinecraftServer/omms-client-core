@@ -22,7 +22,7 @@ dependencies {
 }
 
 group = "icu.takeneko"
-version = "0.16.5"
+version = "0.16.6"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

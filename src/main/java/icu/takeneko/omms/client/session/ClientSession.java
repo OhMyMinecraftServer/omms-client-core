@@ -207,7 +207,10 @@ public class ClientSession extends Thread {
     }
 
     public void fetchSystemInfoFromServer(Callback<SystemInfo> fn) {
-        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle(fn));
+        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle((si) ->{
+            this.systemInfo = si;
+            fn.accept(si);
+        }));
         send(new Request("SYSTEM_GET_INFO"));
     }
 
