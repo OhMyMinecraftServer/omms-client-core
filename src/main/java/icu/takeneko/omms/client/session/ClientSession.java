@@ -319,6 +319,8 @@ public class ClientSession extends Thread {
         if (controllerConsoleAssocMap.containsKey(consoleId)) {
             controllerConsoleAssocMap.get(consoleId).setAssociateGroupId(groupId);
         }
+        delegate.registerOnce(Result.CONSOLE_STOPPED, conStopped);
+        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
         send(new Request().setRequest("CONTROLLER_END_CONSOLE").withContentKeyPair("consoleId", consoleId));
     }
 
@@ -340,7 +342,7 @@ public class ClientSession extends Thread {
         conInput.setAssociateGroupId(groupId);
         conNotFound.setAssociateGroupId(groupId);
         delegate.registerOnce(Result.CONTROLLER_CONSOLE_INPUT_SENT, conInput);
-        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conInput);
+        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
         send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
                 .withContentKeyPair("consoleId", consoleId)
                 .withContentKeyPair("command", line)
@@ -357,7 +359,7 @@ public class ClientSession extends Thread {
         CallbackHandle<SessionContext> playerExists = new BiStringCallbackHandle("whitelist", "player", onPlayerAlreadyExistsCallback);
         playerExists.setAssociateGroupId(groupId);
         added.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.WHITELIST_ADDED, playerExists);
+        delegate.registerOnce(Result.WHITELIST_ADDED, added);
         delegate.registerOnce(Result.PLAYER_ALREADY_EXISTS, playerExists);
         this.send(new Request("WHITELIST_ADD")
                 .withContentKeyPair("whitelist", whitelistName)
