@@ -2,12 +2,16 @@ package icu.takeneko.omms.client.session.callback;
 
 import com.google.gson.reflect.TypeToken;
 import icu.takeneko.omms.client.data.controller.Controller;
-import icu.takeneko.omms.client.session.request.Request;
-import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.session.SessionContext;
+import icu.takeneko.omms.client.session.handler.CallbackHandle;
+import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.util.Result;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
 import static icu.takeneko.omms.client.util.Util.gson;
 
@@ -19,28 +23,34 @@ public class ControllerListCallbackHandle extends CallbackHandle1<Map<String, Co
 
     @Override
     protected Map<String, Controller> parse(SessionContext context) {
-
-        String names = context.getContent(key);
-        if (names == null) return null;
-        String[] controllerNames = gson.fromJson(names, new TypeToken<String[]>() {
-        }.getType());
-        boolean hasError = false;
-        RuntimeException re = new RuntimeException();
-        for (String controllerName : controllerNames) {
-            try {
-                Response response1 = context.getSession().sendBlocking(new Request("CONTROLLER_GET").withContentKeyPair("controller", controllerName));
-                context.getSession().getControllerMap().clear();
-                if (response1.getResponseCode() == Result.CONTROLLER_GOT) {
-                    String jsonString = response1.getContent("controller");
-                    Controller controller = gson.fromJson(jsonString, Controller.class);
-                    context.getSession().getControllerMap().put(controllerName, controller);
-                }
-            } catch (Throwable e) {
-                re.addSuppressed(e);
-                hasError = true;
+        String controllerListString = context.getContent(key);
+        if (controllerListString == null) return null;
+        List<String> controllerNames = Arrays.asList(gson.fromJson(controllerListString, String[].class));
+        context.getSession().getControllerMap().clear();
+        List<String> a = new ArrayList<>(controllerNames);
+        String id = Long.toString(System.nanoTime());
+        CallbackHandle<SessionContext> handle = new JsonObjectCallbackHandle<Controller>("controller", s -> {
+            context.getSession().getControllerMap().put(s.getId(), s);
+            a.remove(s.getId());
+        }) {
+            @Override
+            protected TypeToken<Controller> getObjectType() {
+                return TypeToken.get(Controller.class);
             }
+        };
+        CallbackHandle<SessionContext> notExist = new StringCallbackHandle("controllerId", a::remove);
+        handle.setAssociateGroupId(id);
+        notExist.setAssociateGroupId(id);
+        context.getSession().getDelegate().register(Result.CONTROLLER_GOT, handle, false);
+        context.getSession().getDelegate().register(Result.CONTROLLER_NOT_EXIST, notExist, false);
+        for (String name : controllerNames) {
+            Request request = new Request("CONTROLLER_GET").withContentKeyPair("controller", name);
+            context.getSession().send(request);
         }
-        if (hasError) throw re;
+        while (!a.isEmpty()){
+            LockSupport.parkNanos(1);
+        }
+        context.getSession().getDelegate().removeAssocGroup(id);
         return context.getSession().getControllerMap();
     }
 }

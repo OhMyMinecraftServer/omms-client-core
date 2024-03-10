@@ -1,5 +1,7 @@
 package icu.takeneko.omms.client.session.handler;
 
+import icu.takeneko.omms.client.session.callback.Callback;
+
 public interface ResponseHandlerDelegate<E, C, H> {
     void handle(E event, C context);
 
@@ -10,4 +12,6 @@ public interface ResponseHandlerDelegate<E, C, H> {
     void remove(E event, H handle);
 
     void removeAssocGroup(String groupId);
+
+    void setOnExceptionThrownHandler(Callback<Throwable> cb);
 }

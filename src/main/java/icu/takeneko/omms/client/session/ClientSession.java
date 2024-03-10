@@ -10,6 +10,8 @@ import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
 import icu.takeneko.omms.client.data.permission.PermissionOperation;
 import icu.takeneko.omms.client.data.system.SystemInfo;
+import icu.takeneko.omms.client.exception.PermissionDeniedException;
+import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 import icu.takeneko.omms.client.session.callback.*;
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegate;
@@ -17,9 +19,7 @@ import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
 import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
-import icu.takeneko.omms.client.exception.PermissionDeniedException;
 import icu.takeneko.omms.client.util.Result;
-import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 
 import java.net.Socket;
 import java.net.SocketException;
@@ -72,7 +72,12 @@ public class ClientSession extends Thread {
                 return TypeToken.get(Broadcast.class);
             }
         }, false);
-
+        delegate.setOnExceptionThrownHandler(e -> {
+            if (onAnyExceptionCallback != null) {
+                onAnyExceptionCallback.accept(Thread.currentThread(), e);
+            }
+            else throw new RuntimeException(e);
+        });
     }
 
     public boolean isActive() {
@@ -182,9 +187,9 @@ public class ClientSession extends Thread {
     }
 
     public void close(Callback<String> onDisconnectedCallback) {
-        networkExecutor.shutdownNow();
         setOnDisconnectedCallback(onDisconnectedCallback);
         send(new Request("END"));
+        networkExecutor.shutdownNow();
     }
 
     public void fetchWhitelistFromServer(Callback<Map<String, List<String>>> callback) {
