@@ -22,7 +22,7 @@ dependencies {
 }
 
 group = "icu.takeneko"
-version = "0.16.5"
+version = "1.0.1"
 description = "omms-client-core"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -30,16 +30,36 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 publishing {
     repositories {
         mavenLocal()
+        maven {
+            name = "NekoMavenRelease"
+            url = uri("https://maven.takeneko.icu/releases")
+            credentials {
+                username = project.findProperty("nekomaven.user") as String? ?: System.getenv("NEKO_USERNAME")
+                password = project.findProperty("nekomaven.password") as String? ?: System.getenv("NEKO_TOKEN")
+            }
+        }
     }
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
         }
     }
 }
-tasks{
-    test{
-        useJUnitPlatform()
-//        jvmArgs("--enable-preview")
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+
+    maxHeapSize = "1G"
+
+    testLogging {
+        events("passed")
     }
 }

@@ -22,23 +22,8 @@ public class EncryptedConnector {
     public EncryptedConnector(BufferedReader in, PrintWriter out, String key) {
         this.in = in;
         this.out = out;
-        //补全长度
-        if (key.length() <= 16) {
-            StringBuilder keyBuilder = new StringBuilder(key);
-            while (keyBuilder.length() < 16)
-                keyBuilder.append("0");
-            key = keyBuilder.toString();
-        } else {
-            if (key.length() <= 32) {
-                StringBuilder keyBuilder = new StringBuilder(key);
-                while (keyBuilder.length() < 32)
-                    keyBuilder.append("0");
-                key = keyBuilder.toString();
-            } else {
-                throw new RuntimeException();
-            }
-        }
         this.key = key.getBytes(StandardCharsets.UTF_8);
+        System.out.println("key = " + key);
     }
 
     public void println(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
