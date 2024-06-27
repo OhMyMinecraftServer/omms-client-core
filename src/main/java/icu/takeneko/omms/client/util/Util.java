@@ -14,7 +14,7 @@ public class Util {
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x07;
+    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x10;
 
     public static String randomStringGen(int len) {
         String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
