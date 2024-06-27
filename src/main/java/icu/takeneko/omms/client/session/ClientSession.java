@@ -10,6 +10,8 @@ import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
 import icu.takeneko.omms.client.data.permission.PermissionOperation;
 import icu.takeneko.omms.client.data.system.SystemInfo;
+import icu.takeneko.omms.client.exception.PermissionDeniedException;
+import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 import icu.takeneko.omms.client.session.callback.*;
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegate;
@@ -17,9 +19,7 @@ import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
 import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
-import icu.takeneko.omms.client.exception.PermissionDeniedException;
 import icu.takeneko.omms.client.util.Result;
-import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 
 import java.net.Socket;
 import java.net.SocketException;
@@ -72,7 +72,12 @@ public class ClientSession extends Thread {
                 return TypeToken.get(Broadcast.class);
             }
         }, false);
-
+        delegate.setOnExceptionThrownHandler(e -> {
+            if (onAnyExceptionCallback != null) {
+                onAnyExceptionCallback.accept(Thread.currentThread(), e);
+            }
+            else throw new RuntimeException(e);
+        });
     }
 
     public boolean isActive() {
@@ -182,9 +187,9 @@ public class ClientSession extends Thread {
     }
 
     public void close(Callback<String> onDisconnectedCallback) {
-        networkExecutor.shutdownNow();
         setOnDisconnectedCallback(onDisconnectedCallback);
         send(new Request("END"));
+        networkExecutor.shutdownNow();
     }
 
     public void fetchWhitelistFromServer(Callback<Map<String, List<String>>> callback) {
@@ -202,7 +207,10 @@ public class ClientSession extends Thread {
     }
 
     public void fetchSystemInfoFromServer(Callback<SystemInfo> fn) {
-        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle(fn));
+        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle((si) ->{
+            this.systemInfo = si;
+            fn.accept(si);
+        }));
         send(new Request("SYSTEM_GET_INFO"));
     }
 
@@ -314,6 +322,8 @@ public class ClientSession extends Thread {
         if (controllerConsoleAssocMap.containsKey(consoleId)) {
             controllerConsoleAssocMap.get(consoleId).setAssociateGroupId(groupId);
         }
+        delegate.registerOnce(Result.CONSOLE_STOPPED, conStopped);
+        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
         send(new Request().setRequest("CONTROLLER_END_CONSOLE").withContentKeyPair("consoleId", consoleId));
     }
 
@@ -335,7 +345,7 @@ public class ClientSession extends Thread {
         conInput.setAssociateGroupId(groupId);
         conNotFound.setAssociateGroupId(groupId);
         delegate.registerOnce(Result.CONTROLLER_CONSOLE_INPUT_SENT, conInput);
-        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conInput);
+        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
         send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
                 .withContentKeyPair("consoleId", consoleId)
                 .withContentKeyPair("command", line)
@@ -352,7 +362,7 @@ public class ClientSession extends Thread {
         CallbackHandle<SessionContext> playerExists = new BiStringCallbackHandle("whitelist", "player", onPlayerAlreadyExistsCallback);
         playerExists.setAssociateGroupId(groupId);
         added.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.WHITELIST_ADDED, playerExists);
+        delegate.registerOnce(Result.WHITELIST_ADDED, added);
         delegate.registerOnce(Result.PLAYER_ALREADY_EXISTS, playerExists);
         this.send(new Request("WHITELIST_ADD")
                 .withContentKeyPair("whitelist", whitelistName)

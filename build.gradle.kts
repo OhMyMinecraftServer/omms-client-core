@@ -53,13 +53,9 @@ publishing {
         }
     }
 }
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-
-    maxHeapSize = "1G"
-
-    testLogging {
-        events("passed")
+tasks{
+    test{
+        useJUnitPlatform()
+//        jvmArgs("--enable-preview")
     }
 }
