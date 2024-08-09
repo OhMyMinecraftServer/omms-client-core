@@ -1,7 +1,7 @@
 package icu.takeneko.omms.client.session.request;
 
 public class InitRequest extends Request {
-    long version = VERSION_BASE + 0xffffL;
+    long version;
     public static final long VERSION_BASE = 0xc000_0000L;
 
     public InitRequest(long version) {

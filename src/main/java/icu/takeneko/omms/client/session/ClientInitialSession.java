@@ -6,7 +6,7 @@ import icu.takeneko.omms.client.Constants;
 import icu.takeneko.omms.client.exception.VersionNotMatchException;
 import icu.takeneko.omms.client.session.request.InitRequest;
 import icu.takeneko.omms.client.session.response.Response;
-import icu.takeneko.omms.client.exception.ConnectionFailException;
+import icu.takeneko.omms.client.exception.ConnectionFailedException;
 import icu.takeneko.omms.client.util.EncryptedConnector;
 import icu.takeneko.omms.client.util.Result;
 import icu.takeneko.omms.client.util.Util;
@@ -33,7 +33,7 @@ public class ClientInitialSession {
         this.inetAddress = inetAddress;
     }
 
-    public ClientSession init(String token) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailException, InterruptedException {
+    public ClientSession init(String token) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailedException, InterruptedException {
         Socket socket = new Socket(this.inetAddress, this.port);
         socket.setKeepAlive(true);
 
@@ -73,7 +73,7 @@ public class ClientInitialSession {
                 }
                 throw new VersionNotMatchException(Long.parseLong(serverVersion));
             }
-            throw new ConnectionFailException(response);
+            throw new ConnectionFailedException(response);
         }
 
     }

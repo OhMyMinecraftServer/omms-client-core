@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.data.broadcast;
+package icu.takeneko.omms.client.data.chatbridge;
 
 public class Message {
     String channel;

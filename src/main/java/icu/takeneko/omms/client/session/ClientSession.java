@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import icu.takeneko.omms.client.data.announcement.Announcement;
-import icu.takeneko.omms.client.data.broadcast.Broadcast;
-import icu.takeneko.omms.client.data.broadcast.MessageCache;
+import icu.takeneko.omms.client.data.chatbridge.Broadcast;
+import icu.takeneko.omms.client.data.chatbridge.ChatbridgeImplementation;
+import icu.takeneko.omms.client.data.chatbridge.MessageCache;
 import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
 import icu.takeneko.omms.client.data.permission.PermissionOperation;
@@ -75,8 +76,7 @@ public class ClientSession extends Thread {
         delegate.setOnExceptionThrownHandler(e -> {
             if (onAnyExceptionCallback != null) {
                 onAnyExceptionCallback.accept(Thread.currentThread(), e);
-            }
-            else throw new RuntimeException(e);
+            } else throw new RuntimeException(e);
         });
     }
 
@@ -198,7 +198,6 @@ public class ClientSession extends Thread {
         String groupId = Long.toString(System.nanoTime());
         cb.setAssociateGroupId(groupId);
         delegate.registerOnce(Result.WHITELIST_LISTED, cb);
-        delegate.registerOnce(Result.NO_WHITELIST, cb);
         send(new Request("WHITELIST_LIST"));
     }
 
@@ -208,7 +207,7 @@ public class ClientSession extends Thread {
     }
 
     public void fetchSystemInfoFromServer(Callback<SystemInfo> fn) {
-        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle((si) ->{
+        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle((si) -> {
             this.systemInfo = si;
             fn.accept(si);
         }));
@@ -257,18 +256,6 @@ public class ClientSession extends Thread {
         );
     }
 
-    public Result queryWhitelist(String whitelistName, String playerName) {
-        if (whitelistMap.isEmpty()) {
-            return Result.NO_WHITELIST;
-        }
-        if (!whitelistMap.containsKey(whitelistName)) {
-            return Result.WHITELIST_NOT_EXIST;
-        }
-        if (whitelistMap.get(whitelistName).contains(playerName)) {
-            return Result.OK;
-        }
-        return Result.NO_SUCH_PLAYER;
-    }
 
     public ArrayList<String> queryInAllWhitelist(String playerName) {
         ArrayList<String> whitelists = new ArrayList<>();
@@ -411,7 +398,7 @@ public class ClientSession extends Thread {
         send(request);
     }
 
-    public void sendBroadcastMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
+    public void sendChatbridgeMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
         Request request = new Request()
                 .setRequest("SEND_BROADCAST")
                 .withContentKeyPair("channel", channel)
@@ -432,6 +419,15 @@ public class ClientSession extends Thread {
         send(new Request("GET_CHAT_HISTORY"));
     }
 
+    public void getChatbridgeImplementation(Callback<ChatbridgeImplementation> onResultReceivedCallback) {
+        EnumCallbackHandle<ChatbridgeImplementation> handle = new EnumCallbackHandle<>(
+                "implementation",
+                ChatbridgeImplementation::valueOf,
+                onResultReceivedCallback
+        );
+        delegate.registerOnce(Result.GOT_CHATBRIDGE_IMPL, handle);
+        send(new Request("GET_CHATBRIDGE_IMPL"));
+    }
 
     public HashMap<String, List<String>> getWhitelistMap() {
         return whitelistMap;
