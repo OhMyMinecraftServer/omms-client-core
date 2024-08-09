@@ -4,9 +4,9 @@ import java.util.List;
 
 public class MessageCache {
     int maxCapacity;
-    List<Message> messages;
+    List<Broadcast> messages;
 
-    public MessageCache(int maxCapacity, List<Message> messages) {
+    public MessageCache(int maxCapacity, List<Broadcast> messages) {
         this.maxCapacity = maxCapacity;
         this.messages = messages;
     }
@@ -15,7 +15,7 @@ public class MessageCache {
         return maxCapacity;
     }
 
-    public List<Message> getMessages() {
+    public List<Broadcast> getMessages() {
         return messages;
     }
 }

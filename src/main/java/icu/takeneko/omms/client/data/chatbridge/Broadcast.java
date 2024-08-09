@@ -1,11 +1,11 @@
 package icu.takeneko.omms.client.data.chatbridge;
 
 public class Broadcast {
-    public String channel;
-    public String server;
-    public String player;
-    public String content;
-    public String id;
+    private String channel;
+    private String server;
+    private String player;
+    private String content;
+    private String id;
 
     public Broadcast(String channel, String server, String player, String content) {
         this.channel = channel;
@@ -29,32 +29,16 @@ public class Broadcast {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getChannel() {
         return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
     }
 
     public String getServer() {
         return server;
     }
 
-    public void setServer(String server) {
-        this.server = server;
-    }
-
     public String getPlayer() {
         return player;
-    }
-
-    public void setPlayer(String player) {
-        this.player = player;
     }
 
     public String getContent() {

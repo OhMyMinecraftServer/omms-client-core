@@ -16,27 +16,32 @@ class SessionTest {
             String token = ClientInitialSession.generateToken("o6n1ywzk");
             System.out.println("token = " + token);
             session = initialSession.init(token);
-            CountDownLatch latch = new CountDownLatch(1 + 10 + 10);
+            CountDownLatch latch = new CountDownLatch(2 + 10 + 10);
             session.setOnNewBroadcastReceivedCallback(b -> {
                 System.out.println("b = " + b);
-                latch.countDown();
+                //latch.countDown();
             });
             session.setChatMessagePassthroughState(true, state -> {
                 System.out.println("state = " + state);
                 latch.countDown();
             });
+            session.getChatHistory(cache -> {
+                cache.getMessages().forEach(msg -> System.out.println("msg = " + msg));
+
+            });
             for (int i = 0; i < 10; i++) {
                 session.sendChatbridgeMessage(
                         "GLOBAL",
                         "TEST MESSAGE" + i,
-                        (a,b) -> latch.countDown()
+                        (a, b) -> latch.countDown()
                 );
             }
+
 
             latch.await();
             session.close((s) -> System.out.println("ServerName = " + s));
             session.join();
-        }catch (ConnectionFailedException e){
+        } catch (ConnectionFailedException e) {
             System.out.println("e.getResponse() = " + e.getResponse());
             throw e;
         }
