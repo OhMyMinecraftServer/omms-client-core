@@ -13,7 +13,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-//TODO:用的AES/ECB/PKCS5Padding
 public class EncryptedConnector {
     private final BufferedReader in;
     private final PrintWriter out;
@@ -23,7 +22,6 @@ public class EncryptedConnector {
         this.in = in;
         this.out = out;
         this.key = key.getBytes(StandardCharsets.UTF_8);
-        System.out.println("key = " + key);
     }
 
     public void println(String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

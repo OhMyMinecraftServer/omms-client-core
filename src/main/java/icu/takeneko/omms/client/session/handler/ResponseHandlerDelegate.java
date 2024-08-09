@@ -14,4 +14,6 @@ public interface ResponseHandlerDelegate<E, C, H> {
     void removeAssocGroup(String groupId);
 
     void setOnExceptionThrownHandler(Callback<Throwable> cb);
+
+    void shutdown();
 }

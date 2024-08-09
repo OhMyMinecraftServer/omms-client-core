@@ -1,8 +1,8 @@
 package icu.takeneko.omms.client.session;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import icu.takeneko.omms.client.Constants;
 import icu.takeneko.omms.client.exception.VersionNotMatchException;
 import icu.takeneko.omms.client.session.request.InitRequest;
 import icu.takeneko.omms.client.session.response.Response;
@@ -33,7 +33,7 @@ public class ClientInitialSession {
         this.inetAddress = inetAddress;
     }
 
-    public ClientSession init(int code) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailException, InterruptedException {
+    public ClientSession init(String token) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailException, InterruptedException {
         Socket socket = new Socket(this.inetAddress, this.port);
         socket.setKeepAlive(true);
 
@@ -43,20 +43,12 @@ public class ClientInitialSession {
         key = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
 
         EncryptedConnector connector = new EncryptedConnector(
-                new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                ),
+                new BufferedReader(new InputStreamReader(socket.getInputStream())),
                 new PrintWriter(new OutputStreamWriter(socket.getOutputStream())),
                 key
         );
-
-        long timeCode = Long.parseLong(date.format(DateTimeFormatter.ofPattern("yyyyMMddhhmm")));
-        String connCode = String.valueOf(timeCode ^ code);
-        connCode = Util.base64Encode(connCode);
-        connCode = Util.base64Encode(connCode);
-
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new InitRequest(Util.PROTOCOL_VERSION).withContentKeyPair("token", connCode));
+        String content = gson.toJson(new InitRequest(Constants.PROTOCOL_VERSION).withContentKeyPair("token", token));
         connector.send(content);
 
         String line = connector.readLine();
@@ -81,8 +73,18 @@ public class ClientInitialSession {
                 }
                 throw new VersionNotMatchException(Long.parseLong(serverVersion));
             }
-            throw new ConnectionFailException(String.format("Server returned ERR_CODE:%s", response.getResponseCode()));
+            throw new ConnectionFailException(response);
         }
 
+    }
+
+    public static String generateTokenFromHashed(String hashed){
+        LocalDateTime date = LocalDateTime.now();
+        String time = date.format(DateTimeFormatter.ofPattern("yyyyMMddhhmm"));
+        return Base64.getEncoder().encodeToString((time + ";" + hashed).getBytes());
+    }
+
+    public static String generateToken(String original){
+        return generateTokenFromHashed(Util.getChecksumMD5(original));
     }
 }

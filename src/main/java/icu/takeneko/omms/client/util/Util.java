@@ -2,9 +2,10 @@ package icu.takeneko.omms.client.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import icu.takeneko.omms.client.session.request.InitRequest;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Util {
@@ -13,8 +14,6 @@ public class Util {
     public static String base64Encode(String content) {
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }
-
-    public static final long PROTOCOL_VERSION = InitRequest.VERSION_BASE + 0x10;
 
     public static String randomStringGen(int len) {
         String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
@@ -38,5 +37,15 @@ public class Util {
             }
         }
         return sb.append("]").toString();
+    }
+
+    public static String getChecksumMD5(String original){
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException notIgnored) {
+            throw new RuntimeException(notIgnored);
+        }
+        return Base64.getEncoder().encodeToString(digest.digest(original.getBytes()));
     }
 }

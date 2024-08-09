@@ -189,6 +189,7 @@ public class ClientSession extends Thread {
     public void close(Callback<String> onDisconnectedCallback) {
         setOnDisconnectedCallback(onDisconnectedCallback);
         send(new Request("END"));
+        delegate.shutdown();
         networkExecutor.shutdownNow();
     }
 
@@ -487,4 +488,6 @@ public class ClientSession extends Thread {
     public ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> getDelegate() {
         return delegate;
     }
+
+
 }

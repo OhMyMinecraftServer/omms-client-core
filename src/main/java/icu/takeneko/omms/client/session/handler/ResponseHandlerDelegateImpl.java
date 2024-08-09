@@ -52,6 +52,11 @@ public class ResponseHandlerDelegateImpl<C> implements ResponseHandlerDelegate<R
     }
 
     @Override
+    public void shutdown() {
+        dispatchThread.shutdown();
+    }
+
+    @Override
     public void registerOnce(Result event, CallbackHandle<C> handle) {
         register(event, handle, true);
     }
