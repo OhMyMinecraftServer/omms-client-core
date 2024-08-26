@@ -1,7 +1,5 @@
-package icu.takeneko.omms.client.exception;
+package icu.takeneko.omms.client.exception
 
-public class ServerInternalErrorException extends RuntimeException {
-    public ServerInternalErrorException(String message) {
-        super(message);
-    }
-}
+class ServerInternalErrorException(
+    message: String = "Got FAIL from server.",
+): RuntimeException(message)

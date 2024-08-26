@@ -1,5 +1,5 @@
-package icu.takeneko.omms.client.data.chatbridge;
+package icu.takeneko.omms.client.data.chatbridge
 
-public enum ChatbridgeImplementation {
+enum class ChatbridgeImplementation {
     WS, UDP, DISABLE
 }

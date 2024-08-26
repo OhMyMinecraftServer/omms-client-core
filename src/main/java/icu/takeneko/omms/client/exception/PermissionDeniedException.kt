@@ -1,7 +1,5 @@
-package icu.takeneko.omms.client.exception;
+package icu.takeneko.omms.client.exception
 
-public class PermissionDeniedException extends RuntimeException {
-    public PermissionDeniedException(String message) {
-        super(message);
-    }
-}
+class PermissionDeniedException(
+    message: String = "Permission Denied.",
+): RuntimeException(message)

@@ -33,7 +33,7 @@ public class ClientInitialSession {
         this.inetAddress = inetAddress;
     }
 
-    public ClientSession init(String token) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailedException, InterruptedException {
+    public ClientSession init(String token) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ConnectionFailedException, InterruptedException, VersionNotMatchException {
         Socket socket = new Socket(this.inetAddress, this.port);
         socket.setKeepAlive(true);
 
