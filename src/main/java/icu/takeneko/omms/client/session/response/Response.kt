@@ -1,55 +1,37 @@
-package icu.takeneko.omms.client.session.response;
+package icu.takeneko.omms.client.session.response
 
-import com.google.gson.GsonBuilder;
-import icu.takeneko.omms.client.util.Pair;
-import icu.takeneko.omms.client.util.Result;
+import com.google.gson.GsonBuilder
+import icu.takeneko.omms.client.util.Result
 
-import java.util.HashMap;
+class Response {
+    constructor(responseCode: String, content: Map<String, String>) {
+        this.content = content
+        this.responseCode = Result.valueOf(responseCode)
+    }
+    constructor(responseCode: Result, content: Map<String, String>) {
+        this.content = content
+        this.responseCode = responseCode
+    }
+    lateinit var responseCode: Result
+        private set
+    lateinit var content: Map<String, String>
+        private set
 
-public class Response {
+    companion object {
+        @JvmStatic
+        fun serialize(response: Response): String =
+            GsonBuilder().serializeNulls().create().toJson(response)
 
-    private Result responseCode;
-    private HashMap<String, String> content = new HashMap<>();
-
-    public Response(String responseCode, HashMap<String, String> content) {
-        this.responseCode = Result.valueOf(responseCode);
-        this.content = content;
+        @JvmStatic
+        fun deserialize(x: String): Response =
+            GsonBuilder().serializeNulls().create().fromJson(x, Response::class.java)
     }
 
-    public Response(Result responseCode, HashMap<String, String> content) {
-        this.responseCode = responseCode;
-        this.content = content;
-    }
+    fun getContent(key: String) = content[key]
 
-    public Response() {
-    }
+    fun getPair(first: String, second: String): Pair<String?, String?> =
+        getContent(first) to getContent(second)
 
-    public static String serialize(Response response) {
-        return new GsonBuilder().serializeNulls().create().toJson(response);
-    }
-
-    public static Response deserialize(String x) {
-        return new GsonBuilder().serializeNulls().create().fromJson(x, Response.class);
-    }
-
-    public Result getResponseCode() {
-        return responseCode;
-    }
-
-    public String getContent(String key) {
-        return content.get(key);
-    }
-
-    public Pair<String, String> getPair(String k, String v) {
-        return new Pair<>(this.getContent(k), this.getContent(v));
-    }
-
-
-    @Override
-    public String toString() {
-        return "Response{" +
-                "code='" + responseCode + '\'' +
-                ", content=" + content +
-                '}';
-    }
+    override fun toString(): String =
+        "Response { responseCode='$responseCode', content=$content } "
 }

@@ -1,27 +1,10 @@
-package icu.takeneko.omms.client.util;
+package icu.takeneko.omms.client.util
 
-public class Pair<K, V> {
-    K a;
-    V b;
-
-    public Pair(K a, V b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    public K getA() {
-        return a;
-    }
-
-    public V getB() {
-        return b;
-    }
-
-    @Override
-    public String toString() {
+class Pair<K, V>(var a: K, var b: V) {
+    override fun toString(): String {
         return "Pair{" +
                 "a=" + a.toString() +
                 ", b=" + b.toString() +
-                '}';
+                '}'
     }
 }

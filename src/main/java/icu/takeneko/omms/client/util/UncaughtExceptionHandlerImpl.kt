@@ -1,4 +1,3 @@
-package icu.takeneko.omms.client.util;
+package icu.takeneko.omms.client.util
 
-public class UncaughtExceptionHandlerImpl {
-}
+class UncaughtExceptionHandlerImpl 
