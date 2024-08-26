@@ -7,6 +7,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.random.Random
 
+@Suppress("Unused")
 object Util {
     @JvmStatic
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -18,8 +19,8 @@ object Util {
 
     @JvmStatic
     fun randomStringGen(length: Int): String {
-        val chars: String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789"
-        var result: String = ""
+        val chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789"
+        var result = ""
         for (i in 1..length) {
             val rng = Random(System.nanoTime())
             result += chars[rng.nextInt(chars.length)]

@@ -1,5 +1,6 @@
 package icu.takeneko.omms.client.data.permission
 
+@Suppress("Unused")
 enum class Permission {
     SERVER_OS_CONTROL,
     CENTRAL_SERVER_CONFIG,

@@ -14,6 +14,4 @@ data class Announcement(
         title: String,
         content: Array<String>,
     ): this(id, timeMillis, title, content.toList())
-    override fun toString() =
-        "Announcement { id='$id', timeMillis=$timeMillis, title='$title', content=$content}"
 }

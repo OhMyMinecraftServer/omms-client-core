@@ -1,18 +1,16 @@
 package icu.takeneko.omms.client.session.callback;
 
+import icu.takeneko.omms.client.session.SessionContext;
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
 import icu.takeneko.omms.client.session.request.Request;
-import icu.takeneko.omms.client.session.response.Response;
-import icu.takeneko.omms.client.session.SessionContext;
 import icu.takeneko.omms.client.util.Result;
+import icu.takeneko.omms.client.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
-
-import icu.takeneko.omms.client.util.Util;
 
 public class WhitelistListCallbackHandle extends CallbackHandle1<Map<String, List<String>>, SessionContext> {
 
