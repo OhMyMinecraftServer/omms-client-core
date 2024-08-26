@@ -5,4 +5,6 @@ data class Controller(
     val type: String,
     val displayName: String,
     val statusQueryable: Boolean,
-)
+    val id: String
+) {
+}

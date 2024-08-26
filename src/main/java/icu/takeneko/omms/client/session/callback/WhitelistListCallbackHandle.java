@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import static icu.takeneko.omms.client.util.Util.gson;
+import icu.takeneko.omms.client.util.Util;
 
 public class WhitelistListCallbackHandle extends CallbackHandle1<Map<String, List<String>>, SessionContext> {
 
@@ -24,7 +24,7 @@ public class WhitelistListCallbackHandle extends CallbackHandle1<Map<String, Lis
     protected Map<String, List<String>> parse(SessionContext context) {
         String whitelists = context.getContent("whitelists");
         if (whitelists == null) return null;
-        List<String> whitelistNames = Arrays.asList(gson.fromJson(whitelists, String[].class));
+        List<String> whitelistNames = Arrays.asList(Util.getGson().fromJson(whitelists, String[].class));
         context.session.getWhitelistMap().clear();
         List<String> a = new ArrayList<>(whitelistNames);
         String id = Long.toString(System.nanoTime());

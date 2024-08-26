@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import static icu.takeneko.omms.client.util.Util.gson;
+import icu.takeneko.omms.client.util.Util;
 
 public class ControllerListCallbackHandle extends CallbackHandle1<Map<String, Controller>, SessionContext> {
 
@@ -25,7 +25,7 @@ public class ControllerListCallbackHandle extends CallbackHandle1<Map<String, Co
     protected Map<String, Controller> parse(SessionContext context) {
         String controllerListString = context.getContent(key);
         if (controllerListString == null) return null;
-        List<String> controllerNames = Arrays.asList(gson.fromJson(controllerListString, String[].class));
+        List<String> controllerNames = Arrays.asList(Util.getGson().fromJson(controllerListString, String[].class));
         context.session.getControllerMap().clear();
         List<String> a = new ArrayList<>(controllerNames);
         String id = Long.toString(System.nanoTime());
