@@ -2,10 +2,7 @@ package icu.takeneko.omms.client.session.callback;
 
 import com.google.gson.reflect.TypeToken;
 import icu.takeneko.omms.client.session.SessionContext;
-
-import java.util.function.Consumer;
-
-import static icu.takeneko.omms.client.util.Util.gson;
+import icu.takeneko.omms.client.util.Util;
 
 public abstract class JsonObjectCallbackHandle<T> extends CallbackHandle1<T, SessionContext> {
     public JsonObjectCallbackHandle(String key, Callback<T> fn) {
@@ -17,6 +14,6 @@ public abstract class JsonObjectCallbackHandle<T> extends CallbackHandle1<T, Ses
     @Override
     protected final T parse(SessionContext context) {
         TypeToken<?> tt = getObjectType();
-        return gson.fromJson(context.getContent(key), tt.getType());
+        return Util.getGson().fromJson(context.getContent(key), tt.getType());
     }
 }
