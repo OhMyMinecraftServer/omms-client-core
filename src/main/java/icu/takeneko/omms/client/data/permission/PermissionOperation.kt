@@ -1,4 +1,3 @@
-package icu.takeneko.omms.client.data.permission;
+package icu.takeneko.omms.client.data.permission
 
-public class PermissionOperation {
-}
+class PermissionOperation 

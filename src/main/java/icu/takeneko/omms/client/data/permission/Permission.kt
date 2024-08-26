@@ -1,6 +1,6 @@
-package icu.takeneko.omms.client.data.permission;
+package icu.takeneko.omms.client.data.permission
 
-public enum Permission {
+enum class Permission {
     SERVER_OS_CONTROL,
     CENTRAL_SERVER_CONFIG,
 
