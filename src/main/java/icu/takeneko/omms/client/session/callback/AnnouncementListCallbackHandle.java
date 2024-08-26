@@ -25,11 +25,11 @@ public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, 
         String controllerListString = context.getContent(key);
         if (controllerListString == null) return null;
         List<String> controllerNames = Arrays.asList(Util.getGson().fromJson(controllerListString, String[].class));
-        context.getSession().getAnnouncementMap().clear();
+        context.session.getAnnouncementMap().clear();
         List<String> a = new ArrayList<>(controllerNames);
         String id = Long.toString(System.nanoTime());
         CallbackHandle<SessionContext> handle = new CallbackHandle1<Announcement, SessionContext>("", ann -> {
-            context.getSession().getAnnouncementMap().put(ann.getId(), ann);
+            context.session.getAnnouncementMap().put(ann.getId(), ann);
             a.remove(ann.getId());
         }) {
             @Override
@@ -43,17 +43,17 @@ public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, 
         CallbackHandle<SessionContext> notExist = new StringCallbackHandle("announcement", a::remove);
         handle.setAssociateGroupId(id);
         notExist.setAssociateGroupId(id);
-        context.getSession().getDelegate().register(Result.ANNOUNCEMENT_GOT, handle, false);
-        context.getSession().getDelegate().register(Result.ANNOUNCEMENT_NOT_EXIST, notExist, false);
+        context.session.getDelegate().register(Result.ANNOUNCEMENT_GOT, handle, false);
+        context.session.getDelegate().register(Result.ANNOUNCEMENT_NOT_EXIST, notExist, false);
         for (String name : controllerNames) {
             Request request = new Request("ANNOUNCEMENT_GET").withContentKeyPair("id", name);
-            context.getSession().send(request);
+            context.session.send(request);
         }
         while (!a.isEmpty()) {
             LockSupport.parkNanos(1);
         }
-        context.getSession().getDelegate().removeAssocGroup(id);
-        return context.getSession().getAnnouncementMap();
+        context.session.getDelegate().removeAssocGroup(id);
+        return context.session.getAnnouncementMap();
     }
 
 

@@ -1,7 +1,3 @@
-package icu.takeneko.omms.client.session;
+package icu.takeneko.omms.client.session
 
-public class RateExceedException extends RuntimeException {
-    public RateExceedException(String reason) {
-        super(reason);
-    }
-}
+class RateExceedException(reason: String?) : RuntimeException(reason)

@@ -1,30 +1,16 @@
-package icu.takeneko.omms.client.session;
+package icu.takeneko.omms.client.session
 
-import icu.takeneko.omms.client.session.response.Response;
-import icu.takeneko.omms.client.util.Result;
+import icu.takeneko.omms.client.session.response.Response
+import icu.takeneko.omms.client.util.Result
 
-public class SessionContext {
-    private final Response response;
-    private final ClientSession session;
+class SessionContext(
+    val response: Response,
+    @JvmField val session: ClientSession
+) {
+    val responseCode: Result
+        get() = response.responseCode
 
-    public SessionContext(Response response, ClientSession session) {
-        this.response = response;
-        this.session = session;
-    }
-
-    public Response getResponse() {
-        return response;
-    }
-
-    public ClientSession getSession() {
-        return session;
-    }
-
-    public Result getResponseCode() {
-        return response.getResponseCode();
-    }
-
-    public String getContent(String key) {
-        return response.getContent(key);
+    fun getContent(key: String): String? {
+        return response.getContent(key)
     }
 }

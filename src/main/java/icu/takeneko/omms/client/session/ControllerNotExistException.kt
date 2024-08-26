@@ -1,7 +1,3 @@
-package icu.takeneko.omms.client.session;
+package icu.takeneko.omms.client.session
 
-public class ControllerNotExistException extends RuntimeException {
-    public ControllerNotExistException(String s) {
-        super(s);
-    }
-}
+class ControllerNotExistException(s: String?) : RuntimeException(s)

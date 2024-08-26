@@ -1,4 +1,3 @@
-package icu.takeneko.omms.client.session;
+package icu.takeneko.omms.client.session
 
-public class DisconnectedException extends RuntimeException {
-}
+class DisconnectedException : RuntimeException()
