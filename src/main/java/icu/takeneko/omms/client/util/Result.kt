@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.util;
+package icu.takeneko.omms.client.util
 
 enum class Result {
     FAIL,
