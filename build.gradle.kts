@@ -7,6 +7,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    kotlin("jvm")
 }
 
 repositories {
@@ -19,12 +20,12 @@ dependencies {
     testImplementation("com.google.code.gson:gson:2.9.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 group = "icu.takeneko"
 version = "1.5.0"
 description = "omms-client-core"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 
 publishing {
@@ -58,4 +59,7 @@ tasks{
         useJUnitPlatform()
 //        jvmArgs("--enable-preview")
     }
+}
+kotlin {
+    jvmToolchain(8)
 }

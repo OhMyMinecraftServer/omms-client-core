@@ -5,7 +5,7 @@ import icu.takeneko.omms.client.session.SessionContext;
 import java.util.Arrays;
 import java.util.List;
 
-import static icu.takeneko.omms.client.util.Util.gson;
+import icu.takeneko.omms.client.util.Util;
 
 public class StringWithListCallbackHandle extends CallbackHandle2<String, List<String>, SessionContext>{
 
@@ -20,6 +20,6 @@ public class StringWithListCallbackHandle extends CallbackHandle2<String, List<S
 
     @Override
     protected List<String> parse2(SessionContext context) {
-        return Arrays.asList(gson.fromJson(context.getContent("players"), String[].class));
+        return Arrays.asList(Util.getGson().fromJson(context.getContent("players"), String[].class));
     }
 }
