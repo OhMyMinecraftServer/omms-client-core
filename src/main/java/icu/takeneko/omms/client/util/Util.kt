@@ -1,51 +1,52 @@
-package icu.takeneko.omms.client.util;
+package icu.takeneko.omms.client.util
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.security.MessageDigest
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.random.Random
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
+object Util {
+    @JvmStatic
+    val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
-public class Util {
-    public static Gson gson = new GsonBuilder().serializeNulls().create();
+    @OptIn(ExperimentalEncodingApi::class)
+    @JvmStatic
+    fun base64Encode(content: String): String =
+        Base64.encode(content.toByteArray(Charsets.UTF_8))
 
-    public static String base64Encode(String content) {
-        return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public static String randomStringGen(int len) {
-        String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder stringBuffer = new StringBuilder();
-        for (int i = 0; i < len; i++) {
-            Random random = new Random(System.nanoTime());
-            int num = random.nextInt(62);
-            stringBuffer.append(ch.charAt(num));
+    @JvmStatic
+    fun randomStringGen(length: Int): String {
+        val chars: String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789"
+        var result: String = ""
+        for (i in 1..length) {
+            val rng = Random(System.nanoTime())
+            result += chars[rng.nextInt(chars.length)]
         }
-        return stringBuffer.toString();
+        return result
     }
 
-    public static String joinToString(Collection<String> cl) {
-        StringBuilder sb = new StringBuilder("[");
-        List<String> tl = new ArrayList<>(cl);
-        for (int i = 0; i < tl.size(); i++) {
-            if (i == tl.size() - 1) {
-                sb.append(tl.get(i));
-            } else {
-                sb.append(tl.get(i)).append(", ");
+    @JvmStatic
+    fun joinToString(strings: Collection<String>): String {
+        val list = strings.toList()
+        var result = "["
+        for (i in list.indices) {
+            if (i == list.lastIndex) {
+                result += list[i]
+                continue
             }
+            result += "${list[i]} , "
         }
-        return sb.append("]").toString();
+        result += "]"
+        return result
     }
 
-    public static String getChecksumMD5(String original){
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException notIgnored) {
-            throw new RuntimeException(notIgnored);
-        }
-        return Base64.getEncoder().encodeToString(digest.digest(original.getBytes()));
-    }
+    @OptIn(ExperimentalEncodingApi::class)
+    @JvmStatic
+    fun getChecksumMD5(original: String): String =
+        Base64.encode(
+            MessageDigest.getInstance("SHA-256")
+                .digest(original.toByteArray(Charsets.UTF_8))
+        )
 }

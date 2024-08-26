@@ -1,26 +1,14 @@
-package icu.takeneko.omms.client.session.request;
+package icu.takeneko.omms.client.session.request
 
-public class InitRequest extends Request {
-    long version;
-    public static final long VERSION_BASE = 0xc000_0000L;
-
-    public InitRequest(long version) {
-        super("PING");
-        this.version = version;
+class InitRequest(
+    var version: Long
+): Request("PING") {
+    companion object {
+        const val VERSION_BASE: Long = 0x000_0000L
+    }
+    constructor(version: Long, request: Request): this(version) {
+        this.request = request.request
+        this.content = request.content
     }
 
-    public InitRequest(Request request, long version) {
-        super();
-        this.request = request.getRequest();
-        this.content = request.content;
-        this.version = version;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
-    }
 }

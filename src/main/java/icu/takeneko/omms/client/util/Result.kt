@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.util;
 
-public enum Result {
+enum class Result {
     FAIL,
     OK,
     PERMISSION_DENIED,

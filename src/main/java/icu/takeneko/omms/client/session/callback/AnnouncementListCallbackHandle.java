@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import static icu.takeneko.omms.client.util.Util.gson;
+import icu.takeneko.omms.client.util.Util;
 
 public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, Announcement>, SessionContext> {
 
@@ -24,7 +24,7 @@ public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, 
     protected Map<String, Announcement> parse(SessionContext context) {
         String controllerListString = context.getContent(key);
         if (controllerListString == null) return null;
-        List<String> controllerNames = Arrays.asList(gson.fromJson(controllerListString, String[].class));
+        List<String> controllerNames = Arrays.asList(Util.getGson().fromJson(controllerListString, String[].class));
         context.getSession().getAnnouncementMap().clear();
         List<String> a = new ArrayList<>(controllerNames);
         String id = Long.toString(System.nanoTime());
@@ -37,7 +37,7 @@ public class AnnouncementListCallbackHandle extends CallbackHandle1<Map<String, 
                 return new Announcement(context.getContent("id"),
                         Long.parseLong(context.getContent("time")),
                         context.getContent("title"),
-                        gson.fromJson(context.getContent("content"), String[].class));
+                        Util.getGson().fromJson(context.getContent("content"), String[].class));
             }
         };
         CallbackHandle<SessionContext> notExist = new StringCallbackHandle("announcement", a::remove);

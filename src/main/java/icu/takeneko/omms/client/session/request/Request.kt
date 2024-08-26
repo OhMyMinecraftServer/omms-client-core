@@ -1,52 +1,23 @@
-package icu.takeneko.omms.client.session.request;
+package icu.takeneko.omms.client.session.request
 
-import com.google.gson.annotations.SerializedName;
+open class Request() {
+    constructor(request: String) : this() {
+        this.request = request
+    }
+    lateinit var request: String
+        protected set
 
-import java.util.HashMap;
-
-public class Request {
-    public Request(String req) {
-        this.request = req;
+    fun setRequest(request: String): Request {
+        this.request = request
+        return this
     }
 
-    public Request() {
+    var content: MutableMap<String, String> = mutableMapOf()
 
+    fun withContentKeyPair(key: String, value: String): Request {
+        content[key] = value
+        return this
     }
 
-    @SerializedName("request")
-    String request;
-
-    @SerializedName("content")
-    HashMap<String, String> content = new HashMap<>();
-
-    public String getContent(String key) {
-        return content.get(key);
-    }
-
-    public void setContent(HashMap<String, String> content) {
-        this.content = content;
-    }
-
-    public String getRequest() {
-        return request;
-    }
-
-    public Request setRequest(String request) {
-        this.request = request;
-        return this;
-    }
-
-
-    public Request withContentKeyPair(String key, String pair) {
-        content.put(key, pair);
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Request{" +
-                "request='" + request + '\'' +
-                ", content=" + content +
-                '}';
-    }
+    override fun toString(): String = "Request { request=$request, content=$content }"
 }
