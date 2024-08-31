@@ -16,9 +16,6 @@ via `Session API`
     - [x] Controller Remote Command
     - [x] Controller Status
     - [ ] Create/Delete Controllers
-- [ ] Announcement Management
-    - [ ] Create/Delete Announcements
-    - [x] Retrieve Announcements from Server
 - [x] Chatbridge
     - [x] Chat History
     - [x] Send Chat Message

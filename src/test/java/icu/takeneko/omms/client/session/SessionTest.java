@@ -19,11 +19,14 @@ class SessionTest {
             CountDownLatch latch = new CountDownLatch(2 + 10 + 10);
             session.setOnNewBroadcastReceivedCallback(b -> {
                 System.out.println("b = " + b);
-                //latch.countDown();
+                latch.countDown();
             });
             session.setChatMessagePassthroughState(true, state -> {
                 System.out.println("state = " + state);
                 latch.countDown();
+            });
+            session.getChatbridgeImplementation(impl -> {
+                System.out.println("impl = " + impl);
             });
             session.getChatHistory(cache -> {
                 cache.getMessages().forEach(msg -> System.out.println("msg = " + msg));

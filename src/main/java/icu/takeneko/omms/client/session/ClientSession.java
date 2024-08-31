@@ -3,7 +3,6 @@ package icu.takeneko.omms.client.session;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import icu.takeneko.omms.client.data.announcement.Announcement;
 import icu.takeneko.omms.client.data.chatbridge.Broadcast;
 import icu.takeneko.omms.client.data.chatbridge.ChatbridgeImplementation;
 import icu.takeneko.omms.client.data.chatbridge.MessageCache;
@@ -34,7 +33,6 @@ public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
-    private final HashMap<String, Announcement> announcementMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
@@ -212,11 +210,6 @@ public class ClientSession extends Thread {
             fn.accept(si);
         }));
         send(new Request("SYSTEM_GET_INFO"));
-    }
-
-    public void fetchAnnouncementFromServer(Callback<Map<String, Announcement>> callback) {
-        delegate.registerOnce(Result.ANNOUNCEMENT_LISTED, new AnnouncementListCallbackHandle(callback));
-        send(new Request().setRequest("ANNOUNCEMENT_LIST"));
     }
 
     public void fetchControllerStatus(String controllerId,
@@ -431,10 +424,6 @@ public class ClientSession extends Thread {
 
     public HashMap<String, List<String>> getWhitelistMap() {
         return whitelistMap;
-    }
-
-    public HashMap<String, Announcement> getAnnouncementMap() {
-        return announcementMap;
     }
 
     public SystemInfo getSystemInfo() {
