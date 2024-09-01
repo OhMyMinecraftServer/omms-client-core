@@ -1,18 +1,24 @@
 package icu.takeneko.omms.client.data.chatbridge;
 
+import icu.takeneko.omms.client.util.Util;
+import lombok.Getter;
+
+@Getter
 public class Broadcast {
     private String channel;
     private String server;
     private String player;
     private String content;
     private String id;
+    private long timeMillis;
 
     public Broadcast(String channel, String server, String player, String content) {
         this.channel = channel;
         this.server = server;
         this.player = player;
         this.content = content;
-        this.id = "";
+        this.id = Util.generateRandomString(16);
+        this.timeMillis = System.currentTimeMillis();
     }
 
     @Override
@@ -23,29 +29,5 @@ public class Broadcast {
                 ", player='" + player + '\'' +
                 ", content='" + content + '\'' +
                 '}';
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public String getPlayer() {
-        return player;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 }

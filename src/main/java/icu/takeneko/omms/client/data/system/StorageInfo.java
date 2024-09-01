@@ -2,15 +2,17 @@ package icu.takeneko.omms.client.data.system;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StorageInfo { // TODO: 2022/9/10
+@Getter
+public class StorageInfo {
     @SerializedName("storages")
     List<Storage> storageList = new ArrayList<>();
 
-    public class Storage {
+    public static class Storage {
         final String name;
         final String model;
         final long size;
@@ -20,14 +22,6 @@ public class StorageInfo { // TODO: 2022/9/10
             this.model = model;
             this.size = size;
         }
-    }
-
-    public List<Storage> getStorageList() {
-        return storageList;
-    }
-
-    public void setStorageList(List<Storage> storageList) {
-        this.storageList = storageList;
     }
 
     public static String asJsonString(StorageInfo storageInfo) {

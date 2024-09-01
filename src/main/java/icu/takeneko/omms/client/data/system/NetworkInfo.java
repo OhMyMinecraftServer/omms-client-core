@@ -1,11 +1,14 @@
 package icu.takeneko.omms.client.data.system;
 
 import com.google.gson.GsonBuilder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetworkInfo {  // TODO: 2022/9/10
+@Getter
+public class NetworkInfo {
     private List<NetworkInterface> networkInterfaceList = new ArrayList<>();
     private String hostName;
     private String domainName;
@@ -25,54 +28,7 @@ public class NetworkInfo {  // TODO: 2022/9/10
         return new GsonBuilder().serializeNulls().create().toJson(networkInfo);
     }
 
-    public List<NetworkInterface> getNetworkInterfaceList() {
-        return networkInterfaceList;
-    }
-
-    public void setNetworkInterfaceList(List<NetworkInterface> networkInterfaceList) {
-        this.networkInterfaceList = networkInterfaceList;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
-    }
-
-    public String[] getDnsServers() {
-        return dnsServers;
-    }
-
-    public void setDnsServers(String[] dnsServers) {
-        this.dnsServers = dnsServers;
-    }
-
-    public String getIpv4DefaultGateway() {
-        return ipv4DefaultGateway;
-    }
-
-    public void setIpv4DefaultGateway(String ipv4DefaultGateway) {
-        this.ipv4DefaultGateway = ipv4DefaultGateway;
-    }
-
-    public String getIpv6DefaultGateway() {
-        return ipv6DefaultGateway;
-    }
-
-    public void setIpv6DefaultGateway(String ipv6DefaultGateway) {
-        this.ipv6DefaultGateway = ipv6DefaultGateway;
-    }
-
+    @Getter
     public static class NetworkInterface {
         String name;
         String displayName;
@@ -91,63 +47,5 @@ public class NetworkInfo {  // TODO: 2022/9/10
             this.ipv4Address = ipv4Address;
             this.ipv6Address = ipv6Address;
         }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public void setDisplayName(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getMacAddress() {
-            return macAddress;
-        }
-
-        public void setMacAddress(String macAddress) {
-            this.macAddress = macAddress;
-        }
-
-        public long getMtu() {
-            return mtu;
-        }
-
-        public void setMtu(long mtu) {
-            this.mtu = mtu;
-        }
-
-        public long getSpeed() {
-            return speed;
-        }
-
-        public void setSpeed(long speed) {
-            this.speed = speed;
-        }
-
-        public String[] getIpv4Address() {
-            return ipv4Address;
-        }
-
-        public void setIpv4Address(String[] ipv4Address) {
-            this.ipv4Address = ipv4Address;
-        }
-
-        public String[] getIpv6Address() {
-            return ipv6Address;
-        }
-
-        public void setIpv6Address(String[] ipv6Address) {
-            this.ipv6Address = ipv6Address;
-        }
     }
-
-
 }

@@ -1,7 +1,10 @@
 package icu.takeneko.omms.client.data.chatbridge;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class MessageCache {
     int maxCapacity;
     List<Broadcast> messages;
@@ -11,11 +14,4 @@ public class MessageCache {
         this.messages = messages;
     }
 
-    public int getMaxCapacity() {
-        return maxCapacity;
-    }
-
-    public List<Broadcast> getMessages() {
-        return messages;
-    }
 }

@@ -15,7 +15,7 @@ public class Util {
         return Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String randomStringGen(int len) {
+    public static String generateRandomString(int len) {
         String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder stringBuffer = new StringBuilder();
         for (int i = 0; i < len; i++) {

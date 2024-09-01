@@ -20,6 +20,8 @@ import icu.takeneko.omms.client.session.request.Request;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
 import icu.takeneko.omms.client.util.Result;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.Socket;
 import java.net.SocketException;
@@ -31,26 +33,37 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("unused")
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
+    @Getter
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
+    @Getter
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
+    @Getter
     private final String serverName;
+    @Getter
     EncryptedConnector connector;
+    @Getter
     @SuppressWarnings("FieldMayBeFinal")
     private SystemInfo systemInfo = null;
     private PermissionOperation lastPermissionOperation;
+    @Getter
     private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
+    @Setter
     private Callback<ClientSession> onPermissionDeniedCallback;
+    @Setter
     private Callback<Response> onServerInternalExceptionCallback;
+    @Setter
     private Callback<PermissionOperation> onInvalidOperationCallback;
     private Callback2<Thread, Throwable> onAnyExceptionCallback = (t, e) -> {
         System.out.printf("Exception in thread %s%n", t);
         e.printStackTrace();
     };
     private Callback<Response> onResponseRecievedCallback;
+    @Setter
     private Callback<String> onDisconnectedCallback;
+    @Setter
     private Callback<Broadcast> onNewBroadcastReceivedCallback;
 
     boolean chatMessagePassthroughEnabled = true;
@@ -422,56 +435,12 @@ public class ClientSession extends Thread {
         send(new Request("GET_CHATBRIDGE_IMPL"));
     }
 
-    public HashMap<String, List<String>> getWhitelistMap() {
-        return whitelistMap;
-    }
-
-    public SystemInfo getSystemInfo() {
-        return systemInfo;
-    }
-
-    public HashMap<String, Controller> getControllerMap() {
-        return controllerMap;
-    }
-
     public Controller getControllerByName(String name) {
         return controllerMap.get(name);
     }
 
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setOnPermissionDeniedCallback(Callback<ClientSession> onPermissionDeniedCallback) {
-        this.onPermissionDeniedCallback = onPermissionDeniedCallback;
-    }
-
-    public void setOnServerInternalExceptionCallback(Callback<Response> onServerInternalExeptionCallback) {
-        this.onServerInternalExceptionCallback = onServerInternalExeptionCallback;
-    }
-
-    public void setOnInvalidOperationCallback(Callback<PermissionOperation> onInvalidOperationCallback) {
-        this.onInvalidOperationCallback = onInvalidOperationCallback;
-    }
-
     public void setOnResponseReceivedCallback(Callback<Response> onResponseRecievedCallback) {
         this.onResponseRecievedCallback = onResponseRecievedCallback;
-    }
-
-    public void setOnDisconnectedCallback(Callback<String> onDisconnectedCallback) {
-        this.onDisconnectedCallback = onDisconnectedCallback;
-    }
-
-    public void setOnNewBroadcastReceivedCallback(Callback<Broadcast> onNewBroadcastReceivedCallback) {
-        this.onNewBroadcastReceivedCallback = onNewBroadcastReceivedCallback;
-    }
-
-    public EncryptedConnector getConnector() {
-        return connector;
-    }
-
-    public ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> getDelegate() {
-        return delegate;
     }
 
 
