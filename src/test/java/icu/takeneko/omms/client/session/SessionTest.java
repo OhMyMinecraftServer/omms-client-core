@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.LockSupport;
 
 class SessionTest {
     ClientSession session;
@@ -16,33 +17,19 @@ class SessionTest {
             String token = ClientInitialSession.generateToken("o6n1ywzk");
             System.out.println("token = " + token);
             session = initialSession.init(token);
-            CountDownLatch latch = new CountDownLatch(2 + 10 + 10);
-            session.setOnNewBroadcastReceivedCallback(b -> {
-                System.out.println("b = " + b);
+            CountDownLatch latch = new CountDownLatch(2);
+            session.fetchWhitelistFromServer(it -> {
+                System.out.println("it.toString() = " + it.toString());
                 latch.countDown();
             });
-            session.setChatMessagePassthroughState(true, state -> {
-                System.out.println("state = " + state);
-                latch.countDown();
-            });
-            session.getChatbridgeImplementation(impl -> {
-                System.out.println("impl = " + impl);
-            });
-            session.getChatHistory(cache -> {
-                cache.getMessages().forEach(msg -> System.out.println("msg = " + msg));
-
-            });
-            for (int i = 0; i < 10; i++) {
-                session.sendChatbridgeMessage(
-                        "GLOBAL",
-                        "TEST MESSAGE" + i,
-                        (a, b) -> latch.countDown()
-                );
+            while (latch.getCount() != 1) {
+                LockSupport.parkNanos(1);
             }
-
-
+            session.close((s) -> {
+                System.out.println("ServerName = " + s);
+                latch.countDown();
+            });
             latch.await();
-            session.close((s) -> System.out.println("ServerName = " + s));
             session.join();
         } catch (ConnectionFailedException e) {
             System.out.println("e.getResponse() = " + e.getResponse());

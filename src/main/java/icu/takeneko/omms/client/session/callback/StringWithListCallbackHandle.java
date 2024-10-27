@@ -20,6 +20,6 @@ public class StringWithListCallbackHandle extends CallbackHandle2<String, List<S
 
     @Override
     protected List<String> parse2(SessionContext context) {
-        return Arrays.asList(gson.fromJson(context.getContent("players"), String[].class));
+        return Arrays.asList(gson.fromJson(context.getContent(key2), String[].class));
     }
 }

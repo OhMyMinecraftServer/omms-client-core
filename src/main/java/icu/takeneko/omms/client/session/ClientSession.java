@@ -38,6 +38,8 @@ public class ClientSession extends Thread {
     @Getter
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
+    @Getter
+    private final HashMap<String, Callback<List<String>>> controllerConsoleCompleteCallbackMap = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
     @Getter
@@ -84,6 +86,15 @@ public class ClientSession extends Thread {
                 return TypeToken.get(Broadcast.class);
             }
         }, false);
+        delegate.register(
+            Result.CONTROLLER_CONSOLE_COMPLETION_RESULT,
+            new StringWithListCallbackHandle("completionId", "result", (id, list) -> {
+                Callback<List<String>> callback = controllerConsoleCompleteCallbackMap.get(id);
+                if (callback == null) return;
+                callback.accept(list);
+            }),
+            false
+        );
         delegate.setOnExceptionThrownHandler(e -> {
             if (onAnyExceptionCallback != null) {
                 onAnyExceptionCallback.accept(Thread.currentThread(), e);
@@ -257,8 +268,8 @@ public class ClientSession extends Thread {
         }
         delegate.registerOnce(Result.WHITELIST_REMOVED, c1);
         this.send(new Request("WHITELIST_REMOVE")
-                .withContentKeyPair("whitelist", whitelistName)
-                .withContentKeyPair("player", player)
+            .withContentKeyPair("whitelist", whitelistName)
+            .withContentKeyPair("player", player)
         );
     }
 
@@ -341,8 +352,8 @@ public class ClientSession extends Thread {
         delegate.registerOnce(Result.CONTROLLER_CONSOLE_INPUT_SENT, conInput);
         delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
         send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
-                .withContentKeyPair("consoleId", consoleId)
-                .withContentKeyPair("command", line)
+            .withContentKeyPair("consoleId", consoleId)
+            .withContentKeyPair("command", line)
         );
     }
 
@@ -359,8 +370,8 @@ public class ClientSession extends Thread {
         delegate.registerOnce(Result.WHITELIST_ADDED, added);
         delegate.registerOnce(Result.PLAYER_ALREADY_EXISTS, playerExists);
         this.send(new Request("WHITELIST_ADD")
-                .withContentKeyPair("whitelist", whitelistName)
-                .withContentKeyPair("player", player)
+            .withContentKeyPair("whitelist", whitelistName)
+            .withContentKeyPair("player", player)
         );
     }
 
@@ -379,9 +390,9 @@ public class ClientSession extends Thread {
                                         Callback<String> onControllerAuthFailedCallback
     ) {
         Request request = new Request()
-                .setRequest("CONTROLLER_EXECUTE_COMMAND")
-                .withContentKeyPair("controller", controller)
-                .withContentKeyPair("command", command);
+            .setRequest("CONTROLLER_EXECUTE_COMMAND")
+            .withContentKeyPair("controller", controller)
+            .withContentKeyPair("command", command);
         String groupId = Long.toString(System.nanoTime());
         ControllerCommandLogCallbackHandle logCallbackHandle = new ControllerCommandLogCallbackHandle(callback);
         StringCallbackHandle notExist = new StringCallbackHandle("controllerId", onControllerNotExistCallback);
@@ -397,8 +408,8 @@ public class ClientSession extends Thread {
 
     public void setChatMessagePassthroughState(boolean state, Callback<Boolean> onStateChangedCallback) {
         Request request = new Request()
-                .setRequest("SET_CHAT_PASSTHROUGH_STATE")
-                .withContentKeyPair("state", Boolean.toString(state));
+            .setRequest("SET_CHAT_PASSTHROUGH_STATE")
+            .withContentKeyPair("state", Boolean.toString(state));
         BooleanCallbackHandle cb = new BooleanCallbackHandle("state", onStateChangedCallback);
         delegate.registerOnce(Result.CHAT_PASSTHROUGH_STATE_CHANGED, cb);
         send(request);
@@ -406,9 +417,9 @@ public class ClientSession extends Thread {
 
     public void sendChatbridgeMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
         Request request = new Request()
-                .setRequest("SEND_BROADCAST")
-                .withContentKeyPair("channel", channel)
-                .withContentKeyPair("message", message);
+            .setRequest("SEND_BROADCAST")
+            .withContentKeyPair("channel", channel)
+            .withContentKeyPair("message", message);
         BiStringCallbackHandle cb = new BiStringCallbackHandle("channel", "message", onMessageSentCallback);
         delegate.registerOnce(Result.BROADCAST_SENT, cb);
         send(request);
@@ -427,12 +438,29 @@ public class ClientSession extends Thread {
 
     public void getChatbridgeImplementation(Callback<ChatbridgeImplementation> onResultReceivedCallback) {
         EnumCallbackHandle<ChatbridgeImplementation> handle = new EnumCallbackHandle<>(
-                "implementation",
-                ChatbridgeImplementation::valueOf,
-                onResultReceivedCallback
+            "implementation",
+            ChatbridgeImplementation::valueOf,
+            onResultReceivedCallback
         );
         delegate.registerOnce(Result.GOT_CHATBRIDGE_IMPL, handle);
         send(new Request("GET_CHATBRIDGE_IMPL"));
+    }
+
+    public void controllerConsoleComplete(
+        String consoleId,
+        String text,
+        int cursorPosition,
+        Callback<List<String>> callback
+    ) {
+        StringCallbackHandle idCallback = new StringCallbackHandle(
+            "completionId",
+            it -> controllerConsoleCompleteCallbackMap.put(it, callback)
+        );
+        delegate.registerOnce(Result.CONTROLLER_CONSOLE_COMPLETION_SENT, idCallback);
+        send(new Request("CONTROLLER_CONSOLE_COMPLETE")
+            .withContentKeyPair("input", text)
+            .withContentKeyPair("cursor", Integer.toString(cursorPosition))
+        );
     }
 
     public Controller getControllerByName(String name) {

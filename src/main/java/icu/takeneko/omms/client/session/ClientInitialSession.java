@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import icu.takeneko.omms.client.Constants;
 import icu.takeneko.omms.client.exception.VersionNotMatchException;
-import icu.takeneko.omms.client.session.request.InitRequest;
+import icu.takeneko.omms.client.session.request.LoginRequest;
 import icu.takeneko.omms.client.session.response.Response;
 import icu.takeneko.omms.client.exception.ConnectionFailedException;
 import icu.takeneko.omms.client.util.EncryptedConnector;
@@ -48,7 +48,7 @@ public class ClientInitialSession {
                 key
         );
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String content = gson.toJson(new InitRequest(Constants.PROTOCOL_VERSION).withContentKeyPair("token", token));
+        String content = gson.toJson(new LoginRequest(Constants.PROTOCOL_VERSION, token));
         connector.send(content);
 
         String line = connector.readLine();
