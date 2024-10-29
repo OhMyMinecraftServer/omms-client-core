@@ -24,6 +24,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
+/**
+ * Create a {@link ClientSession} and authenticate with Central Server
+ */
 public class ClientInitialSession {
     InetAddress inetAddress;
     int port;

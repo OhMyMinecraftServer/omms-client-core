@@ -1,0 +1,109 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.jreleaser' version '1.14.0'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api("com.google.code.gson:gson:2.9.0")
+    testImplementation("com.google.code.gson:gson:2.9.0")
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.34")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+}
+
+group = "icu.takeneko"
+version = "1.6.0"
+description = "omms-client-core"
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+tasks {
+    test {
+        useJUnitPlatform()
+//        jvmArgs("--enable-preview")
+    }
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'icu.takeneko'
+            artifactId = 'omms-client-core'
+
+            from components.java
+
+            pom {
+                name = 'omms-client-core'
+                description = 'A library to communicate with OMMS Central Server via Session API'
+                url = 'https://github.com/OhMyMinecraftServer/omms-client-core'
+                inceptionYear = '2022'
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://mit-license.org/'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ZhuRuoLing'
+                        name = '竹若泠'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/OhMyMinecraftServer/omms-client-core'
+                    developerConnection = 'scm:git:ssh://github.com/OhMyMinecraftServer/omms-client-core'
+                    url = 'https://github.com/OhMyMinecraftServer/omms-client-core'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+//            nexus2 {
+//                'maven-central' {
+//                    active = 'ALWAYS'
+//                    url = 'https://s01.oss.sonatype.org/service/local'
+//                    snapshotUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+//                    closeRepository = true
+//                    releaseRepository = true
+//                    stagingRepository('build/staging-deploy')
+//                }
+//            }
+//            Portal Publisher API
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
+}

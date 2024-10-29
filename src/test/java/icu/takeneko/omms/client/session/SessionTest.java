@@ -10,7 +10,7 @@ import java.util.concurrent.locks.LockSupport;
 class SessionTest {
     ClientSession session;
 
-    @Test
+
     void testSession() throws Throwable {
         try {
             ClientInitialSession initialSession = new ClientInitialSession(InetAddress.getByName("localhost"), 50000);

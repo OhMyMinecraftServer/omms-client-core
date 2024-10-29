@@ -29,7 +29,9 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+/**
+ * Session API
+ */
 @SuppressWarnings("unused")
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
