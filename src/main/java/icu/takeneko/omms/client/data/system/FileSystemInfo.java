@@ -12,14 +12,13 @@ import java.util.List;
 public class FileSystemInfo {
 
     @SerializedName("filesystems")
-    final
-    List<FileSystem> fileSystemList = new ArrayList<>();
+    final List<FileSystem> fileSystemList = new ArrayList<>();
 
     public static String asJsonString(FileSystemInfo fileSystemInfo) {
         return new GsonBuilder().serializeNulls().create().toJson(fileSystemInfo);
     }
 
-    @Setter
+    @Getter
     public static class FileSystem {
         long free;
         long total;

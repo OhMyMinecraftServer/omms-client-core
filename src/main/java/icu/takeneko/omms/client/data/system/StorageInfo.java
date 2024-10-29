@@ -12,6 +12,7 @@ public class StorageInfo {
     @SerializedName("storages")
     List<Storage> storageList = new ArrayList<>();
 
+    @Getter
     public static class Storage {
         final String name;
         final String model;

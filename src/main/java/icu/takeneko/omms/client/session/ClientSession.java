@@ -33,26 +33,20 @@ import java.util.concurrent.Executors;
  * Session API
  */
 @SuppressWarnings("unused")
+@Getter
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
-    @Getter
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
-    @Getter
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
-    @Getter
     private final HashMap<String, Callback<List<String>>> controllerConsoleCompleteCallbackMap = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
-    @Getter
     private final String serverName;
-    @Getter
     EncryptedConnector connector;
-    @Getter
     @SuppressWarnings("FieldMayBeFinal")
     private SystemInfo systemInfo = null;
     private PermissionOperation lastPermissionOperation;
-    @Getter
     private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
     @Setter
     private Callback<ClientSession> onPermissionDeniedCallback;
