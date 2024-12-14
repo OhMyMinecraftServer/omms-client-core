@@ -4,7 +4,7 @@ import icu.takeneko.omms.client.util.Util;
 import lombok.Getter;
 
 @Getter
-public class Broadcast {
+public class ChatMessage {
     private String channel;
     private String server;
     private String player;
@@ -12,7 +12,7 @@ public class Broadcast {
     private String id;
     private long timeMillis;
 
-    public Broadcast(String channel, String server, String player, String content) {
+    public ChatMessage(String channel, String server, String player, String content) {
         this.channel = channel;
         this.server = server;
         this.player = player;

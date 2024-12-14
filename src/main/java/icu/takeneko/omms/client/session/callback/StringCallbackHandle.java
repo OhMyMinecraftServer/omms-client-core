@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.session.callback;
 
-import icu.takeneko.omms.client.session.SessionContext;
+import icu.takeneko.omms.client.session.data.SessionContext;
 
 public class StringCallbackHandle extends CallbackHandle1<String, SessionContext> {
     public StringCallbackHandle(String key, Callback<String> fn) {

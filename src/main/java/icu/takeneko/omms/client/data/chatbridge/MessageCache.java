@@ -7,9 +7,9 @@ import java.util.List;
 @Getter
 public class MessageCache {
     int maxCapacity;
-    List<Broadcast> messages;
+    List<ChatMessage> messages;
 
-    public MessageCache(int maxCapacity, List<Broadcast> messages) {
+    public MessageCache(int maxCapacity, List<ChatMessage> messages) {
         this.maxCapacity = maxCapacity;
         this.messages = messages;
     }

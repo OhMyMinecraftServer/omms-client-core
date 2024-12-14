@@ -1,9 +1,7 @@
 package icu.takeneko.omms.client.session.callback;
 
 import com.google.gson.reflect.TypeToken;
-import icu.takeneko.omms.client.session.SessionContext;
-
-import java.util.function.Consumer;
+import icu.takeneko.omms.client.session.data.SessionContext;
 
 import static icu.takeneko.omms.client.util.Util.gson;
 

@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import icu.takeneko.omms.client.Constants;
 import icu.takeneko.omms.client.exception.VersionNotMatchException;
-import icu.takeneko.omms.client.session.request.LoginRequest;
-import icu.takeneko.omms.client.session.response.Response;
+import icu.takeneko.omms.client.session.data.LoginRequest;
+import icu.takeneko.omms.client.session.data.Response;
 import icu.takeneko.omms.client.exception.ConnectionFailedException;
+import icu.takeneko.omms.client.session.data.StatusEvent;
 import icu.takeneko.omms.client.util.EncryptedConnector;
-import icu.takeneko.omms.client.util.Result;
 import icu.takeneko.omms.client.util.Util;
 
 import javax.crypto.BadPaddingException;
@@ -56,7 +56,7 @@ public class ClientInitialSession {
 
         String line = connector.readLine();
         Response response = Response.deserialize(line);
-        if (response.getResponseCode() == Result.OK) {
+        if (response.getEvent() == StatusEvent.SUCCESS) {
             String newKey = response.getContent("key");
             EncryptedConnector newConnector = new EncryptedConnector(
                     new BufferedReader(
@@ -69,7 +69,7 @@ public class ClientInitialSession {
             clientSession.start();
             return clientSession;
         } else {
-            if (response.getResponseCode() == Result.VERSION_NOT_MATCH){
+            if (response.getEvent() == StatusEvent.FAIL){
                 String serverVersion = response.getContent("version");
                 if (serverVersion == null){
                     throw new VersionNotMatchException();

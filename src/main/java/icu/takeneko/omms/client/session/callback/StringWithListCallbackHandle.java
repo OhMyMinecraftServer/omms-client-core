@@ -1,6 +1,6 @@
 package icu.takeneko.omms.client.session.callback;
 
-import icu.takeneko.omms.client.session.SessionContext;
+import icu.takeneko.omms.client.session.data.SessionContext;
 
 import java.util.Arrays;
 import java.util.List;

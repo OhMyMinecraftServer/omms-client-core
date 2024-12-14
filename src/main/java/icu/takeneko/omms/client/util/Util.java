@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Util {
     public static Gson gson = new GsonBuilder().serializeNulls().create();
@@ -47,5 +49,9 @@ public class Util {
             throw new RuntimeException(notIgnored);
         }
         return Base64.getEncoder().encodeToString(digest.digest(original.getBytes()));
+    }
+
+    public static <K, V> Collector<Pair<K, V>, ?, Map<K, V>> toMapCollector() {
+        return Collectors.toMap(Pair::getA, Pair::getB);
     }
 }

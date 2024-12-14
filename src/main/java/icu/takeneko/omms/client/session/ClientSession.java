@@ -3,23 +3,25 @@ package icu.takeneko.omms.client.session;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import icu.takeneko.omms.client.data.chatbridge.Broadcast;
+import icu.takeneko.omms.client.data.chatbridge.ChatMessage;
 import icu.takeneko.omms.client.data.chatbridge.ChatbridgeImplementation;
 import icu.takeneko.omms.client.data.chatbridge.MessageCache;
 import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
 import icu.takeneko.omms.client.data.permission.PermissionOperation;
 import icu.takeneko.omms.client.data.system.SystemInfo;
-import icu.takeneko.omms.client.exception.PermissionDeniedException;
-import icu.takeneko.omms.client.exception.ServerInternalErrorException;
 import icu.takeneko.omms.client.session.callback.*;
+import icu.takeneko.omms.client.session.data.FailureReasons;
+import icu.takeneko.omms.client.session.data.SessionContext;
+import icu.takeneko.omms.client.session.data.StatusEvent;
 import icu.takeneko.omms.client.session.handler.CallbackHandle;
+import icu.takeneko.omms.client.session.handler.EventSubscription;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegate;
 import icu.takeneko.omms.client.session.handler.ResponseHandlerDelegateImpl;
-import icu.takeneko.omms.client.session.request.Request;
-import icu.takeneko.omms.client.session.response.Response;
+import icu.takeneko.omms.client.session.data.Request;
+import icu.takeneko.omms.client.session.data.Response;
 import icu.takeneko.omms.client.util.EncryptedConnector;
-import icu.takeneko.omms.client.util.Result;
+import icu.takeneko.omms.client.util.Util;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,21 +41,17 @@ public class ClientSession extends Thread {
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
     private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
-    private final HashMap<String, Callback<List<String>>> controllerConsoleCompleteCallbackMap = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
     private final String serverName;
     EncryptedConnector connector;
-    @SuppressWarnings("FieldMayBeFinal")
     private SystemInfo systemInfo = null;
     private PermissionOperation lastPermissionOperation;
-    private final ResponseHandlerDelegate<Result, SessionContext, CallbackHandle<SessionContext>> delegate;
-    @Setter
-    private Callback<ClientSession> onPermissionDeniedCallback;
+    private final ResponseHandlerDelegate<SessionContext, CallbackHandle<SessionContext>> delegate;
+    private final PermissionDeniedCallbackHandle<SessionContext> onPermissionDeniedCallback = new PermissionDeniedCallbackHandle<>();
     @Setter
     private Callback<Response> onServerInternalExceptionCallback;
     @Setter
-    private Callback<PermissionOperation> onInvalidOperationCallback;
     private Callback2<Thread, Throwable> onAnyExceptionCallback = (t, e) -> {
         System.out.printf("Exception in thread %s%n", t);
         e.printStackTrace();
@@ -62,7 +60,7 @@ public class ClientSession extends Thread {
     @Setter
     private Callback<String> onDisconnectedCallback;
     @Setter
-    private Callback<Broadcast> onNewBroadcastReceivedCallback;
+    private Callback<ChatMessage> onNewChatMessageReceivedCallback;
 
     boolean chatMessagePassthroughEnabled = true;
 
@@ -72,30 +70,24 @@ public class ClientSession extends Thread {
         this.connector = connector;
         this.socket = socket;
         delegate = new ResponseHandlerDelegateImpl<>();
-        delegate.register(Result.BROADCAST_MESSAGE, new JsonObjectCallbackHandle<Broadcast>("broadcast", (broadcast) -> {
-            if (onNewBroadcastReceivedCallback != null) {
-                onNewBroadcastReceivedCallback.accept(broadcast);
-            }
-        }) {
-            @Override
-            protected TypeToken<Broadcast> getObjectType() {
-                return TypeToken.get(Broadcast.class);
-            }
-        }, false);
-        delegate.register(
-            Result.CONTROLLER_CONSOLE_COMPLETION_RESULT,
-            new StringWithListCallbackHandle("completionId", "result", (id, list) -> {
-                Callback<List<String>> callback = controllerConsoleCompleteCallbackMap.get(id);
-                if (callback == null) return;
-                callback.accept(list);
-            }),
-            false
-        );
-        delegate.setOnExceptionThrownHandler(e -> {
+        delegate.setExceptionHandler(e -> {
             if (onAnyExceptionCallback != null) {
                 onAnyExceptionCallback.accept(Thread.currentThread(), e);
             } else throw new RuntimeException(e);
         });
+    }
+
+    public EventSubscription<SessionContext> subscribe(String requestId) {
+        return delegate.subscribe(requestId)
+            .subscribe(StatusEvent.PERMISSION_DENIED, onPermissionDeniedCallback);
+    }
+
+    public EventSubscription<SessionContext> subscribe() {
+        return subscribe(newRequestId());
+    }
+
+    public String newRequestId() {
+        return this + ":" + Util.generateRandomString(16);
     }
 
     public boolean isActive() {
@@ -118,7 +110,12 @@ public class ClientSession extends Thread {
                 if (onResponseRecievedCallback != null) {
                     onResponseRecievedCallback.accept(response);
                 }
-                handleResponse(response);
+                if (response.getEvent() == StatusEvent.BROADCAST) {
+                    ChatMessage chatMessage = gson.fromJson(response.getContent("message"), ChatMessage.class);
+                    onNewChatMessageReceivedCallback.accept(chatMessage);
+                    continue;
+                }
+                delegate.handle(new SessionContext(response, this));
             } catch (DisconnectedException | SocketException ignored) {
                 if (onDisconnectedCallback != null) {
                     onDisconnectedCallback.accept(this.serverName);
@@ -131,44 +128,13 @@ public class ClientSession extends Thread {
         }
     }
 
-    private void handleResponse(Response response) throws Exception {
-        if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
-            this.socket.close();
-            throw new RateExceedException("Connection closed because request rate exceeded.");
-        }
-        switch (response.getResponseCode()) {
-            case FAIL:
-                if (onServerInternalExceptionCallback == null)
-                    throw new ServerInternalErrorException("Got FAIL from server.");
-                else {
-                    onServerInternalExceptionCallback.accept(response);
-                }
-                break;
-            case PERMISSION_DENIED:
-                if (onPermissionDeniedCallback == null)
-                    throw new PermissionDeniedException("Permission Denied.");
-                else
-                    onPermissionDeniedCallback.accept(this);
-                break;
-            case OPERATION_ALREADY_EXISTS:
-                if (onInvalidOperationCallback != null) {
-                    onInvalidOperationCallback.accept(lastPermissionOperation);
-                    onInvalidOperationCallback = null;
-                }
-                break;
-            case DISCONNECT:
-                throw new DisconnectedException();
-            default:
-                delegate.handle(response.getResponseCode(), new SessionContext(response, this));
-        }
-    }
-
     private void syncStatus() {
 
     }
 
-    public void send(Request request) {
+    public void send(Request request, String requestId) {
         networkExecutor.submit(() -> {
+            request.setRequestId(requestId);
             String content = gson.toJson(request);
             try {
                 connector.println(content);
@@ -178,94 +144,81 @@ public class ClientSession extends Thread {
         });
     }
 
-    public Response sendBlocking(Request request, Result... expectedValue) throws Exception {
-        String content = gson.toJson(request);
-        connector.println(content);
-        String s = connector.readLine();
-        Response response = gson.fromJson(s, Response.class);
-        while (true) {// tiny loop
-            if (onResponseRecievedCallback != null) {
-                onResponseRecievedCallback.accept(response);
-            }
-            if (response.getResponseCode() == Result.RATE_LIMIT_EXCEEDED) {
-                this.socket.close();
-                throw new RateExceedException("Connection closed because request rate exceeded.");
-            } else {
-                Response finalResponse = response;
-                if (Arrays.stream(expectedValue).anyMatch(result -> result == finalResponse.getResponseCode())) {
-                    break;
-                } else {
-                    handleResponse(response);
-                }
-            }
-            s = connector.readLine();
-            response = gson.fromJson(s, Response.class);
-        }
-        return response;
-    }
-
     public void close(Callback<String> onDisconnectedCallback) {
         setOnDisconnectedCallback(onDisconnectedCallback);
-        send(new Request("END"));
+        send(new Request("END"), newRequestId());
         delegate.shutdown();
         networkExecutor.shutdownNow();
     }
 
     public void fetchWhitelistFromServer(Callback<Map<String, List<String>>> callback) {
         CallbackHandle<SessionContext> cb = new WhitelistListCallbackHandle(callback);
-        String groupId = Long.toString(System.nanoTime());
-        cb.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.WHITELIST_LISTED, cb);
-        send(new Request("WHITELIST_LIST"));
+        send(
+            new Request("WHITELIST_LIST"),
+            subscribe()
+                .subscribeSuccess(cb)
+                .getRequestId()
+        );
     }
 
     public void fetchControllersFromServer(Callback<Map<String, Controller>> callback) {
-        delegate.registerOnce(Result.CONTROLLER_LISTED, new ControllerListCallbackHandle(callback));
-        send(new Request("CONTROLLER_LIST"));
+        send(
+            new Request("CONTROLLER_LIST"),
+            subscribe()
+                .subscribeSuccess(new ControllerListCallbackHandle(callback))
+                .getRequestId()
+        );
     }
 
     public void fetchSystemInfoFromServer(Callback<SystemInfo> fn) {
-        delegate.registerOnce(Result.SYSINFO_GOT, new SystemInfoCallbackHandle((si) -> {
-            this.systemInfo = si;
-            fn.accept(si);
-        }));
-        send(new Request("SYSTEM_GET_INFO"));
+        send(
+            new Request("SYSTEM_GET_INFO"),
+            subscribe()
+                .subscribeSuccess(new SystemInfoCallbackHandle((si) -> {
+                    this.systemInfo = si;
+                    fn.accept(si);
+                }))
+                .getRequestId()
+        );
     }
 
     public void fetchControllerStatus(String controllerId,
                                       Callback<Status> onStatusReceivedCallback,
-                                      Callback<String> onControllerNotExistCallback
+                                      Callback0 onControllerNotExistCallback
     ) {
         CallbackHandle<SessionContext> c1 = new StatusCallbackHandle(onStatusReceivedCallback);
+        EventSubscription<SessionContext> ctx = subscribe()
+            .subscribeSuccess(c1);
         if (onControllerNotExistCallback != null) {
-            CallbackHandle<SessionContext> c2 = new StringCallbackHandle("controller", onControllerNotExistCallback);
-            String groupId = Long.toString(System.nanoTime());
-            c1.setAssociateGroupId(groupId);
-            c2.setAssociateGroupId(groupId);
-            delegate.registerOnce(Result.CONTROLLER_NOT_EXIST, c2);
+            CallbackHandle<SessionContext> c2 = new CallbackHandle0<>(onControllerNotExistCallback);
+            ctx.subscribeFailure(c2);
         }
-        delegate.registerOnce(Result.CONTROLLER_STATUS_GOT, c1);
-        send(new Request().setRequest("CONTROLLER_GET_STATUS").withContentKeyPair("id", controllerId));
+        send(
+            new Request()
+                .setRequest("CONTROLLER_GET_STATUS")
+                .withContentKeyPair("id", controllerId),
+            ctx.getRequestId()
+        );
     }
 
 
     public void removeFromWhitelist(String whitelistName,
                                     String player,
-                                    Callback2<String, String> onPlayerRemovedCallback,
-                                    Callback2<String, String> onPlayerNotExistCallback
+                                    Callback0 onPlayerRemovedCallback,
+                                    Callback0 onPlayerNotExistCallback
     ) {
-        CallbackHandle<SessionContext> c1 = new BiStringCallbackHandle("whitelist", "player", onPlayerRemovedCallback);
+        CallbackHandle<SessionContext> c1 = new CallbackHandle0<>(onPlayerRemovedCallback);
+        EventSubscription<SessionContext> s = subscribe()
+            .subscribeSuccess(c1);
         if (onPlayerNotExistCallback != null) {
-            CallbackHandle<SessionContext> c2 = new BiStringCallbackHandle("whitelist", "player", onPlayerNotExistCallback);
-            String groupId = Long.toString(System.nanoTime());
-            c1.setAssociateGroupId(groupId);
-            c2.setAssociateGroupId(groupId);
-            delegate.registerOnce(Result.PLAYER_NOT_EXIST, c2);
+            CallbackHandle<SessionContext> c2 = new CallbackHandle0<>(onPlayerNotExistCallback);
+            s.subscribeFailure(c2);
         }
-        delegate.registerOnce(Result.WHITELIST_REMOVED, c1);
-        this.send(new Request("WHITELIST_REMOVE")
-            .withContentKeyPair("whitelist", whitelistName)
-            .withContentKeyPair("player", player)
+        this.send(
+            new Request("WHITELIST_REMOVE")
+                .withContentKeyPair("whitelist", whitelistName)
+                .withContentKeyPair("player", player),
+            s.getRequestId()
         );
     }
 
@@ -286,12 +239,14 @@ public class ClientSession extends Thread {
         return whitelists;
     }
 
-    public void startControllerConsole(String controller,
-                                       Callback2<String, String> onControllerConsoleLaunchedCallback,
-                                       Callback2<String, String> onControllerConsoleLogReceivedCallback,
-                                       Callback<String> onControllerNotExistCallback,
-                                       Callback<String> onControllerConsoleAlreadyExistsCallback
+    public void startControllerConsole(
+        String controller,
+        Callback2<String, String> onControllerConsoleLaunchedCallback,
+        Callback2<String, String> onControllerConsoleLogReceivedCallback,
+        Callback<String> onControllerNotExistCallback,
+        Callback<String> onControllerConsoleAlreadyExistsCallback
     ) {
+        EventSubscription<SessionContext> subscription = subscribe();
         CallbackHandle<SessionContext> logRecv = new BiStringCallbackHandle("consoleId", "content", onControllerConsoleLogReceivedCallback);
         CallbackHandle<SessionContext> consoleLaunched = new BiStringCallbackHandle("controller", "consoleId", (ct, conId) -> {
             controllerConsoleAssocMap.put(conId, logRecv);
@@ -299,57 +254,80 @@ public class ClientSession extends Thread {
         });
         CallbackHandle<SessionContext> consoleExists = new StringCallbackHandle("controller", onControllerConsoleAlreadyExistsCallback);
         CallbackHandle<SessionContext> controllerNotExist = new StringCallbackHandle("controller", onControllerNotExistCallback);
-        String groupId = Long.toString(System.nanoTime());
-        consoleLaunched.setAssociateGroupId(groupId);
-        consoleExists.setAssociateGroupId(groupId);
-        //logRecv.setAssociateGroupId(groupId);
-        controllerNotExist.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.CONSOLE_LAUNCHED, consoleLaunched);
-        delegate.registerOnce(Result.CONSOLE_ALREADY_EXISTS, consoleExists);
-        delegate.registerOnce(Result.CONTROLLER_NOT_EXIST, controllerNotExist);
-        delegate.register(Result.CONTROLLER_LOG, logRecv, false);
-        send(new Request().setRequest("CONTROLLER_LAUNCH_CONSOLE").withContentKeyPair("controller", controller));
+        subscription.subscribeAlways(StatusEvent.SUCCESS, new RawCallbackHandle<>(ctx -> {
+            if (ctx.hasMarker("log")) {
+                logRecv.invoke(ctx);
+                return;
+            }
+            if (ctx.hasMarker("launched")) {
+                consoleLaunched.invoke(ctx);
+            }
+        }));
+        subscription.subscribeFailure(new RawCallbackHandle<>(ctx -> {
+            if (ctx.hasReason(FailureReasons.CONSOLE_EXISTS)) {
+                consoleExists.invoke(ctx);
+                return;
+            }
+            if (ctx.hasReason(FailureReasons.CONTROLLER_NOT_FOUND)) {
+                controllerNotExist.invoke(ctx);
+            }
+        }));
+        send(
+            new Request()
+                .setRequest("CONTROLLER_LAUNCH_CONSOLE")
+                .withContentKeyPair("controller", controller),
+            subscription.getRequestId()
+        );
     }
 
-    public void stopControllerConsole(String consoleId,
-                                      Callback<String> onConsoleStoppedCallback,
-                                      Callback<String> onConsoleNotFoundCallback
+    public void stopControllerConsole(
+        String consoleId,
+        Callback<String> onConsoleStoppedCallback,
+        Callback<String> onConsoleNotFoundCallback
     ) {
-        String groupId = Long.toString(System.nanoTime());
         CallbackHandle<SessionContext> conStopped = new StringCallbackHandle("consoleId", onConsoleStoppedCallback);
         CallbackHandle<SessionContext> conNotFound = new StringCallbackHandle("consoleId", onConsoleNotFoundCallback);
-        conStopped.setAssociateGroupId(groupId);
-        conNotFound.setAssociateGroupId(groupId);
-        if (controllerConsoleAssocMap.containsKey(consoleId)) {
-            controllerConsoleAssocMap.get(consoleId).setAssociateGroupId(groupId);
-        }
-        delegate.registerOnce(Result.CONSOLE_STOPPED, conStopped);
-        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
-        send(new Request().setRequest("CONTROLLER_END_CONSOLE").withContentKeyPair("consoleId", consoleId));
+        send(
+            new Request()
+                .setRequest("CONTROLLER_END_CONSOLE")
+                .withContentKeyPair("consoleId", consoleId),
+            subscribe()
+                .subscribeSuccess(conStopped)
+                .subscribeFailure(conNotFound)
+                .getRequestId()
+        );
     }
 
-    public void controllerConsoleInput(String consoleId,
-                                       String line,
-                                       Callback<String> onConsoleNotFoundCallback
+    public void controllerConsoleInput(
+        String consoleId,
+        String line,
+        Callback<String> onConsoleNotFoundCallback
     ) {
-        controllerConsoleInput(consoleId, line, onConsoleNotFoundCallback, null);
+        controllerConsoleInput(
+            consoleId,
+            line,
+            onConsoleNotFoundCallback,
+            s -> {
+            }
+        );
     }
 
-    public void controllerConsoleInput(String consoleId,
-                                       String line,
-                                       Callback<String> onConsoleNotFoundCallback,
-                                       Callback<String> onControllerConsoleInputSendCallback
+    public void controllerConsoleInput(
+        String consoleId,
+        String line,
+        Callback<String> onConsoleNotFoundCallback,
+        Callback<String> onControllerConsoleInputSendCallback
     ) {
-        String groupId = Long.toString(System.nanoTime());
         CallbackHandle<SessionContext> conNotFound = new StringCallbackHandle("consoleId", onConsoleNotFoundCallback);
         CallbackHandle<SessionContext> conInput = new StringCallbackHandle("consoleId", onControllerConsoleInputSendCallback);
-        conInput.setAssociateGroupId(groupId);
-        conNotFound.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.CONTROLLER_CONSOLE_INPUT_SENT, conInput);
-        delegate.registerOnce(Result.CONSOLE_NOT_EXIST, conNotFound);
-        send(new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
-            .withContentKeyPair("consoleId", consoleId)
-            .withContentKeyPair("command", line)
+        send(
+            new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
+                .withContentKeyPair("consoleId", consoleId)
+                .withContentKeyPair("command", line),
+            subscribe()
+                .subscribeSuccess(conInput)
+                .subscribeFailure(conNotFound)
+                .getRequestId()
         );
     }
 
@@ -358,16 +336,16 @@ public class ClientSession extends Thread {
                                Callback2<String, String> resultCallback,
                                Callback2<String, String> onPlayerAlreadyExistsCallback
     ) {
-        String groupId = Long.toString(System.nanoTime());
         CallbackHandle<SessionContext> added = new BiStringCallbackHandle("whitelist", "player", resultCallback);
         CallbackHandle<SessionContext> playerExists = new BiStringCallbackHandle("whitelist", "player", onPlayerAlreadyExistsCallback);
-        playerExists.setAssociateGroupId(groupId);
-        added.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.WHITELIST_ADDED, added);
-        delegate.registerOnce(Result.PLAYER_ALREADY_EXISTS, playerExists);
-        this.send(new Request("WHITELIST_ADD")
-            .withContentKeyPair("whitelist", whitelistName)
-            .withContentKeyPair("player", player)
+        this.send(
+            new Request("WHITELIST_ADD")
+                .withContentKeyPair("whitelist", whitelistName)
+                .withContentKeyPair("player", player),
+            subscribe()
+                .subscribeSuccess(added)
+                .subscribeFailure(playerExists)
+                .getRequestId()
         );
     }
 
@@ -393,13 +371,21 @@ public class ClientSession extends Thread {
         ControllerCommandLogCallbackHandle logCallbackHandle = new ControllerCommandLogCallbackHandle(callback);
         StringCallbackHandle notExist = new StringCallbackHandle("controllerId", onControllerNotExistCallback);
         StringCallbackHandle authFailed = new StringCallbackHandle("controllerId", onControllerAuthFailedCallback);
-        logCallbackHandle.setAssociateGroupId(groupId);
-        notExist.setAssociateGroupId(groupId);
-        authFailed.setAssociateGroupId(groupId);
-        delegate.registerOnce(Result.CONTROLLER_COMMAND_SENT, logCallbackHandle);
-        delegate.registerOnce(Result.CONTROLLER_NOT_EXIST, notExist);
-        delegate.registerOnce(Result.CONTROLLER_AUTH_FAILED, authFailed);
-        send(request);
+        send(
+            request,
+            subscribe()
+                .subscribeSuccess(logCallbackHandle)
+                .subscribeFailure(new RawCallbackHandle<>(c -> {
+                    if (c.hasReason(FailureReasons.CONTROLLER_UNAUTHORISED)){
+                        authFailed.invoke(c);
+                        return;
+                    }
+                    if (c.hasReason(FailureReasons.CONTROLLER_NOT_FOUND)){
+                        notExist.invoke(c);
+                    }
+                }))
+                .getRequestId()
+        );
     }
 
     public void setChatMessagePassthroughState(boolean state, Callback<Boolean> onStateChangedCallback) {
@@ -407,8 +393,7 @@ public class ClientSession extends Thread {
             .setRequest("SET_CHAT_PASSTHROUGH_STATE")
             .withContentKeyPair("state", Boolean.toString(state));
         BooleanCallbackHandle cb = new BooleanCallbackHandle("state", onStateChangedCallback);
-        delegate.registerOnce(Result.CHAT_PASSTHROUGH_STATE_CHANGED, cb);
-        send(request);
+        send(request, subscribe().subscribeSuccess(cb).getRequestId());
     }
 
     public void sendChatbridgeMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
@@ -417,8 +402,8 @@ public class ClientSession extends Thread {
             .withContentKeyPair("channel", channel)
             .withContentKeyPair("message", message);
         BiStringCallbackHandle cb = new BiStringCallbackHandle("channel", "message", onMessageSentCallback);
-        delegate.registerOnce(Result.BROADCAST_SENT, cb);
-        send(request);
+
+        send(request, subscribe().subscribeSuccess(cb).getRequestId());
     }
 
     public void getChatHistory(Callback<MessageCache> onMessageCacheReceivedCallback) {
@@ -428,8 +413,7 @@ public class ClientSession extends Thread {
                 return TypeToken.get(MessageCache.class);
             }
         };
-        delegate.registerOnce(Result.GOT_CHAT_HISTORY, cb);
-        send(new Request("GET_CHAT_HISTORY"));
+        send(new Request("GET_CHAT_HISTORY"), subscribe().subscribeSuccess(cb).getRequestId());
     }
 
     public void getChatbridgeImplementation(Callback<ChatbridgeImplementation> onResultReceivedCallback) {
@@ -438,8 +422,7 @@ public class ClientSession extends Thread {
             ChatbridgeImplementation::valueOf,
             onResultReceivedCallback
         );
-        delegate.registerOnce(Result.GOT_CHATBRIDGE_IMPL, handle);
-        send(new Request("GET_CHATBRIDGE_IMPL"));
+        send(new Request("GET_CHATBRIDGE_IMPL"), subscribe().subscribeSuccess(handle).getRequestId());
     }
 
     public void controllerConsoleComplete(
@@ -448,14 +431,13 @@ public class ClientSession extends Thread {
         int cursorPosition,
         Callback<List<String>> callback
     ) {
-        StringCallbackHandle idCallback = new StringCallbackHandle(
-            "completionId",
-            it -> controllerConsoleCompleteCallbackMap.put(it, callback)
-        );
-        delegate.registerOnce(Result.CONTROLLER_CONSOLE_COMPLETION_SENT, idCallback);
+        ListCallbackHandle<String> callbackHandle = new ListCallbackHandle<>("result", callback);
         send(new Request("CONTROLLER_CONSOLE_COMPLETE")
-            .withContentKeyPair("input", text)
-            .withContentKeyPair("cursor", Integer.toString(cursorPosition))
+                .withContentKeyPair("input", text)
+                .withContentKeyPair("cursor", Integer.toString(cursorPosition)),
+            subscribe()
+                .subscribeSuccess(callbackHandle)
+                .getRequestId()
         );
     }
 
@@ -467,5 +449,8 @@ public class ClientSession extends Thread {
         this.onResponseRecievedCallback = onResponseRecievedCallback;
     }
 
-
+    @Override
+    public String toString() {
+        return "ClientSession<" + this.hashCode() + ">";
+    }
 }

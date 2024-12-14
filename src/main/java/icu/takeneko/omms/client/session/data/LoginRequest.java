@@ -1,4 +1,4 @@
-package icu.takeneko.omms.client.session.request;
+package icu.takeneko.omms.client.session.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

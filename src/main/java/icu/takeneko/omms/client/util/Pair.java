@@ -1,5 +1,8 @@
 package icu.takeneko.omms.client.util;
 
+import lombok.Getter;
+
+@Getter
 public class Pair<K, V> {
     K a;
     V b;
@@ -9,19 +12,15 @@ public class Pair<K, V> {
         this.b = b;
     }
 
-    public K getA() {
-        return a;
-    }
-
-    public V getB() {
-        return b;
-    }
-
     @Override
     public String toString() {
         return "Pair{" +
                 "a=" + a.toString() +
                 ", b=" + b.toString() +
                 '}';
+    }
+
+    public static <K,V> Pair<K,V> of(K a, V b){
+        return new Pair<>(a, b);
     }
 }

@@ -2,18 +2,18 @@ package icu.takeneko.omms.client.session.handler;
 
 import icu.takeneko.omms.client.session.callback.Callback;
 
-public interface ResponseHandlerDelegate<E, C, H> {
-    void handle(E event, C context);
+public interface ResponseHandlerDelegate<C, H> {
+    void handle(C context);
 
-    void registerOnce(E event, H handle);
+    void register(EventSubscription<C> subscription);
 
-    void register(E event, H handle, boolean emitOnce);
-
-    void remove(E event, H handle);
-
-    void removeAssocGroup(String groupId);
-
-    void setOnExceptionThrownHandler(Callback<Throwable> cb);
+    default EventSubscription<C> subscribe(String requestId){
+        EventSubscription<C> subscription = new EventSubscription<>(requestId);
+        register(subscription);
+        return subscription;
+    }
 
     void shutdown();
+
+    void setExceptionHandler(Callback<Throwable> callback);
 }
