@@ -1,5 +1,7 @@
 package icu.takeneko.omms.client.util;
 
+import lombok.Getter;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -13,6 +15,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+@Getter
 public class EncryptedConnector {
     private final BufferedReader in;
     private final PrintWriter out;
@@ -53,18 +56,6 @@ public class EncryptedConnector {
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"));
         byte[] base64 = Base64.getDecoder().decode(data);
         return cipher.doFinal(base64);
-    }
-
-    public BufferedReader getIn() {
-        return in;
-    }
-
-    public byte[] getKey() {
-        return key;
-    }
-
-    public PrintWriter getOut() {
-        return out;
     }
 
 }

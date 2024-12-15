@@ -58,9 +58,12 @@ public class ClientSession extends Thread {
     };
     private Callback<Response> onResponseRecievedCallback;
     @Setter
-    private Callback<String> onDisconnectedCallback;
+    private Callback0 onDisconnectedCallback;
     @Setter
     private Callback<ChatMessage> onNewChatMessageReceivedCallback;
+    @Getter
+    @Setter
+    private String sessionName;
 
     boolean chatMessagePassthroughEnabled = true;
 
@@ -73,8 +76,11 @@ public class ClientSession extends Thread {
         delegate.setExceptionHandler(e -> {
             if (onAnyExceptionCallback != null) {
                 onAnyExceptionCallback.accept(Thread.currentThread(), e);
-            } else throw new RuntimeException(e);
+            } else {
+                throw new RuntimeException(e);
+            }
         });
+        sessionName = Integer.toString(Math.abs((serverName + ":" + new String(connector.getKey())).hashCode()));
     }
 
     public EventSubscription<SessionContext> subscribe(String requestId) {
@@ -87,7 +93,7 @@ public class ClientSession extends Thread {
     }
 
     public String newRequestId() {
-        return this + ":" + Util.generateRandomString(16);
+        return Util.generateNonce(16) + ":" + this;
     }
 
     public boolean isActive() {
@@ -115,10 +121,16 @@ public class ClientSession extends Thread {
                     onNewChatMessageReceivedCallback.accept(chatMessage);
                     continue;
                 }
+                if (response.getEvent() == StatusEvent.DISCONNECT) {
+                    if (onDisconnectedCallback != null) {
+                        onDisconnectedCallback.accept();
+                    }
+                    break;
+                }
                 delegate.handle(new SessionContext(response, this));
             } catch (DisconnectedException | SocketException ignored) {
                 if (onDisconnectedCallback != null) {
-                    onDisconnectedCallback.accept(this.serverName);
+                    onDisconnectedCallback.accept();
                 }
                 break;
             } catch (Exception e) {
@@ -144,9 +156,12 @@ public class ClientSession extends Thread {
         });
     }
 
-    public void close(Callback<String> onDisconnectedCallback) {
+    public void close(Callback0 onDisconnectedCallback) {
         setOnDisconnectedCallback(onDisconnectedCallback);
-        send(new Request("END"), newRequestId());
+        send(
+            new Request("END"),
+            newRequestId()
+        );
         delegate.shutdown();
         networkExecutor.shutdownNow();
     }
@@ -376,11 +391,11 @@ public class ClientSession extends Thread {
             subscribe()
                 .subscribeSuccess(logCallbackHandle)
                 .subscribeFailure(new RawCallbackHandle<>(c -> {
-                    if (c.hasReason(FailureReasons.CONTROLLER_UNAUTHORISED)){
+                    if (c.hasReason(FailureReasons.CONTROLLER_UNAUTHORISED)) {
                         authFailed.invoke(c);
                         return;
                     }
-                    if (c.hasReason(FailureReasons.CONTROLLER_NOT_FOUND)){
+                    if (c.hasReason(FailureReasons.CONTROLLER_NOT_FOUND)) {
                         notExist.invoke(c);
                     }
                 }))
@@ -451,6 +466,6 @@ public class ClientSession extends Thread {
 
     @Override
     public String toString() {
-        return "ClientSession<" + this.hashCode() + ">";
+        return sessionName;
     }
 }

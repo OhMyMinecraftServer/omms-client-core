@@ -20,7 +20,13 @@ public class ResponseHandlerDelegateImpl<C extends ResponseAccess> implements Re
     public void handle(C context) {
         EventSubscription<C> subscription = subscriptionMap.get(context.requestId());
         if (subscription == null) return;
-        dispatchThread.submit(() -> subscription.handle(context.event(), context));
+        dispatchThread.submit(() -> {
+            try {
+                subscription.handle(context.event(), context);
+            } catch (Throwable e){
+                exceptionHandler.accept(e);
+            }
+        });
     }
 
     @Override

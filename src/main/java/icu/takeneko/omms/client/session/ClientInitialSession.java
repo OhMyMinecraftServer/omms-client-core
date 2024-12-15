@@ -69,7 +69,7 @@ public class ClientInitialSession {
             clientSession.start();
             return clientSession;
         } else {
-            if (response.getEvent() == StatusEvent.FAIL){
+            if (response.getEvent() == StatusEvent.FAIL) {
                 String serverVersion = response.getContent("version");
                 if (serverVersion == null){
                     throw new VersionNotMatchException();

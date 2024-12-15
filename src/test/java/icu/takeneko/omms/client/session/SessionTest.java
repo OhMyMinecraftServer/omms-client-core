@@ -18,21 +18,18 @@ class SessionTest {
             System.out.println("token = " + token);
             session = initialSession.init(token);
             CountDownLatch latch = new CountDownLatch(3);
-            session.fetchSystemInfoFromServer(info -> {
-                System.out.println("info = " + info);
+            session.fetchWhitelistFromServer(it -> {
+                System.out.println("whitelists = " + it.toString());
                 latch.countDown();
             });
-            session.fetchWhitelistFromServer(it -> {
-                System.out.println("it.toString() = " + it.toString());
+            session.fetchControllersFromServer(it -> {
+                System.out.println("controllers = " + it.toString());
                 latch.countDown();
             });
             while (latch.getCount() != 1) {
                 LockSupport.parkNanos(1);
             }
-            session.close((s) -> {
-                System.out.println("ServerName = " + s);
-                latch.countDown();
-            });
+            session.close(latch::countDown);
             latch.await();
             session.join();
         } catch (ConnectionFailedException e) {

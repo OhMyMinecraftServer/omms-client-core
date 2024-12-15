@@ -19,11 +19,20 @@ public class Util {
 
     public static String generateRandomString(int len) {
         String ch = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+        return randomStringFrom(ch, len);
+    }
+
+    public static String generateNonce(int len) {
+        String ch = "abcdef0123456789";
+        return randomStringFrom(ch, len);
+    }
+
+    public static String randomStringFrom(String src, int len) {
         StringBuilder stringBuffer = new StringBuilder();
         for (int i = 0; i < len; i++) {
             Random random = new Random(System.nanoTime());
-            int num = random.nextInt(62);
-            stringBuffer.append(ch.charAt(num));
+            int num = random.nextInt(src.length() - 1);
+            stringBuffer.append(src.charAt(num));
         }
         return stringBuffer.toString();
     }
@@ -41,7 +50,7 @@ public class Util {
         return sb.append("]").toString();
     }
 
-    public static String getChecksumMD5(String original){
+    public static String getChecksumMD5(String original) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
