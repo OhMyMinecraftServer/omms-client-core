@@ -48,7 +48,8 @@ public class ClientSession extends Thread {
     private SystemInfo systemInfo = null;
     private PermissionOperation lastPermissionOperation;
     private final ResponseHandlerDelegate<SessionContext, CallbackHandle<SessionContext>> delegate;
-    private final PermissionDeniedCallbackHandle<SessionContext> onPermissionDeniedCallback = new PermissionDeniedCallbackHandle<>();
+    @Setter
+    private PermissionDeniedCallbackHandle<SessionContext> onPermissionDeniedCallback = new PermissionDeniedCallbackHandle<>();
     @Setter
     private Callback<Response> onServerInternalExceptionCallback;
     @Setter
@@ -61,7 +62,6 @@ public class ClientSession extends Thread {
     private Callback0 onDisconnectedCallback;
     @Setter
     private Callback<ChatMessage> onNewChatMessageReceivedCallback;
-    @Getter
     @Setter
     private String sessionName;
 
@@ -118,7 +118,9 @@ public class ClientSession extends Thread {
                 }
                 if (response.getEvent() == StatusEvent.BROADCAST) {
                     ChatMessage chatMessage = gson.fromJson(response.getContent("message"), ChatMessage.class);
-                    onNewChatMessageReceivedCallback.accept(chatMessage);
+                    if (onNewChatMessageReceivedCallback != null){
+                        onNewChatMessageReceivedCallback.accept(chatMessage);
+                    }
                     continue;
                 }
                 if (response.getEvent() == StatusEvent.DISCONNECT) {
