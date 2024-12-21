@@ -10,6 +10,13 @@ import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
 import icu.takeneko.omms.client.data.permission.PermissionOperation;
 import icu.takeneko.omms.client.data.system.SystemInfo;
+import icu.takeneko.omms.client.exception.ConsoleExistsException;
+import icu.takeneko.omms.client.exception.ConsoleNotFoundException;
+import icu.takeneko.omms.client.exception.ControllerNotFoundException;
+import icu.takeneko.omms.client.exception.PlayerAlreadyExistsException;
+import icu.takeneko.omms.client.exception.PlayerNotFoundException;
+import icu.takeneko.omms.client.exception.RequestUnauthorisedException;
+import icu.takeneko.omms.client.exception.WhitelistNotFoundException;
 import icu.takeneko.omms.client.session.callback.*;
 import icu.takeneko.omms.client.session.data.FailureReasons;
 import icu.takeneko.omms.client.session.data.SessionContext;
@@ -28,8 +35,10 @@ import lombok.Setter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Session API
@@ -40,7 +49,8 @@ public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
     private final HashMap<String, Controller> controllerMap = new HashMap<>();
-    private final HashMap<String, CallbackHandle<SessionContext>> controllerConsoleAssocMap = new HashMap<>();
+    private final HashMap<String, EventSubscription<SessionContext>> controllerConsoleSubscriptions = new HashMap<>();
+    private final HashMap<String, ControllerConsoleClient> controllerConsoleClients = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private final Socket socket;
     private final String serverName;
@@ -118,7 +128,7 @@ public class ClientSession extends Thread {
                 }
                 if (response.getEvent() == StatusEvent.BROADCAST) {
                     ChatMessage chatMessage = gson.fromJson(response.getContent("message"), ChatMessage.class);
-                    if (onNewChatMessageReceivedCallback != null){
+                    if (onNewChatMessageReceivedCallback != null) {
                         onNewChatMessageReceivedCallback.accept(chatMessage);
                     }
                     continue;
@@ -158,85 +168,102 @@ public class ClientSession extends Thread {
         });
     }
 
-    public void close(Callback0 onDisconnectedCallback) {
-        setOnDisconnectedCallback(onDisconnectedCallback);
+    public CompletableFuture<Void> close() {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        setOnDisconnectedCallback(() -> future.complete(null));
         send(
             new Request("END"),
             newRequestId()
         );
         delegate.shutdown();
         networkExecutor.shutdownNow();
+        return future;
     }
 
-    public void fetchWhitelistFromServer(Callback<Map<String, List<String>>> callback) {
-        CallbackHandle<SessionContext> cb = new WhitelistListCallbackHandle(callback);
+    public CompletableFuture<Map<String, List<String>>> fetchWhitelistFromServer() {
+        CompletableFuture<Map<String, List<String>>> fu = new CompletableFuture<>();
+        CallbackHandle<SessionContext> cb = new WhitelistListCallbackHandle(fu::complete);
         send(
             new Request("WHITELIST_LIST"),
             subscribe()
                 .subscribeSuccess(cb)
                 .getRequestId()
         );
+        return fu;
     }
 
-    public void fetchControllersFromServer(Callback<Map<String, Controller>> callback) {
+    public CompletableFuture<Map<String, Controller>> fetchControllersFromServer() {
+        CompletableFuture<Map<String, Controller>> future = new CompletableFuture<>();
         send(
             new Request("CONTROLLER_LIST"),
             subscribe()
-                .subscribeSuccess(new ControllerListCallbackHandle(callback))
+                .subscribeSuccess(new ControllerListCallbackHandle(future::complete))
                 .getRequestId()
         );
+        return future;
     }
 
-    public void fetchSystemInfoFromServer(Callback<SystemInfo> fn) {
+    public CompletableFuture<SystemInfo> fetchSystemInfoFromServer() {
+        CompletableFuture<SystemInfo> future = new CompletableFuture<>();
         send(
             new Request("SYSTEM_GET_INFO"),
             subscribe()
                 .subscribeSuccess(new SystemInfoCallbackHandle((si) -> {
                     this.systemInfo = si;
-                    fn.accept(si);
+                    future.complete(si);
                 }))
                 .getRequestId()
         );
+        return future;
     }
 
-    public void fetchControllerStatus(String controllerId,
-                                      Callback<Status> onStatusReceivedCallback,
-                                      Callback0 onControllerNotExistCallback
-    ) {
-        CallbackHandle<SessionContext> c1 = new StatusCallbackHandle(onStatusReceivedCallback);
+    public CompletableFuture<Status> fetchControllerStatus(String controllerId) {
+        CompletableFuture<Status> future = new CompletableFuture<>();
         EventSubscription<SessionContext> ctx = subscribe()
-            .subscribeSuccess(c1);
-        if (onControllerNotExistCallback != null) {
-            CallbackHandle<SessionContext> c2 = new CallbackHandle0<>(onControllerNotExistCallback);
-            ctx.subscribeFailure(c2);
-        }
+            .subscribeSuccess(
+                new StatusCallbackHandle(future::complete)
+            ).subscribeFailure(
+                new CallbackHandle0<>(
+                    () -> future.completeExceptionally(new ControllerNotExistException(controllerId))
+                )
+            );
+
         send(
             new Request()
                 .setRequest("CONTROLLER_GET_STATUS")
                 .withContentKeyPair("id", controllerId),
             ctx.getRequestId()
         );
+        return future;
     }
 
 
-    public void removeFromWhitelist(String whitelistName,
-                                    String player,
-                                    Callback0 onPlayerRemovedCallback,
-                                    Callback0 onPlayerNotExistCallback
+    public CompletableFuture<Void> removeFromWhitelist(
+        String whitelistName,
+        String player
     ) {
-        CallbackHandle<SessionContext> c1 = new CallbackHandle0<>(onPlayerRemovedCallback);
+        CompletableFuture<Void> future = new CompletableFuture<>();
         EventSubscription<SessionContext> s = subscribe()
-            .subscribeSuccess(c1);
-        if (onPlayerNotExistCallback != null) {
-            CallbackHandle<SessionContext> c2 = new CallbackHandle0<>(onPlayerNotExistCallback);
-            s.subscribeFailure(c2);
-        }
+            .subscribeSuccess(new CallbackHandle0<>(() -> future.complete(null)))
+            .subscribeFailure(
+                new RawCallbackHandle<>(ctx -> {
+                    if (ctx.hasReason(FailureReasons.WHITELIST_NOT_FOUND)) {
+                        future.completeExceptionally(new WhitelistNotFoundException(whitelistName));
+                    } else {
+                        if (ctx.hasReason(FailureReasons.PLAYER_NOT_FOUND)) {
+                            future.completeExceptionally(new PlayerNotFoundException(whitelistName, player));
+                        }
+                    }
+                })
+            );
+
         this.send(
             new Request("WHITELIST_REMOVE")
                 .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player),
             s.getRequestId()
         );
+        return future;
     }
 
 
@@ -256,21 +283,35 @@ public class ClientSession extends Thread {
         return whitelists;
     }
 
-    public void startControllerConsole(
+    public CompletableFuture<Void> startControllerConsole(
         String controller,
-        Callback2<String, String> onControllerConsoleLaunchedCallback,
-        Callback2<String, String> onControllerConsoleLogReceivedCallback,
-        Callback<String> onControllerNotExistCallback,
-        Callback<String> onControllerConsoleAlreadyExistsCallback
+        ControllerConsoleClient client
     ) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         EventSubscription<SessionContext> subscription = subscribe();
-        CallbackHandle<SessionContext> logRecv = new BiStringCallbackHandle("consoleId", "content", onControllerConsoleLogReceivedCallback);
-        CallbackHandle<SessionContext> consoleLaunched = new BiStringCallbackHandle("controller", "consoleId", (ct, conId) -> {
-            controllerConsoleAssocMap.put(conId, logRecv);
-            onControllerConsoleLaunchedCallback.accept(ct, conId);
-        });
-        CallbackHandle<SessionContext> consoleExists = new StringCallbackHandle("controller", onControllerConsoleAlreadyExistsCallback);
-        CallbackHandle<SessionContext> controllerNotExist = new StringCallbackHandle("controller", onControllerNotExistCallback);
+        CallbackHandle<SessionContext> logRecv = new BiStringCallbackHandle(
+            "consoleId",
+            "content",
+            client::onLogReceived
+        );
+        CallbackHandle<SessionContext> consoleLaunched = new BiStringCallbackHandle(
+            "controller",
+            "consoleId",
+            (ct, conId) -> {
+                controllerConsoleSubscriptions.put(conId, subscription);
+                controllerConsoleClients.put(conId, client);
+                future.complete(null);
+                client.onLaunched(controller, conId);
+            }
+        );
+        CallbackHandle<SessionContext> consoleExists = new StringCallbackHandle(
+            "controller",
+            s -> future.completeExceptionally(new ConsoleExistsException(controller))
+        );
+        CallbackHandle<SessionContext> controllerNotFound = new StringCallbackHandle(
+            "controller",
+            s -> future.completeExceptionally(new ControllerNotFoundException(controller))
+        );
         subscription.subscribeAlways(StatusEvent.SUCCESS, new RawCallbackHandle<>(ctx -> {
             if (ctx.hasMarker("log")) {
                 logRecv.invoke(ctx);
@@ -286,7 +327,7 @@ public class ClientSession extends Thread {
                 return;
             }
             if (ctx.hasReason(FailureReasons.CONTROLLER_NOT_FOUND)) {
-                controllerNotExist.invoke(ctx);
+                controllerNotFound.invoke(ctx);
             }
         }));
         send(
@@ -295,15 +336,27 @@ public class ClientSession extends Thread {
                 .withContentKeyPair("controller", controller),
             subscription.getRequestId()
         );
+        return future;
     }
 
-    public void stopControllerConsole(
-        String consoleId,
-        Callback<String> onConsoleStoppedCallback,
-        Callback<String> onConsoleNotFoundCallback
+    public CompletableFuture<Void> stopControllerConsole(
+        String consoleId
     ) {
-        CallbackHandle<SessionContext> conStopped = new StringCallbackHandle("consoleId", onConsoleStoppedCallback);
-        CallbackHandle<SessionContext> conNotFound = new StringCallbackHandle("consoleId", onConsoleNotFoundCallback);
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        CallbackHandle<SessionContext> conStopped = new StringCallbackHandle(
+            "consoleId",
+            id -> {
+                controllerConsoleClients.get(id).onStopped();
+                controllerConsoleSubscriptions.get(id).setRemoved();
+                controllerConsoleClients.remove(id);
+                controllerConsoleSubscriptions.remove(id);
+                future.complete(null);
+            }
+        );
+        CallbackHandle<SessionContext> conNotFound = new StringCallbackHandle(
+            "consoleId",
+            id -> future.completeExceptionally(new ConsoleNotFoundException(id))
+        );
         send(
             new Request()
                 .setRequest("CONTROLLER_END_CONSOLE")
@@ -313,30 +366,20 @@ public class ClientSession extends Thread {
                 .subscribeFailure(conNotFound)
                 .getRequestId()
         );
+        return future;
     }
 
-    public void controllerConsoleInput(
+    public CompletableFuture<Void> controllerConsoleInput(
         String consoleId,
-        String line,
-        Callback<String> onConsoleNotFoundCallback
+        String line
     ) {
-        controllerConsoleInput(
-            consoleId,
-            line,
-            onConsoleNotFoundCallback,
-            s -> {
-            }
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        CallbackHandle<SessionContext> conNotFound = new CallbackHandle0<>(
+            () -> future.completeExceptionally(new ConsoleNotFoundException(consoleId))
         );
-    }
-
-    public void controllerConsoleInput(
-        String consoleId,
-        String line,
-        Callback<String> onConsoleNotFoundCallback,
-        Callback<String> onControllerConsoleInputSendCallback
-    ) {
-        CallbackHandle<SessionContext> conNotFound = new StringCallbackHandle("consoleId", onConsoleNotFoundCallback);
-        CallbackHandle<SessionContext> conInput = new StringCallbackHandle("consoleId", onControllerConsoleInputSendCallback);
+        CallbackHandle<SessionContext> conInput = new CallbackHandle0<>(
+            () -> future.complete(null)
+        );
         send(
             new Request().setRequest("CONTROLLER_INPUT_CONSOLE")
                 .withContentKeyPair("consoleId", consoleId)
@@ -346,48 +389,57 @@ public class ClientSession extends Thread {
                 .subscribeFailure(conNotFound)
                 .getRequestId()
         );
+        return future;
     }
 
-    public void addToWhitelist(String whitelistName,
-                               String player,
-                               Callback2<String, String> resultCallback,
-                               Callback2<String, String> onPlayerAlreadyExistsCallback
+    public CompletableFuture<Void> addToWhitelist(
+        String whitelistName,
+        String player
     ) {
-        CallbackHandle<SessionContext> added = new BiStringCallbackHandle("whitelist", "player", resultCallback);
-        CallbackHandle<SessionContext> playerExists = new BiStringCallbackHandle("whitelist", "player", onPlayerAlreadyExistsCallback);
+        CompletableFuture<Void> future = new CompletableFuture<>();
         this.send(
             new Request("WHITELIST_ADD")
                 .withContentKeyPair("whitelist", whitelistName)
                 .withContentKeyPair("player", player),
             subscribe()
-                .subscribeSuccess(added)
-                .subscribeFailure(playerExists)
+                .subscribeSuccess(new CallbackHandle0<>(
+                        () -> future.complete(null)
+                    )
+                ).subscribeFailure(new RawCallbackHandle<>(ctx -> {
+                    if (ctx.hasReason(FailureReasons.WHITELIST_NOT_FOUND)) {
+                        future.completeExceptionally(new WhitelistNotFoundException(whitelistName));
+                    } else {
+                        if (ctx.hasReason(FailureReasons.PLAYER_EXISTS)) {
+                            future.completeExceptionally(new PlayerAlreadyExistsException(whitelistName, player));
+                        }
+                    }
+                }))
                 .getRequestId()
         );
+        return future;
     }
 
-
-    public void sendCommandToController(String controller,
-                                        String command,
-                                        Callback2<String, List<String>> callback
+    public CompletableFuture<List<String>> sendCommandToController(
+        String controller,
+        String command
     ) {
-        sendCommandToController(controller, command, callback, null, null);
-    }
-
-    public void sendCommandToController(String controller,
-                                        String command,
-                                        Callback2<String, List<String>> callback,
-                                        Callback<String> onControllerNotExistCallback,
-                                        Callback<String> onControllerAuthFailedCallback
-    ) {
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
         Request request = new Request()
             .setRequest("CONTROLLER_EXECUTE_COMMAND")
             .withContentKeyPair("controller", controller)
             .withContentKeyPair("command", command);
         String groupId = Long.toString(System.nanoTime());
-        ControllerCommandLogCallbackHandle logCallbackHandle = new ControllerCommandLogCallbackHandle(callback);
-        StringCallbackHandle notExist = new StringCallbackHandle("controllerId", onControllerNotExistCallback);
-        StringCallbackHandle authFailed = new StringCallbackHandle("controllerId", onControllerAuthFailedCallback);
+        ControllerCommandLogCallbackHandle logCallbackHandle = new ControllerCommandLogCallbackHandle(
+            (id, c) -> future.complete(c)
+        );
+        StringCallbackHandle notExist = new StringCallbackHandle(
+            "controllerId",
+            c -> future.completeExceptionally(new ControllerNotFoundException(c))
+        );
+        StringCallbackHandle authFailed = new StringCallbackHandle(
+            "controllerId",
+            c -> future.completeExceptionally(new RequestUnauthorisedException(controller))
+        );
         send(
             request,
             subscribe()
@@ -403,52 +455,67 @@ public class ClientSession extends Thread {
                 }))
                 .getRequestId()
         );
+        return future;
     }
 
-    public void setChatMessagePassthroughState(boolean state, Callback<Boolean> onStateChangedCallback) {
+    public CompletableFuture<Boolean> setChatMessagePassthroughState(boolean state) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         Request request = new Request()
             .setRequest("SET_CHAT_PASSTHROUGH_STATE")
             .withContentKeyPair("state", Boolean.toString(state));
-        BooleanCallbackHandle cb = new BooleanCallbackHandle("state", onStateChangedCallback);
+        BooleanCallbackHandle cb = new BooleanCallbackHandle(
+            "state",
+            future::complete
+        );
         send(request, subscribe().subscribeSuccess(cb).getRequestId());
+        return future;
     }
 
-    public void sendChatbridgeMessage(String channel, String message, Callback2<String, String> onMessageSentCallback) {
+    public CompletableFuture<Void> sendChatbridgeMessage(String channel, String message) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         Request request = new Request()
             .setRequest("SEND_BROADCAST")
             .withContentKeyPair("channel", channel)
             .withContentKeyPair("message", message);
-        BiStringCallbackHandle cb = new BiStringCallbackHandle("channel", "message", onMessageSentCallback);
+        CallbackHandle0<SessionContext> cb = new CallbackHandle0<>(
+            () -> future.complete(null)
+        );
 
         send(request, subscribe().subscribeSuccess(cb).getRequestId());
+        return future;
     }
 
-    public void getChatHistory(Callback<MessageCache> onMessageCacheReceivedCallback) {
-        JsonObjectCallbackHandle<MessageCache> cb = new JsonObjectCallbackHandle<MessageCache>("content", onMessageCacheReceivedCallback) {
+    public CompletableFuture<MessageCache> getChatHistory() {
+        CompletableFuture<MessageCache> future = new CompletableFuture<>();
+        JsonObjectCallbackHandle<MessageCache> cb = new JsonObjectCallbackHandle<MessageCache>("content", future::complete) {
             @Override
             protected TypeToken<MessageCache> getObjectType() {
                 return TypeToken.get(MessageCache.class);
             }
         };
         send(new Request("GET_CHAT_HISTORY"), subscribe().subscribeSuccess(cb).getRequestId());
+        return future;
     }
 
-    public void getChatbridgeImplementation(Callback<ChatbridgeImplementation> onResultReceivedCallback) {
+    public CompletableFuture<ChatbridgeImplementation> getChatbridgeImplementation() {
+        CompletableFuture<ChatbridgeImplementation> future = new CompletableFuture<>();
         EnumCallbackHandle<ChatbridgeImplementation> handle = new EnumCallbackHandle<>(
             "implementation",
             ChatbridgeImplementation::valueOf,
-            onResultReceivedCallback
+            future::complete
         );
         send(new Request("GET_CHATBRIDGE_IMPL"), subscribe().subscribeSuccess(handle).getRequestId());
+        return future;
     }
 
-    public void controllerConsoleComplete(
+    public CompletableFuture<List<String>> controllerConsoleComplete(
         String consoleId,
         String text,
         int cursorPosition,
         Callback<List<String>> callback
     ) {
-        ListCallbackHandle<String> callbackHandle = new ListCallbackHandle<>("result", callback);
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+        ListCallbackHandle<String> callbackHandle = new ListCallbackHandle<>("result", future::complete);
         send(new Request("CONTROLLER_CONSOLE_COMPLETE")
                 .withContentKeyPair("input", text)
                 .withContentKeyPair("cursor", Integer.toString(cursorPosition)),
@@ -456,6 +523,7 @@ public class ClientSession extends Thread {
                 .subscribeSuccess(callbackHandle)
                 .getRequestId()
         );
+        return future;
     }
 
     public Controller getControllerByName(String name) {

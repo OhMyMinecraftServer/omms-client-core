@@ -18,18 +18,10 @@ class SessionTest {
             System.out.println("token = " + token);
             session = initialSession.init(token);
             CountDownLatch latch = new CountDownLatch(3);
-            session.fetchWhitelistFromServer(it -> {
-                System.out.println("whitelists = " + it.toString());
-                latch.countDown();
-            });
-            session.fetchControllersFromServer(it -> {
-                System.out.println("controllers = " + it.toString());
-                latch.countDown();
-            });
+
             while (latch.getCount() != 1) {
                 LockSupport.parkNanos(1);
             }
-            session.close(latch::countDown);
             latch.await();
             session.join();
         } catch (ConnectionFailedException e) {

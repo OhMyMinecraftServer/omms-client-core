@@ -11,6 +11,7 @@ public class EventSubscription<C> {
     private final String requestId;
     private final Map<StatusEvent, CallbackHandle<C>> subscriptions = new HashMap<>();
     private final Map<StatusEvent, SubscriptionStatus> statuses = new HashMap<>();
+    private boolean removed = false;
 
     EventSubscription(String requestId) {
         this.requestId = requestId;
@@ -19,7 +20,7 @@ public class EventSubscription<C> {
     public void handle(StatusEvent event, C context) {
         CallbackHandle<C> handle = subscriptions.get(event);
         SubscriptionStatus status = statuses.get(event);
-        if (handle != null && status != null) {
+        if (handle != null && status != null && !removed) {
             if (status == SubscriptionStatus.EMITTED) return;
             if (status != SubscriptionStatus.MULTIPLE) {
                 statuses.put(event, SubscriptionStatus.EMITTED);
@@ -28,11 +29,11 @@ public class EventSubscription<C> {
         }
     }
 
-    public EventSubscription<C> subscribeSuccess(CallbackHandle<C> handle){
+    public EventSubscription<C> subscribeSuccess(CallbackHandle<C> handle) {
         return subscribe(StatusEvent.SUCCESS, handle);
     }
 
-    public EventSubscription<C> subscribeFailure(CallbackHandle<C> handle){
+    public EventSubscription<C> subscribeFailure(CallbackHandle<C> handle) {
         return subscribe(StatusEvent.FAIL, handle);
     }
 
@@ -52,6 +53,14 @@ public class EventSubscription<C> {
         return statuses.values()
             .stream()
             .allMatch(it -> it == SubscriptionStatus.EMITTED);
+    }
+
+    public void setRemoved() {
+        removed = true;
+    }
+
+    public boolean markedRemoval() {
+        return removed;
     }
 
     public static <C1> EventSubscription<C1> of(String requestId) {
