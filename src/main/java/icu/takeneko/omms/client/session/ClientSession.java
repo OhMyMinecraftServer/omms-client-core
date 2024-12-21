@@ -88,6 +88,10 @@ public class ClientSession extends Thread {
         sessionName = Integer.toString(Math.abs((serverName + ":" + new String(connector.getKey())).hashCode()));
     }
 
+    /**
+     * Subscribe a new {@link EventSubscription}
+     * Use this method to implement custom/plugin communications.
+     */
     public EventSubscription<SessionContext> subscribe(String requestId) {
         return delegate.subscribe(requestId)
             .subscribe(StatusEvent.PERMISSION_DENIED, onPermissionDeniedCallback);
@@ -163,6 +167,9 @@ public class ClientSession extends Thread {
         });
     }
 
+    /**
+     * Shutdown this {@link ClientSession}
+     */
     public CompletableFuture<Void> close() {
         CompletableFuture<Void> future = new CompletableFuture<>();
         setOnDisconnectedCallback(() -> future.complete(null));
@@ -175,6 +182,9 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * @return A {@link CompletableFuture} returns all whitelists when this request completed.
+     */
     public CompletableFuture<Map<String, List<String>>> fetchWhitelistFromServer() {
         CompletableFuture<Map<String, List<String>>> fu = new CompletableFuture<>();
         CallbackHandle<SessionContext> cb = new WhitelistListCallbackHandle(fu::complete);
@@ -212,6 +222,10 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ControllerNotExistException}
+     *  which indicates the controller does not exist.
+     */
     public CompletableFuture<Status> fetchControllerStatus(String controllerId) {
         CompletableFuture<Status> future = new CompletableFuture<>();
         EventSubscription<SessionContext> ctx = subscribe()
@@ -232,7 +246,10 @@ public class ClientSession extends Thread {
         return future;
     }
 
-
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link WhitelistNotFoundException}
+     * or {@link PlayerNotFoundException} which indicates the specified whitelist or player does not exist.
+     */
     public CompletableFuture<Void> removeFromWhitelist(
         String whitelistName,
         String player
@@ -278,13 +295,19 @@ public class ClientSession extends Thread {
         return whitelists;
     }
 
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ConsoleExistsException}
+     * or {@link ControllerNotFoundException} which indicates a console was running or the specified controller does not exist.
+     *
+     * @param client Client custom implementation of {@link ControllerConsoleClient}
+     */
     public CompletableFuture<Void> startControllerConsole(
         String controller,
         ControllerConsoleClient client
     ) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         EventSubscription<SessionContext> subscription = subscribe();
-        CallbackHandle<SessionContext> logRecv = new BiStringCallbackHandle(
+        CallbackHandle<SessionContext> logRec = new BiStringCallbackHandle(
             "consoleId",
             "content",
             client::onLogReceived
@@ -309,7 +332,7 @@ public class ClientSession extends Thread {
         );
         subscription.subscribeAlways(StatusEvent.SUCCESS, new RawCallbackHandle<>(ctx -> {
             if (ctx.hasMarker("log")) {
-                logRecv.invoke(ctx);
+                logRec.invoke(ctx);
                 return;
             }
             if (ctx.hasMarker("launched")) {
@@ -334,6 +357,10 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ConsoleNotFoundException}
+     * which indicates specified consoleId does not exist or already stopped.
+     */
     public CompletableFuture<Void> stopControllerConsole(
         String consoleId
     ) {
@@ -387,6 +414,11 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link WhitelistNotFoundException}
+     * or {@link PlayerAlreadyExistsException} which indicates specified whitelist does not exist or the player are already added to this whitelist.
+     *
+     */
     public CompletableFuture<Void> addToWhitelist(
         String whitelistName,
         String player
@@ -414,6 +446,11 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ControllerNotFoundException}
+     * or {@link RequestUnauthorisedException} which indicates specified controller does not exist or a server configuration failure.
+     *
+     */
     public CompletableFuture<List<String>> sendCommandToController(
         String controller,
         String command
@@ -453,6 +490,9 @@ public class ClientSession extends Thread {
         return future;
     }
 
+    /**
+     * @return A {@link CompletableFuture} holds the passthrough state.
+     */
     public CompletableFuture<Boolean> setChatMessagePassthroughState(boolean state) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         Request request = new Request()

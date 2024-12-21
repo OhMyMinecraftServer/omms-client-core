@@ -18,7 +18,16 @@ class SessionTest {
             System.out.println("token = " + token);
             session = initialSession.init(token);
             CountDownLatch latch = new CountDownLatch(3);
-
+            session.fetchWhitelistFromServer()
+                .thenAccept(result -> {
+                    System.out.println("whitelists = " + result);
+                    latch.countDown();
+                });
+            session.fetchControllersFromServer()
+                .thenAccept(result -> {
+                    System.out.println("controllers = " + result);
+                    latch.countDown();
+                });
             while (latch.getCount() != 1) {
                 LockSupport.parkNanos(1);
             }
