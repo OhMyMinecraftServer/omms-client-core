@@ -8,7 +8,6 @@ import icu.takeneko.omms.client.data.chatbridge.ChatbridgeImplementation;
 import icu.takeneko.omms.client.data.chatbridge.MessageCache;
 import icu.takeneko.omms.client.data.controller.Controller;
 import icu.takeneko.omms.client.data.controller.Status;
-import icu.takeneko.omms.client.data.permission.PermissionOperation;
 import icu.takeneko.omms.client.data.system.SystemInfo;
 import icu.takeneko.omms.client.exception.ConsoleExistsException;
 import icu.takeneko.omms.client.exception.ConsoleNotFoundException;
@@ -38,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Session API
@@ -47,17 +45,16 @@ import java.util.concurrent.Future;
 @Getter
 public class ClientSession extends Thread {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
-    private final HashMap<String, List<String>> whitelistMap = new HashMap<>();
-    private final HashMap<String, Controller> controllerMap = new HashMap<>();
-    private final HashMap<String, EventSubscription<SessionContext>> controllerConsoleSubscriptions = new HashMap<>();
-    private final HashMap<String, ControllerConsoleClient> controllerConsoleClients = new HashMap<>();
+    private final Map<String, List<String>> whitelistMap = new HashMap<>();
+    private final Map<String, Controller> controllerMap = new HashMap<>();
+    private final Map<String, EventSubscription<SessionContext>> controllerConsoleSubscriptions = new HashMap<>();
+    private final Map<String, ControllerConsoleClient> controllerConsoleClients = new HashMap<>();
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
+    private final ResponseHandlerDelegate<SessionContext, CallbackHandle<SessionContext>> delegate;
     private final Socket socket;
     private final String serverName;
-    EncryptedConnector connector;
-    private SystemInfo systemInfo = null;
-    private PermissionOperation lastPermissionOperation;
-    private final ResponseHandlerDelegate<SessionContext, CallbackHandle<SessionContext>> delegate;
+    private final EncryptedConnector connector;
+    private SystemInfo systemInfo;
     @Setter
     private PermissionDeniedCallbackHandle<SessionContext> onPermissionDeniedCallback = new PermissionDeniedCallbackHandle<>();
     @Setter
@@ -74,8 +71,6 @@ public class ClientSession extends Thread {
     private Callback<ChatMessage> onNewChatMessageReceivedCallback;
     @Setter
     private String sessionName;
-
-    boolean chatMessagePassthroughEnabled = true;
 
     public ClientSession(EncryptedConnector connector, Socket socket, String serverName) {
         super("ClientSessionThread");
