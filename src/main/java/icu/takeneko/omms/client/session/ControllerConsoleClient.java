@@ -5,5 +5,5 @@ public interface ControllerConsoleClient {
 
     void onLogReceived(String consoleId, String log);
 
-    void onStopped();
+    void onStopped(String consoleId);
 }

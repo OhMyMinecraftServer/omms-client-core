@@ -197,6 +197,9 @@ public class ClientSession extends Thread {
         return fu;
     }
 
+    /**
+     * @return A {@link CompletableFuture} returns all controllers when this request completed.
+     */
     public CompletableFuture<Map<String, Controller>> fetchControllersFromServer() {
         CompletableFuture<Map<String, Controller>> future = new CompletableFuture<>();
         send(
@@ -223,7 +226,7 @@ public class ClientSession extends Thread {
     }
 
     /**
-     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ControllerNotExistException}
+     * Note: the returned {@link CompletableFuture} may completeExceptionally with {@link ControllerNotFoundException}
      *  which indicates the controller does not exist.
      */
     public CompletableFuture<Status> fetchControllerStatus(String controllerId) {
@@ -233,7 +236,7 @@ public class ClientSession extends Thread {
                 new StatusCallbackHandle(future::complete)
             ).subscribeFailure(
                 new CallbackHandle0<>(
-                    () -> future.completeExceptionally(new ControllerNotExistException(controllerId))
+                    () -> future.completeExceptionally(new ControllerNotFoundException(controllerId))
                 )
             );
 
@@ -301,11 +304,11 @@ public class ClientSession extends Thread {
      *
      * @param client Client custom implementation of {@link ControllerConsoleClient}
      */
-    public CompletableFuture<Void> startControllerConsole(
+    public CompletableFuture<String> startControllerConsole(
         String controller,
         ControllerConsoleClient client
     ) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
+        CompletableFuture<String> future = new CompletableFuture<>();
         EventSubscription<SessionContext> subscription = subscribe();
         CallbackHandle<SessionContext> logRec = new BiStringCallbackHandle(
             "consoleId",
@@ -318,8 +321,8 @@ public class ClientSession extends Thread {
             (ct, conId) -> {
                 controllerConsoleSubscriptions.put(conId, subscription);
                 controllerConsoleClients.put(conId, client);
-                future.complete(null);
                 client.onLaunched(controller, conId);
+                future.complete(conId);
             }
         );
         CallbackHandle<SessionContext> consoleExists = new StringCallbackHandle(
@@ -368,7 +371,7 @@ public class ClientSession extends Thread {
         CallbackHandle<SessionContext> conStopped = new StringCallbackHandle(
             "consoleId",
             id -> {
-                controllerConsoleClients.get(id).onStopped();
+                controllerConsoleClients.get(id).onStopped(id);
                 controllerConsoleSubscriptions.get(id).setRemoved();
                 controllerConsoleClients.remove(id);
                 controllerConsoleSubscriptions.remove(id);
@@ -546,14 +549,14 @@ public class ClientSession extends Thread {
     public CompletableFuture<List<String>> controllerConsoleComplete(
         String consoleId,
         String text,
-        int cursorPosition,
-        Callback<List<String>> callback
+        int cursorPosition
     ) {
         CompletableFuture<List<String>> future = new CompletableFuture<>();
         ListCallbackHandle<String> callbackHandle = new ListCallbackHandle<>("result", future::complete);
         send(new Request("CONTROLLER_CONSOLE_COMPLETE")
                 .withContentKeyPair("input", text)
-                .withContentKeyPair("cursor", Integer.toString(cursorPosition)),
+                .withContentKeyPair("cursor", Integer.toString(cursorPosition))
+                .withContentKeyPair("consoleId", consoleId),
             subscribe()
                 .subscribeSuccess(callbackHandle)
                 .getRequestId()
