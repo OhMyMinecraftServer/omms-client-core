@@ -9,14 +9,14 @@ import java.util.List;
 @Getter
 @Setter
 public class Status {
-    boolean isAlive = false;
+    private boolean isAlive = false;
 
-    boolean isQueryable = false;
-    String name;
-    String type;
-    int playerCount;
-    int maxPlayerCount;
-    List<String> players;
+    private boolean isQueryable = false;
+    private String name;
+    private String type;
+    private int playerCount;
+    private int maxPlayerCount;
+    private List<String> players;
 
     public Status(String type, int playerCount, int maxPlayerCount, List<String> players) {
         this.type = type;
